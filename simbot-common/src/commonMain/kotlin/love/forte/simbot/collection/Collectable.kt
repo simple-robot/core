@@ -12,8 +12,14 @@
 
 package love.forte.simbot.collection
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import love.forte.simbot.function.Action
+import kotlin.jvm.JvmSynthetic
 
+// TODO Collectable..?
 
 /**
  * 一个可收集序列器。
@@ -26,15 +32,66 @@ import kotlinx.coroutines.flow.Flow
  *
  * @author ForteScarlet
  */
-public expect interface Collectable<out T> {
+public interface Collectable<out T> {
+
+    // TODO ?
+
+    /**
+     * 挂起并收集其中的元素。
+     *
+     * [collector] 函数体内不可挂起，如果希望行为函数内部可挂起请使用 [asFlow]
+     * 转化为 [Flow] 后进行操作。
+     *
+     */
+    @JvmSynthetic
+    public suspend fun collect(collector: Action<T>)
+
+    /**
+     * 异步收集其中的元素。
+     *
+     * [collector] 函数体内不可挂起，如果希望行为函数内部可挂起请使用 [asFlow]
+     * 转化为 [Flow] 后进行操作。
+     *
+     */
+    @JvmSynthetic
+    public fun launchAndCollect(scope: CoroutineScope, collector: Action<T>): Job = scope.launch { collect(collector) }
 
     /**
      * 将自身中的元素（或收集器）转化为 [Flow]。
      */
     public fun asFlow(): Flow<T>
 
+}
+
+
+/**
+ * 一个基于普通迭代器 [Collectable] 实现。
+ *
+ * [IterableCollectable] 中没有实际需要挂起的流类型（例如 [Flow]），
+ * 因此可以将其转化为普通序列（例如 [Sequence]）。
+ *
+ */
+public interface IterableCollectable<out T> : Collectable<T> {
+
+    /**
+     *
+     */
+    public fun forEach(action: Action<T>)
+
+    @JvmSynthetic
+    override suspend fun collect(collector: Action<T>): Unit = forEach(collector)
+
+
+    override fun launchAndCollect(scope: CoroutineScope, collector: Action<T>): Job = scope.launch {
+        forEach(collector)
+    }
+
+
     /**
      * 将自身中的元素（或收集器）转化为 [Sequence]。
      */
     public fun asSequence(): Sequence<T>
+
 }
+
+

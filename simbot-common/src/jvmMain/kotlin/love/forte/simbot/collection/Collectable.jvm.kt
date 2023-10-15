@@ -16,23 +16,3 @@ import kotlinx.coroutines.flow.Flow
 import java.util.stream.Stream
 import kotlin.streams.asStream
 
-/**
- * 一个可收集序列器。
- *
- * [Collectable] 应当支持将自身（或其中实际的元素收集方式）
- * 转化为可挂起的流（[Flow]）或同步序列（[Sequence]）。
- *
- * [Collectable] 本身可能含有一个热流或冷流，因此 [Collectable] 不保证可以多次使用，
- * 也不建议多次调用 [Collectable] 的转化函数。[Collectable] 应当仅至多调用一次转化函数。
- *
- * @author ForteScarlet
- */
-public actual interface Collectable<out T> {
-    public actual fun asFlow(): Flow<T>
-    public actual fun asSequence(): Sequence<T>
-
-    /**
-     * 将自身中的元素（或收集器）转化为 [Stream]。
-     */
-    public fun toStream(): Stream<@UnsafeVariance T> = asSequence().asStream()
-}

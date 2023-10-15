@@ -11,11 +11,15 @@
  */
 
 @file:JvmName("Collectables")
+
 package love.forte.simbot.collection
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
+import love.forte.simbot.function.Action
 import kotlin.jvm.JvmName
 
 /**
@@ -23,8 +27,20 @@ import kotlin.jvm.JvmName
  */
 public fun <T> emptyCollectable(): Collectable<T> = EmptyCollectable
 
-private data object EmptyCollectable : Collectable<Nothing> {
+private data object EmptyCollectable : IterableCollectable<Nothing> {
+    override suspend fun collect(collector: Action<Nothing>) {
+        // nothing.
+    }
+
+    override fun forEach(action: Action<Nothing>) {
+    }
+
+    override fun launchAndCollect(scope: CoroutineScope, collector: Action<Nothing>): Job {
+        return Job().apply { complete() }
+    }
+
     override fun asFlow(): Flow<Nothing> = emptyFlow()
+
     override fun asSequence(): Sequence<Nothing> = emptySequence()
 }
 
@@ -38,19 +54,21 @@ public fun <T> Flow<T>.asCollectable(): Collectable<T> = FlowCollectable(this)
 
 private class FlowCollectable<T>(private val flow: Flow<T>) : Collectable<T> {
     override fun asFlow(): Flow<T> = flow
-    override fun asSequence(): Sequence<T> {
-        TODO("Not yet implemented")
+    override suspend fun collect(collector: Action<T>) {
+        flow.collect { collector(it) }
     }
 }
 
 // TODO
 
-public fun <T> Iterable<T>.asCollectable(): Collectable<T> = IterableCollectable(this)
+public fun <T> Iterable<T>.asCollectable(): Collectable<T> = IterableCollectableImpl(this)
 
 
-private class IterableCollectable<T>(private val collection: Iterable<T>) : Collectable<T> {
+private class IterableCollectableImpl<T>(private val collection: Iterable<T>) : IterableCollectable<T> {
     override fun asFlow(): Flow<T> = collection.asFlow()
     override fun asSequence(): Sequence<T> = collection.asSequence()
+
+    override fun forEach(action: Action<T>): Unit = collection.forEach(action::invoke)
 }
 
 // TODO
@@ -58,7 +76,9 @@ private class IterableCollectable<T>(private val collection: Iterable<T>) : Coll
 public fun <T> Sequence<T>.asCollectable(): Collectable<T> = SequenceCollectable(this)
 
 
-private class SequenceCollectable<T>(private val collection: Sequence<T>) : Collectable<T> {
+private class SequenceCollectable<T>(private val collection: Sequence<T>) : IterableCollectable<T> {
     override fun asFlow(): Flow<T> = collection.asFlow()
     override fun asSequence(): Sequence<T> = collection
+
+    override fun forEach(action: Action<T>): Unit = collection.forEach(action::invoke)
 }
