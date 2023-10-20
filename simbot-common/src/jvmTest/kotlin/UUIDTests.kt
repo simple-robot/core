@@ -12,8 +12,6 @@ class UUIDTests {
         val uuid = UUID.random()
         val javaUUID = java.util.UUID(uuid.mostSignificantBits, uuid.leastSignificantBits)
 
-        val a = "abc"
-
         println(uuid)
         println(javaUUID)
 

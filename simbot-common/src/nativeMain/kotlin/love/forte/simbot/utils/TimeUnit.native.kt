@@ -119,16 +119,7 @@ public actual enum class TimeUnit(private val scale: Long) {
      * 转为 Minutes
      */
     public actual open fun toMinutes(duration: Long): Long {
-        return when {
-            scale <= SECOND_SCALE -> if (scale == SECOND_SCALE) {
-                duration
-            } else {
-                duration / secRatio
-            }
-            duration > maxSecs -> Long.MAX_VALUE
-            duration < -maxSecs -> Long.MIN_VALUE
-            else -> duration * secRatio
-        }
+        return cvt(duration, MINUTE_SCALE, scale)
     }
 
     /**

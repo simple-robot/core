@@ -12,6 +12,7 @@
 
 package love.forte.simbot.timestamp
 
+import love.forte.simbot.annotation.ExperimentalAPI
 import love.forte.simbot.utils.TimeUnit
 import kotlin.jvm.JvmStatic
 
@@ -21,8 +22,8 @@ import kotlin.jvm.JvmStatic
  * 是从 `UTC 1970.01.01T00:00:00Z` 直至现在所经过的时间，
  * 常见的时间单位有秒或毫秒。
  *
- * [Timestamp] **不是** 日期API，而仅是一种无视时间戳数值单位的包装体。
- * 因此 [Timestamp] 本身不提供例如获取当前时间戳、解析某格式的日期（例如 ISO-8601）等功能。
+ * [Timestamp] **不是日期API** ，而仅是一种无视时间戳数值单位的包装体。
+ * 因此 [Timestamp] 本身不提供例如解析某格式的日期（例如 ISO-8601）或进行日期格式化等功能。
  *
  * 这些功能也许会在某些支持的特定平台上提供辅助实现（例如在JVM平台上使用 `java.time` 相关API）。
  *
@@ -66,7 +67,6 @@ public interface Timestamp : Comparable<Timestamp> {
      */
     public infix fun timeAs(unit: TimeUnit): Long = unit.convert(milliseconds, TimeUnit.MILLISECONDS)
 
-
     /**
      * 默认情况下，[Timestamp] 通过 [milliseconds] 进行顺序比较。
      */
@@ -75,10 +75,25 @@ public interface Timestamp : Comparable<Timestamp> {
     public companion object {
         /**
          * 通过毫秒值得到一个 [Timestamp]。
+         *
+         * @see MillisecondsTimestamp
          */
         @JvmStatic
         public fun ofMilliseconds(milliseconds: Long): Timestamp = MillisecondsTimestamp(milliseconds)
+
+        /**
+         * 得到一个记录了当前时间戳信息的 [Timestamp] 实例。
+         *
+         * 实验性: [now] 在大多数原生平台中实现不稳定。请尽可能在可靠平台中使用（例如 `JVM`、`JS`）
+         */
+        @JvmStatic
+        @ExperimentalAPI
+        public fun now(): Timestamp = nowInternal()
     }
 }
 
 
+/**
+ * 得到一个记录了当前时间戳信息的 [Timestamp] 实例。
+ */
+internal expect fun nowInternal(): Timestamp

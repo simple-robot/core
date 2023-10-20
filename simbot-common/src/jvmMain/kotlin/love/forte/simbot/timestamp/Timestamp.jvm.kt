@@ -24,7 +24,7 @@ import java.time.Instant
  * @author ForteScarlet
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class InstantTimestamp(public val instant: Instant) : Timestamp {
+public class InstantTimestamp private constructor(public val instant: Instant) : Timestamp {
     override val milliseconds: Long
         get() = instant.toEpochMilli()
 
@@ -46,4 +46,22 @@ public class InstantTimestamp(public val instant: Instant) : Timestamp {
 
     override fun hashCode(): Int = instant.hashCode()
     override fun toString(): String = "InstantTimestamp(milliseconds=$milliseconds, instant=$instant)"
+
+    public companion object {
+
+        /**
+         * 通过 [Instant] 得到一个 [InstantTimestamp]。
+         */
+        @JvmStatic
+        public fun of(instant: Instant): InstantTimestamp = InstantTimestamp(instant)
+
+    }
+
 }
+
+
+/**
+ * 通过 [System.currentTimeMillis] 获取当前时间戳并转化为 [Timestamp]。
+ *
+ */
+internal actual fun nowInternal(): Timestamp = MillisecondsTimestamp(System.currentTimeMillis())

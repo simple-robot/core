@@ -1,5 +1,6 @@
+package love.forte.simbot.id
+
 import kotlinx.serialization.json.Json
-import love.forte.simbot.id.*
 import love.forte.simbot.id.IntID.Companion.ID
 import love.forte.simbot.id.LongID.Companion.ID
 import love.forte.simbot.id.StringID.Companion.ID
@@ -17,7 +18,6 @@ class IDTests {
 
     @Test
     fun uuidGenerateTest() {
-        println(UUID.random())
         val id = UUID.random()
         val id2 = id.toString().UUID
 
@@ -50,12 +50,6 @@ class IDTests {
         assertEquals(json.encodeToString(UIntID.serializer(), ui.ID), ui.toString())
         assertEquals(json.encodeToString(ULongID.serializer(), ul.ID), ul.toString())
 
-    }
-
-    @Test
-    fun ta() {
-        val map = hashMapOf<IntID, String>(1.ID to "value 1", 1.ID to "also value 1")
-        println(map)
     }
 
 }

@@ -25,12 +25,23 @@ repositories {
 kotlin {
     explicitApi()
 
+    metadata {
+
+    }
+
+    withSourcesJar()
+    applyDefaultHierarchyTemplate()
+
     jvm {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "11"
                 javaParameters = true
-                freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
+                freeCompilerArgs = freeCompilerArgs + listOf(
+                    "-Xjvm-default=all",
+                    // 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. You can use -Xexpect-actual-classes flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
+                    "-Xexpect-actual-classes"
+                )
             }
         }
         withJava()
@@ -76,23 +87,10 @@ kotlin {
 //    @Suppress("OPT_IN_USAGE")
 //    wasmWasi()
 
-//    val mainPresets = mutableSetOf<KotlinSourceSet>()
-//    val testPresets = mutableSetOf<KotlinSourceSet>()
-//
-//    targets {
-//        presets.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeTargetPreset<*>>()
-//            .filter { it.name in NativeTargets.Official.all }
-//            .forEach { presets ->
-//                val target = fromPreset(presets, presets.name)
-//                mainPresets.add(target.compilations["main"].kotlinSourceSets.first())
-//                testPresets.add(target.compilations["test"].kotlinSourceSets.first())
-//            }
-//    }
-
     sourceSets {
         commonMain {
             dependencies {
-                compileOnly(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
             }
         }

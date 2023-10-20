@@ -14,9 +14,14 @@ package love.forte.simbot.timestamp
 
 import kotlin.js.Date
 
+/**
+ * 得到一个记录了当前 epoch 时间的 Timestamp 实例。
+ */
+internal actual fun nowInternal(): Timestamp = DateTimestamp(Date())
+
 
 /**
- * 基于 [Date] 的 [Timestamp] 实现。
+ * 基于 [kotlin.js.Date] 的 [Timestamp] 实现。
  *
  * @author ForteScarlet
  */

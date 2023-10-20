@@ -168,7 +168,7 @@ import kotlin.random.Random
  * @author ForteScarlet
  */
 @Serializable(with = AsStringIDSerializer::class)
-public expect sealed class ID() : Comparable<ID> {
+public sealed class ID : Comparable<ID> {
 
     /**
      * ID 的 **字面值** 字符串。
@@ -209,7 +209,6 @@ public expect sealed class ID() : Comparable<ID> {
      * 复制一个当前ID。
      */
     public abstract fun copy(): ID
-
 }
 
 
@@ -376,7 +375,6 @@ public class UUID private constructor(
 
             is NumericalID -> 1
             is StringID -> stringValue.compareTo(other.value)
-            else -> -1
         }
     }
 
@@ -551,7 +549,6 @@ public sealed class NumericalID : ID() {
             is StringID -> 1
             is UUID -> -1
             is NumericalID -> compareNumber(other)
-            else -> -1
         }
     }
 

@@ -1,10 +1,15 @@
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.memScoped
-import kotlin.test.Test
-import kotlinx.cinterop.*
-import platform.posix.*
+package love.forte.simbot.timestamp
 
-class TimeTests {
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import platform.posix.mingw_gettimeofday
+import platform.posix.time
+import platform.posix.timeval
+import kotlin.test.Test
+
+class NativeTimestampTests {
     @OptIn(ExperimentalForeignApi::class)
     @Test
     fun test() {
@@ -24,14 +29,13 @@ class TimeTests {
     }
 
 
-
     @OptIn(ExperimentalForeignApi::class)
     @Test
     fun nowTest2() {
         val time = memScoped {
             val timeVal = alloc<timeval>()
             mingw_gettimeofday(timeVal.ptr, null)
-            timeVal.tv_sec * 1_000L + timeVal.tv_usec / 1_000L
+            (timeVal.tv_sec * 1_000L) + (timeVal.tv_usec / 1_000L)
         }
 
         println(time)
