@@ -1,3 +1,6 @@
+import P.Simbot.group
+import P.Simbot.version
+
 plugins {
     idea
 //    id("simbot.changelog-generator")
@@ -26,6 +29,13 @@ allprojects {
         }
     }
 }
+
+//subprojects {
+//    plugins.any { it ->
+//        println("it: $it")
+//        false
+//    }
+//}
 
 idea {
     module {

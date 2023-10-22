@@ -32,6 +32,7 @@ kotlin {
             kotlinOptions {
                 jvmTarget = JVMConstants.KT_JVM_TARGET
                 javaParameters = true
+
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xjvm-default=all",
                     // 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. You can use -Xexpect-actual-classes flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
