@@ -12,7 +12,6 @@
 
 package love.forte.simbot.timestamp
 
-
 /**
  * 使用 [毫秒级时间戳][milliseconds] 作为基础数据进行简单包装的 [Timestamp] 实现。
  *
