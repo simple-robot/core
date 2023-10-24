@@ -33,5 +33,5 @@ public class MillisecondsTimestamp(override val milliseconds: Long) : Timestamp 
     }
 
     override fun hashCode(): Int = milliseconds.hashCode()
-    override fun toString(): String = "MillisecondsTimestamp(milliseconds=$milliseconds)"
+    override fun toString(): String = "Timestamp(milliseconds=$milliseconds)"
 }

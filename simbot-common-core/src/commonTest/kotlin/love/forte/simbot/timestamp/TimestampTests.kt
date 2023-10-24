@@ -1,5 +1,6 @@
 package love.forte.simbot.timestamp
 
+import love.forte.simbot.annotations.ExperimentalAPI
 import love.forte.simbot.utils.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -18,6 +19,24 @@ class TimestampTests {
 
         val timestamp = MillisecondsTimestamp(millis)
         assertEquals(timestamp.timeAs(TimeUnit.SECONDS), millis / 1000)
+    }
+
+    @OptIn(ExperimentalAPI::class)
+    @Test
+    fun nowTimestampTests() {
+        val now = Timestamp.now()
+
+        println(now)
+
+        assertEquals(now.compareTo(now), 0)
+        assertEquals(now.milliseconds.toString().length, 13)
+
+        val timeOfNow = Timestamp.ofMilliseconds(now.milliseconds)
+
+        assertEquals(now, timeOfNow)
+        assertEquals(now.milliseconds, timeOfNow.milliseconds)
+        assertEquals(now.compareTo(timeOfNow), 0)
+
     }
 
 }
