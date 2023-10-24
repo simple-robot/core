@@ -18,17 +18,17 @@ processors:
   active: true
   exclude:
     - 'DetektProgressListener'
-  # - 'KtFileCountProcessor'
-  # - 'PackageCountProcessor'
-  # - 'ClassCountProcessor'
+    - 'KtFileCountProcessor'
+    - 'PackageCountProcessor'
+    - 'ClassCountProcessor'
   # - 'FunctionCountProcessor'
   # - 'PropertyCountProcessor'
   # - 'ProjectComplexityProcessor'
   # - 'ProjectCognitiveComplexityProcessor'
-  # - 'ProjectLLOCProcessor'
-  # - 'ProjectCLOCProcessor'
-  # - 'ProjectLOCProcessor'
-  # - 'ProjectSLOCProcessor'
+    - 'ProjectLLOCProcessor'
+    - 'ProjectCLOCProcessor'
+    - 'ProjectLOCProcessor'
+    - 'ProjectSLOCProcessor'
   # - 'LicenseHeaderLoaderExtension'
 
 console-reports:
@@ -43,12 +43,12 @@ console-reports:
 
 output-reports:
   active: true
-#  exclude:
+  exclude:
   # - 'TxtOutputReport'
-  # - 'XmlOutputReport'
+   - 'XmlOutputReport'
   # - 'HtmlOutputReport'
   # - 'MdOutputReport'
-  # - 'SarifOutputReport'
+   - 'SarifOutputReport'
 
 comments:
   active: true
