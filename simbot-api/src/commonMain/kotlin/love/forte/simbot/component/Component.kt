@@ -1,6 +1,7 @@
 package love.forte.simbot.component
 
 import kotlinx.serialization.modules.SerializersModule
+import love.forte.simbot.component.ComponentFactoriesConfigurator.Configurator
 
 /**
  * 一个 **组件**。
@@ -37,6 +38,18 @@ public interface Component {
 public interface ComponentFactory<Com : Component, Conf : Any> {
     /**
      * 用于 [ComponentFactory] 在内部整合时的标识类型。
+     *
+     * [Key] 的实现应用于 [ComponentFactory.key]。
+     * [Key] 会被作为一个用于区分 [ComponentFactory] 的 `key` 使用，
+     * 并可能会应用于诸如 HashMap 的键上。
+     *
+     * 因此，在 Kotlin 中，[Key] 的实现推荐为一个 `object` 类型
+     * （例如 [ComponentFactory] 实现对应的伴生对象）。
+     * 在 JVM 或其他实现中，[Key] 的实现至少应保证其实例唯一，
+     * 或 [hashCode] 与 [equals] 直接具有正常的关联性。
+     *
+     * @see ComponentFactory.key
+     *
      */
     public interface Key
 
@@ -70,6 +83,76 @@ public fun interface ComponentFactoryConfigurer<in Conf> {
      */
     public operator fun Conf.invoke()
 }
+
+
+/**
+ * 用于对 [ComponentFactory] 进行聚合组装的配置器。
+ */
+public class ComponentFactoriesConfigurator<CONTEXT>(
+    configurators: Map<ComponentFactory.Key, Configurator<Any, CONTEXT>> = emptyMap(),
+    factories: Map<ComponentFactory.Key, (CONTEXT) -> Component> = emptyMap(),
+) {
+    private val configurators = configurators.toMutableMap()
+    private val factories = factories.toMutableMap()
+
+    /**
+     * Configurer fun type for [ComponentFactoriesConfigurator.add].
+     */
+    public fun interface Configurator<in Conf, in Context> {
+        /**
+         * invoker.
+         */
+        public operator fun Conf.invoke(context: Context)
+    }
+
+    // TODO
+
+    /**
+     *
+     *
+     */
+    public fun <Com : Component, Conf : Any> add(
+        factory: ComponentFactory<Com, Conf>,
+        configurator: Configurator<Conf, CONTEXT>
+    ) {
+        val key = factory.key
+        val newConfig = newConfigurator(key, configurators, configurator)
+        configurators[key] = newConfig
+
+        if (key in factories) return
+
+        factories[key] = {
+            val configurator0 = configurators[key]!!
+            //
+//            factory.create(configurator0)
+            TODO()
+        }
+    }
+
+
+    private fun <CONFIG : Any> newConfigurator(
+        key: ComponentFactory.Key,
+        configurations: Map<ComponentFactory.Key, Configurator<Any, CONTEXT>>,
+        configurator: Configurator<CONFIG, CONTEXT>
+    ): (Configurator<Any, CONTEXT>) {
+        val oldConfig = configurations[key]
+
+        @Suppress("UNCHECKED_CAST")
+        return if (oldConfig != null) {
+            Configurator { context ->
+                this as CONFIG
+                oldConfig.apply { invoke(context) }
+                configurator.apply { invoke(context) }
+            }
+        } else {
+            Configurator { context ->
+                this as CONFIG
+                configurator.apply { invoke(context) }
+            }
+        }
+    }
+}
+
 
 // region Exceptions
 /**
