@@ -32,10 +32,10 @@ public interface Component {
  * [Component] 的工厂函数，用于配置并预构建 [Component] 实例。
  *
  * @see Component
- * @param Com 目标组件类型
- * @param Conf 配置类型。配置类型应是一个可变类，以便于在 DSL 中进行动态配置。
+ * @param COM 目标组件类型
+ * @param CONF 配置类型。配置类型应是一个可变类，以便于在 DSL 中进行动态配置。
  */
-public interface ComponentFactory<Com : Component, Conf : Any> {
+public interface ComponentFactory<COM : Component, CONF : Any> {
     /**
      * 用于 [ComponentFactory] 在内部整合时的标识类型。
      *
@@ -51,7 +51,7 @@ public interface ComponentFactory<Com : Component, Conf : Any> {
      * @see ComponentFactory.key
      *
      */
-    public interface Key
+    public interface Key // TODO : <C : ComponentFactory>
 
     /**
      * 工厂函数的标识。
@@ -64,12 +64,12 @@ public interface ComponentFactory<Com : Component, Conf : Any> {
      *
      * @param configurer 配置类的配置逻辑。
      */
-    public fun create(configurer: ComponentFactoryConfigurer<Conf>): Com
+    public fun create(configurer: ComponentFactoryConfigurer<CONF>): COM
 
     /**
      * 使用默认的配置（没有额外配置逻辑）构建并得到组件的结果。
      */
-    public fun create(): Com = create {}
+    public fun create(): COM = create {}
 }
 
 
@@ -77,11 +77,11 @@ public interface ComponentFactory<Com : Component, Conf : Any> {
  * 组件工厂的配置逻辑函数。
  * @see ComponentFactory.create
  */
-public fun interface ComponentFactoryConfigurer<in Conf> {
+public fun interface ComponentFactoryConfigurer<in CONF> {
     /**
      * 配置逻辑。
      */
-    public operator fun Conf.invoke()
+    public operator fun CONF.invoke()
 }
 
 
@@ -98,11 +98,11 @@ public class ComponentFactoriesConfigurator<CONTEXT>(
     /**
      * Configurer fun type for [ComponentFactoriesConfigurator.add].
      */
-    public fun interface Configurator<in Conf, in Context> {
+    public fun interface Configurator<in CONF, in CONTEXT> {
         /**
          * invoker.
          */
-        public operator fun Conf.invoke(context: Context)
+        public operator fun CONF.invoke(context: CONTEXT)
     }
 
     // TODO
@@ -111,9 +111,9 @@ public class ComponentFactoriesConfigurator<CONTEXT>(
      *
      *
      */
-    public fun <Com : Component, Conf : Any> add(
-        factory: ComponentFactory<Com, Conf>,
-        configurator: Configurator<Conf, CONTEXT>
+    public fun <COM : Component, CONF : Any> add(
+        factory: ComponentFactory<COM, CONF>,
+        configurator: Configurator<CONF, CONTEXT>
     ) {
         val key = factory.key
         val newConfig = newConfigurator(key, configurators, configurator)
@@ -121,13 +121,26 @@ public class ComponentFactoriesConfigurator<CONTEXT>(
 
         if (key in factories) return
 
-        factories[key] = {
+        factories[key] = { context ->
             val configurator0 = configurators[key]!!
-            //
-//            factory.create(configurator0)
-            TODO()
+            factory.create {
+                configurator0.apply { invoke(context) }
+            }
         }
     }
+
+    // TODO
+
+    /**
+     *
+     */
+    public fun <COM : Component, CONF : Any> createOrNull(factory: ComponentFactory<COM, CONF>, context: CONTEXT): COM? {
+        val configurator = configurators[factory.key] ?: return null
+        return factory.create {
+            configurator.apply { invoke(context) }
+        }
+    }
+
 
 
     private fun <CONFIG : Any> newConfigurator(
