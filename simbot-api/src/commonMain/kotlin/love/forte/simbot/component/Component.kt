@@ -1,7 +1,8 @@
 package love.forte.simbot.component
 
 import kotlinx.serialization.modules.SerializersModule
-import love.forte.simbot.component.ComponentFactoriesConfigurator.Configurator
+import love.forte.simbot.utils.MergeableFactoriesConfigurator
+import love.forte.simbot.utils.MergeableFactory
 
 /**
  * 一个 **组件**。
@@ -35,53 +36,16 @@ public interface Component {
  * @param COM 目标组件类型
  * @param CONF 配置类型。配置类型应是一个可变类，以便于在 DSL 中进行动态配置。
  */
-public interface ComponentFactory<COM : Component, CONF : Any> {
+public interface ComponentFactory<COM : Component, CONF : Any> : MergeableFactory<ComponentFactory.Key, COM, CONF> {
     /**
      * 用于 [ComponentFactory] 在内部整合时的标识类型。
      *
-     * [Key] 的实现应用于 [ComponentFactory.key]。
-     * [Key] 会被作为一个用于区分 [ComponentFactory] 的 `key` 使用，
-     * 并可能会应用于诸如 HashMap 的键上。
-     *
-     * 因此，在 Kotlin 中，[Key] 的实现推荐为一个 `object` 类型
-     * （例如 [ComponentFactory] 实现对应的伴生对象）。
-     * 在 JVM 或其他实现中，[Key] 的实现至少应保证其实例唯一，
-     * 或 [hashCode] 与 [equals] 直接具有正常的关联性。
+     * 更多说明参阅 [MergeableFactory.Key]。
      *
      * @see ComponentFactory.key
-     *
+     * @see MergeableFactory.key
      */
-    public interface Key // TODO : <C : ComponentFactory>
-
-    /**
-     * 工厂函数的标识。
-     * [key] 应当是一个针对当前类型的 [ComponentFactory] 的 **常量** 实例。
-     */
-    public val key: Key
-
-    /**
-     * 提供配置逻辑函数，并得到组件的结果。
-     *
-     * @param configurer 配置类的配置逻辑。
-     */
-    public fun create(configurer: ComponentFactoryConfigurer<CONF>): COM
-
-    /**
-     * 使用默认的配置（没有额外配置逻辑）构建并得到组件的结果。
-     */
-    public fun create(): COM = create {}
-}
-
-
-/**
- * 组件工厂的配置逻辑函数。
- * @see ComponentFactory.create
- */
-public fun interface ComponentFactoryConfigurer<in CONF> {
-    /**
-     * 配置逻辑。
-     */
-    public operator fun CONF.invoke()
+    public interface Key : MergeableFactory.Key
 }
 
 
@@ -91,80 +55,7 @@ public fun interface ComponentFactoryConfigurer<in CONF> {
 public class ComponentFactoriesConfigurator<CONTEXT>(
     configurators: Map<ComponentFactory.Key, Configurator<Any, CONTEXT>> = emptyMap(),
     factories: Map<ComponentFactory.Key, (CONTEXT) -> Component> = emptyMap(),
-) {
-    private val configurators = configurators.toMutableMap()
-    private val factories = factories.toMutableMap()
-
-    /**
-     * Configurer fun type for [ComponentFactoriesConfigurator.add].
-     */
-    public fun interface Configurator<in CONF, in CONTEXT> {
-        /**
-         * invoker.
-         */
-        public operator fun CONF.invoke(context: CONTEXT)
-    }
-
-    // TODO
-
-    /**
-     *
-     *
-     */
-    public fun <COM : Component, CONF : Any> add(
-        factory: ComponentFactory<COM, CONF>,
-        configurator: Configurator<CONF, CONTEXT>
-    ) {
-        val key = factory.key
-        val newConfig = newConfigurator(key, configurators, configurator)
-        configurators[key] = newConfig
-
-        if (key in factories) return
-
-        factories[key] = { context ->
-            val configurator0 = configurators[key]!!
-            factory.create {
-                configurator0.apply { invoke(context) }
-            }
-        }
-    }
-
-    // TODO
-
-    /**
-     *
-     */
-    public fun <COM : Component, CONF : Any> createOrNull(factory: ComponentFactory<COM, CONF>, context: CONTEXT): COM? {
-        val configurator = configurators[factory.key] ?: return null
-        return factory.create {
-            configurator.apply { invoke(context) }
-        }
-    }
-
-
-
-    private fun <CONFIG : Any> newConfigurator(
-        key: ComponentFactory.Key,
-        configurations: Map<ComponentFactory.Key, Configurator<Any, CONTEXT>>,
-        configurator: Configurator<CONFIG, CONTEXT>
-    ): (Configurator<Any, CONTEXT>) {
-        val oldConfig = configurations[key]
-
-        @Suppress("UNCHECKED_CAST")
-        return if (oldConfig != null) {
-            Configurator { context ->
-                this as CONFIG
-                oldConfig.apply { invoke(context) }
-                configurator.apply { invoke(context) }
-            }
-        } else {
-            Configurator { context ->
-                this as CONFIG
-                configurator.apply { invoke(context) }
-            }
-        }
-    }
-}
+) : MergeableFactoriesConfigurator<CONTEXT, Component, ComponentFactory.Key>(configurators, factories)
 
 
 // region Exceptions
