@@ -13,7 +13,8 @@ import love.forte.simbot.utils.MergeableFactory
  * 在所有组件 [Component][love.forte.simbot.component.Component]
  * 加载完成后进入配置阶段。
  *
- * 事件提供者无所谓形式，可以是一个 [BotManager][love.forte.simbot.bot.BotFactory], 或是一个定时任务、一个http服务, 或者其他任何什么。
+ * [Plugin] 无所谓形式，可以是一个 [BotManager][love.forte.simbot.bot.BotFactory],
+ * 或是一个定时任务、一个http服务, 或者其他任何什么。
  *
  * @author ForteScarlet
  */
