@@ -80,7 +80,10 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
             ?: return factory.create()
 
         return factory.create {
-            configurator.apply { invoke(context) }
+            val conf = this
+            configurator.apply {
+                conf.invoke(context)
+            }
         }
     }
 
@@ -95,15 +98,15 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
         key: K,
         configurations: Map<K, Configurator<Any, CONTEXT>>,
         configurator: Configurator<CONFIG, CONTEXT>
-    ): (Configurator<Any, CONTEXT>) {
+    ): Configurator<Any, CONTEXT> {
         val oldConfig = configurations[key]
 
         @Suppress("UNCHECKED_CAST")
         return if (oldConfig != null) {
             Configurator { context ->
-                this as CONFIG
-                oldConfig.apply { invoke(context) }
-                configurator.apply { invoke(context) }
+                val conf = this as CONFIG
+                oldConfig.apply { conf.invoke(context) }
+                configurator.apply { conf.invoke(context) }
             }
         } else {
             Configurator { context ->

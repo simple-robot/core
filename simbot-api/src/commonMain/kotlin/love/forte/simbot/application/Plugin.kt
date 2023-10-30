@@ -1,6 +1,5 @@
 package love.forte.simbot.application
 
-import love.forte.simbot.ability.LifecycleAware
 import love.forte.simbot.component.Component
 import love.forte.simbot.utils.MergeableFactoriesConfigurator
 import love.forte.simbot.utils.MergeableFactory
@@ -21,7 +20,7 @@ import love.forte.simbot.utils.MergeableFactory
  *
  * @author ForteScarlet
  */
-public interface Plugin : LifecycleAware
+public interface Plugin
 
 
 /**

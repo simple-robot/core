@@ -74,8 +74,9 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                compileOnly(libs.jetbrains.annotations)
-                compileOnly(project(":simbot-common-annotations"))
+                // jvm compile only
+                api(libs.jetbrains.annotations)
+                api(project(":simbot-common-annotations"))
                 api(project(":simbot-common-suspend-runner"))
                 api(project(":simbot-common-core"))
                 api(libs.kotlinx.coroutines.core)
@@ -87,6 +88,13 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.serialization.json)
+            }
+        }
+
+        jvmMain {
+            dependencies {
+                compileOnly(libs.jetbrains.annotations)
+                compileOnly(project(":simbot-common-annotations"))
             }
         }
 

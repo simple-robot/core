@@ -1,5 +1,9 @@
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
+import love.forte.simbot.application.Plugin
+import love.forte.simbot.application.PluginConfigureContext
+import love.forte.simbot.application.PluginFactoriesConfigurator
+import love.forte.simbot.application.PluginFactory
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
@@ -15,7 +19,7 @@ import kotlin.test.assertEquals
  */
 class MergeableConfiguratorTests {
 
-    private class TestComponent private constructor(): Component {
+    private class TestComponent private constructor() : Component {
         override val id: String = "simbot.test"
         override val serializersModule: SerializersModule = EmptySerializersModule()
 
@@ -26,6 +30,18 @@ class MergeableConfiguratorTests {
             override fun create(configurer: MergeableFactory.Configurer<Unit>): TestComponent {
                 configurer.invokeWith(Unit)
                 return TestComponent()
+            }
+        }
+    }
+
+    private class TestPlugin private constructor() : Plugin {
+        companion object Factory : PluginFactory<TestPlugin, Unit> {
+            override val key: PluginFactory.Key = object : PluginFactory.Key {}
+
+
+            override fun create(configurer: MergeableFactory.Configurer<Unit>): TestPlugin {
+                configurer.invokeWith(Unit)
+                return TestPlugin()
             }
         }
     }
@@ -42,7 +58,28 @@ class MergeableConfiguratorTests {
             }
         }
 
-        configurator.create(object : ComponentConfigureContext {}, TestComponent)
+        val context = object : ComponentConfigureContext {}
+
+        configurator.create(context, TestComponent)
+
+        assertEquals(count, 2)
+    }
+
+    @Test
+    fun mergeable_configuration_plugin_test() {
+        var count = 0
+        val configurator = PluginFactoriesConfigurator().apply {
+            add(TestPlugin) {
+                count++
+            }
+            add(TestPlugin) {
+                count++
+            }
+        }
+
+        val context = object : PluginConfigureContext {}
+
+        configurator.create(context, TestPlugin)
 
         assertEquals(count, 2)
     }
