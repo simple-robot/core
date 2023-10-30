@@ -1,5 +1,6 @@
 package love.forte.simbot.application
 
+import love.forte.simbot.ability.LifecycleAware
 import love.forte.simbot.component.Component
 import love.forte.simbot.utils.MergeableFactoriesConfigurator
 import love.forte.simbot.utils.MergeableFactory
@@ -12,11 +13,12 @@ import love.forte.simbot.utils.MergeableFactory
  * 在所有组件 [Component][love.forte.simbot.component.Component]
  * 加载完成后进入配置阶段。
  *
+ * 事件提供者无所谓形式，可以是一个 [BotManager][love.forte.simbot.bot.BotFactory], 或是一个定时任务、一个http服务, 或者其他任何什么。
+ *
  * @author ForteScarlet
  */
-public interface Plugin {
+public interface Plugin : LifecycleAware
 
-}
 
 /**
  * [Plugin] 的工厂函数，用于配置并预构建 [Plugin] 实例。
@@ -42,7 +44,7 @@ public interface PluginFactory<P : Plugin, CONF : Any> : MergeableFactory<Plugin
  * 可以得到来自 [Application][love.forte.simbot.application.Application] 的初始化配置信息
  * 和 [Component] 的配置信息。
  */
-public interface ComponentConfigureContext {
+public interface PluginConfigureContext {
     // TODO application configurations
 
     // TODO Components
@@ -52,7 +54,7 @@ public interface ComponentConfigureContext {
  * 用于对 [PluginFactory] 进行聚合组装的配置器。
  */
 public class PluginFactoriesConfigurator(
-    configurators: Map<PluginFactory.Key, Configurator<Any, ComponentConfigureContext>> = emptyMap(),
-    factories: Map<PluginFactory.Key, (ComponentConfigureContext) -> Plugin> = emptyMap(),
-) : MergeableFactoriesConfigurator<ComponentConfigureContext, Plugin, PluginFactory.Key>(configurators, factories)
+    configurators: Map<PluginFactory.Key, Configurator<Any, PluginConfigureContext>> = emptyMap(),
+    factories: Map<PluginFactory.Key, (PluginConfigureContext) -> Plugin> = emptyMap(),
+) : MergeableFactoriesConfigurator<PluginConfigureContext, Plugin, PluginFactory.Key>(configurators, factories)
 
