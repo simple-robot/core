@@ -13,6 +13,9 @@ import love.forte.simbot.utils.MergeableFactory
  * 在所有组件 [Component][love.forte.simbot.component.Component]
  * 加载完成后进入配置阶段。
  *
+ * 插件同样配置于事件处理器之后，因此 [Plugin] 最主要的职责之一便是与事件打交道——
+ * 比如实现通过某种方式产生事件、并推送给事件处理器。
+ *
  * [Plugin] 无所谓形式，可以是一个 [BotManager][love.forte.simbot.bot.BotFactory],
  * 或是一个定时任务、一个http服务, 或者其他任何什么。
  *
