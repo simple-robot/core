@@ -41,7 +41,8 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
         factories[key] = { context ->
             val configurator0 = configurators[key]!!
             factory.create {
-                configurator0.apply { invoke(context) }
+                val conf = this
+                configurator0.apply { conf.invoke(context) }
             }
         }
     }
@@ -72,8 +73,8 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
      * @param context 配置所需上下文
      */
     public fun <K1 : K, V1 : V, CONF : Any> create(
-        factory: MergeableFactory<K1, V1, CONF>,
-        context: CONTEXT
+        context: CONTEXT,
+        factory: MergeableFactory<K1, V1, CONF>
     ): V1 {
         val configurator = configurators[factory.key]
             ?: return factory.create()
@@ -164,3 +165,9 @@ public interface MergeableFactory<out K : MergeableFactory.Key, out V : Any, CON
 }
 
 
+/**
+ * Invoke [MergeableFactory.Configurer] with [conf]。
+ */
+public fun <CONF : Any> MergeableFactory.Configurer<CONF>.invokeWith(conf: CONF) {
+    conf.apply { invoke() }
+}
