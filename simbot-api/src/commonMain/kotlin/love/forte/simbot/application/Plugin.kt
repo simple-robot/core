@@ -1,5 +1,6 @@
 package love.forte.simbot.application
 
+import love.forte.simbot.component.Component
 import love.forte.simbot.utils.MergeableFactoriesConfigurator
 import love.forte.simbot.utils.MergeableFactory
 
@@ -36,12 +37,22 @@ public interface PluginFactory<P : Plugin, CONF : Any> : MergeableFactory<Plugin
     public interface Key : MergeableFactory.Key
 }
 
+/**
+ * 提供给 [PluginFactoriesConfigurator] 用于配置 [Plugin] 的上下文信息。
+ * 可以得到来自 [Application][love.forte.simbot.application.Application] 的初始化配置信息
+ * 和 [Component] 的配置信息。
+ */
+public interface ComponentConfigureContext {
+    // TODO application configurations
+
+    // TODO Components
+}
 
 /**
  * 用于对 [PluginFactory] 进行聚合组装的配置器。
  */
-public class PluginFactoriesConfigurator<CONTEXT>(
-    configurators: Map<PluginFactory.Key, Configurator<Any, CONTEXT>> = emptyMap(),
-    factories: Map<PluginFactory.Key, (CONTEXT) -> Plugin> = emptyMap(),
-) : MergeableFactoriesConfigurator<CONTEXT, Plugin, PluginFactory.Key>(configurators, factories)
+public class PluginFactoriesConfigurator(
+    configurators: Map<PluginFactory.Key, Configurator<Any, ComponentConfigureContext>> = emptyMap(),
+    factories: Map<PluginFactory.Key, (ComponentConfigureContext) -> Plugin> = emptyMap(),
+) : MergeableFactoriesConfigurator<ComponentConfigureContext, Plugin, PluginFactory.Key>(configurators, factories)
 

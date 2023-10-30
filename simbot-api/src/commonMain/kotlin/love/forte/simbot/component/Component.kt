@@ -48,14 +48,23 @@ public interface ComponentFactory<COM : Component, CONF : Any> : MergeableFactor
     public interface Key : MergeableFactory.Key
 }
 
+/**
+ * 提供给 [ComponentFactoriesConfigurator] 用于配置 [Component] 的上下文信息。
+ * 可以得到来自 [Application][love.forte.simbot.application.Application] 的初始化配置信息。
+ */
+public interface ComponentConfigureContext {
+    // TODO application configurations
+
+}
+
 
 /**
  * 用于对 [ComponentFactory] 进行聚合组装的配置器。
  */
-public class ComponentFactoriesConfigurator<CONTEXT>(
-    configurators: Map<ComponentFactory.Key, Configurator<Any, CONTEXT>> = emptyMap(),
-    factories: Map<ComponentFactory.Key, (CONTEXT) -> Component> = emptyMap(),
-) : MergeableFactoriesConfigurator<CONTEXT, Component, ComponentFactory.Key>(configurators, factories)
+public class ComponentFactoriesConfigurator(
+    configurators: Map<ComponentFactory.Key, Configurator<Any, ComponentConfigureContext>> = emptyMap(),
+    factories: Map<ComponentFactory.Key, (ComponentConfigureContext) -> Component> = emptyMap(),
+) : MergeableFactoriesConfigurator<ComponentConfigureContext, Component, ComponentFactory.Key>(configurators, factories)
 
 
 // region Exceptions
