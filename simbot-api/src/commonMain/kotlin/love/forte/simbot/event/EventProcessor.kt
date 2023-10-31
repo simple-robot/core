@@ -1,6 +1,9 @@
 package love.forte.simbot.event
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
 
 
 /**
@@ -10,7 +13,6 @@ import kotlinx.coroutines.flow.Flow
  * @author ForteScarlet
  */
 public interface EventProcessor {
-
     /**
      * 推送一个事件，
      * 得到内部所有事件依次将其处理后得到最终的结果流。
@@ -19,6 +21,12 @@ public interface EventProcessor {
      * 可以通过响应的流对事件处理量
      *
      */
-    public fun push(): Flow<EventResult>
+    public fun push(event: Event): Flow<EventResult>
+}
 
+/**
+ * 通过 [scope] 将事件推送并异步处理，不关心事件的结果。
+ */
+public fun EventProcessor.pushAndLaunch(scope: CoroutineScope, event: Event): Job {
+    return push(event).launchIn(scope)
 }
