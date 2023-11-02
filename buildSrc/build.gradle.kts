@@ -9,8 +9,8 @@ repositories {
     mavenLocal()
 }
 
-val kotlinVersion = "1.9.20-RC"
-val dokkaPluginVersion = "1.9.0"
+val kotlinVersion = "1.9.20"
+val dokkaPluginVersion = "1.9.10"
 val suspendTransformVersion = "0.5.0"
 val gradleCommon = "0.1.1"
 val ktor = "2.3.1"
