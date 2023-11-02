@@ -18,7 +18,9 @@ public interface EventProcessor {
      * 得到内部所有事件依次将其处理后得到最终的结果流。
      *
      * 只有当对结果进行收集时事件才会真正的被处理。
-     * 可以通过响应的流对事件处理量
+     * 可以通过响应的流对事件处理量进行控制。
+     *
+     * 事件内部实际的调度器由构造 [EventProcessor] 时的配置属性和具体实现为准。
      *
      */
     public fun push(event: Event): Flow<EventResult>

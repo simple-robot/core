@@ -1,12 +1,14 @@
 package love.forte.simbot.utils
 
+import love.forte.simbot.function.ConfigurerFunction
+
 /**
  * 对一组 [MergeableFactory] 进行聚合组装的配置器。
  *
  * @author ForteScarlet
  */
-public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : MergeableFactory.Key>(
-    configurators: Map<K, Configurator<Any, CONTEXT>> = emptyMap(),
+public open class MergeableFactoriesConfigurator<CONTEXT : Any, V : Any, K : MergeableFactory.Key>(
+    configurators: Map<K, ConfigurerFunction<Any>> = emptyMap(),
     factories: Map<K, (CONTEXT) -> V> = emptyMap(),
 ) {
     private val configurators = configurators.toMutableMap()
@@ -15,7 +17,7 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
     /**
      * Configurer fun type for [MergeableFactoriesConfigurator.add].
      */
-    public fun interface Configurator<in CONF, in CONTEXT> {
+    public fun interface Configurer<in CONF, in CONTEXT> {
         /**
          * invoker.
          */
@@ -29,8 +31,8 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
      *
      */
     public fun <V1 : V, CONF : Any> add(
-        factory: MergeableFactory<K, V1, CONF>,
-        configurator: Configurator<CONF, CONTEXT>
+        factory: MergeableFactory<K, V1, CONF, CONTEXT>,
+        configurator: ConfigurerFunction<CONF>
     ) {
         val key = factory.key
         val newConfig = newConfigurator(key, configurators, configurator)
@@ -40,9 +42,9 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
 
         factories[key] = { context ->
             val configurator0 = configurators[key]!!
-            factory.create {
+            factory.create(context) {
                 val conf = this
-                configurator0.apply { conf.invoke(context) }
+                configurator0.apply { conf.invoke() }
             }
         }
     }
@@ -56,12 +58,12 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
      * @param context 配置所需上下文
      */
     public fun <K1 : K, V1 : V, CONF : Any> createOrNull(
-        factory: MergeableFactory<K1, V1, CONF>,
+        factory: MergeableFactory<K1, V1, CONF, CONTEXT>,
         context: CONTEXT
     ): V1? {
         val configurator = configurators[factory.key] ?: return null
-        return factory.create {
-            configurator.apply { invoke(context) }
+        return factory.create(context) {
+            configurator.apply { invoke() }
         }
     }
 
@@ -74,15 +76,15 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
      */
     public fun <K1 : K, V1 : V, CONF : Any> create(
         context: CONTEXT,
-        factory: MergeableFactory<K1, V1, CONF>
+        factory: MergeableFactory<K1, V1, CONF, CONTEXT>
     ): V1 {
         val configurator = configurators[factory.key]
-            ?: return factory.create()
+            ?: return factory.create(context)
 
-        return factory.create {
+        return factory.create(context) {
             val conf = this
             configurator.apply {
-                conf.invoke(context)
+                conf.invoke()
             }
         }
     }
@@ -96,22 +98,22 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
 
     private fun <CONFIG : Any> newConfigurator(
         key: K,
-        configurations: Map<K, Configurator<Any, CONTEXT>>,
-        configurator: Configurator<CONFIG, CONTEXT>
-    ): Configurator<Any, CONTEXT> {
+        configurations: Map<K, ConfigurerFunction<Any>>,
+        configurator: ConfigurerFunction<CONFIG>
+    ): ConfigurerFunction<Any> {
         val oldConfig = configurations[key]
 
         @Suppress("UNCHECKED_CAST")
         return if (oldConfig != null) {
-            Configurator { context ->
+            ConfigurerFunction {
                 val conf = this as CONFIG
-                oldConfig.apply { conf.invoke(context) }
-                configurator.apply { conf.invoke(context) }
+                oldConfig.apply { conf.invoke() }
+                configurator.apply { conf.invoke() }
             }
         } else {
-            Configurator { context ->
+            ConfigurerFunction {
                 this as CONFIG
-                configurator.apply { invoke(context) }
+                configurator.apply { invoke() }
             }
         }
     }
@@ -120,7 +122,7 @@ public open class MergeableFactoriesConfigurator<CONTEXT, V : Any, K : Mergeable
 /**
  * 一个可应用于 [MergeableFactoriesConfigurator] 的工厂。
  */
-public interface MergeableFactory<out K : MergeableFactory.Key, out V : Any, CONF : Any> {
+public interface MergeableFactory<out K : MergeableFactory.Key, out V : Any, CONF : Any, CTX : Any> {
     /**
      * 用于 [MergeableFactory] 在内部整合时的标识类型。
      * [Key] 的实现应用于 [MergeableFactory.key]。
@@ -142,35 +144,17 @@ public interface MergeableFactory<out K : MergeableFactory.Key, out V : Any, CON
      */
     public val key: K
 
-    /**
-     * 工厂的配置逻辑函数。
-     * @see MergeableFactory.create
-     */
-    public fun interface Configurer<in CONF> {
-        /**
-         * 配置逻辑。
-         */
-        public operator fun CONF.invoke()
-    }
-
 
     /**
      * 提供配置逻辑函数，并得到结果 [V] 。
      *
      * @param configurer 配置类的配置逻辑。
      */
-    public fun create(configurer: Configurer<CONF>): V
+    public fun create(context: CTX, configurer: ConfigurerFunction<CONF>): V
 
     /**
      * 使用默认的配置（没有额外配置逻辑）构建并得到结果 [V] 。
      */
-    public fun create(): V = create {}
+    public fun create(context: CTX): V = create(context) {}
 }
 
-
-/**
- * Invoke [MergeableFactory.Configurer] with [conf]。
- */
-public fun <CONF : Any> MergeableFactory.Configurer<CONF>.invokeWith(conf: CONF) {
-    conf.apply { invoke() }
-}

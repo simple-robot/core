@@ -1,15 +1,19 @@
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-import love.forte.simbot.application.Plugin
-import love.forte.simbot.application.PluginConfigureContext
-import love.forte.simbot.application.PluginFactoriesConfigurator
-import love.forte.simbot.application.PluginFactory
+import love.forte.simbot.application.ApplicationConfiguration
+import love.forte.simbot.application.ApplicationConfigurationBuilder
+import love.forte.simbot.application.Components
+import love.forte.simbot.application.toComponents
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
 import love.forte.simbot.component.ComponentFactory
-import love.forte.simbot.utils.MergeableFactory
-import love.forte.simbot.utils.invokeWith
+import love.forte.simbot.function.ConfigurerFunction
+import love.forte.simbot.function.invokeWith
+import love.forte.simbot.plugin.Plugin
+import love.forte.simbot.plugin.PluginConfigureContext
+import love.forte.simbot.plugin.PluginFactoriesConfigurator
+import love.forte.simbot.plugin.PluginFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -27,7 +31,10 @@ class MergeableConfiguratorTests {
             override val key: ComponentFactory.Key = object : ComponentFactory.Key {}
 
 
-            override fun create(configurer: MergeableFactory.Configurer<Unit>): TestComponent {
+            override fun create(
+                context: ComponentConfigureContext,
+                configurer: ConfigurerFunction<Unit>
+            ): TestComponent {
                 configurer.invokeWith(Unit)
                 return TestComponent()
             }
@@ -39,7 +46,10 @@ class MergeableConfiguratorTests {
             override val key: PluginFactory.Key = object : PluginFactory.Key {}
 
 
-            override fun create(configurer: MergeableFactory.Configurer<Unit>): TestPlugin {
+            override fun create(
+                context: PluginConfigureContext,
+                configurer: ConfigurerFunction<Unit>
+            ): TestPlugin {
                 configurer.invokeWith(Unit)
                 return TestPlugin()
             }
@@ -58,7 +68,9 @@ class MergeableConfiguratorTests {
             }
         }
 
-        val context = object : ComponentConfigureContext {}
+        val context = object : ComponentConfigureContext {
+            override val applicationConfiguration: ApplicationConfiguration = ApplicationConfigurationBuilder().build()
+        }
 
         configurator.create(context, TestComponent)
 
@@ -77,7 +89,10 @@ class MergeableConfiguratorTests {
             }
         }
 
-        val context = object : PluginConfigureContext {}
+        val context = object : PluginConfigureContext {
+            override val applicationConfiguration: ApplicationConfiguration = ApplicationConfigurationBuilder().build()
+            override val components: Components = emptyList<Component>().toComponents()
+        }
 
         configurator.create(context, TestPlugin)
 

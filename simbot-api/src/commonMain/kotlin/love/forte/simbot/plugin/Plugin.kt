@@ -1,6 +1,10 @@
-package love.forte.simbot.application
+package love.forte.simbot.plugin
 
+import love.forte.simbot.application.Application
+import love.forte.simbot.application.ApplicationConfiguration
+import love.forte.simbot.application.Components
 import love.forte.simbot.component.Component
+import love.forte.simbot.function.ConfigurerFunction
 import love.forte.simbot.utils.MergeableFactoriesConfigurator
 import love.forte.simbot.utils.MergeableFactory
 
@@ -30,7 +34,8 @@ public interface Plugin
  * @param P 目标组件类型
  * @param CONF 配置类型。配置类型应是一个可变类，以便于在 DSL 中进行动态配置。
  */
-public interface PluginFactory<P : Plugin, CONF : Any> : MergeableFactory<PluginFactory.Key, P, CONF> {
+public interface PluginFactory<P : Plugin, CONF : Any> :
+    MergeableFactory<PluginFactory.Key, P, CONF, PluginConfigureContext> {
     /**
      * 用于 [PluginFactory] 在内部整合时的标识类型。
      *
@@ -48,16 +53,22 @@ public interface PluginFactory<P : Plugin, CONF : Any> : MergeableFactory<Plugin
  * 和 [Component] 的配置信息。
  */
 public interface PluginConfigureContext {
-    // TODO application configurations
+    /**
+     * 构建 Application 的配置信息
+     */
+    public val applicationConfiguration: ApplicationConfiguration
 
-    // TODO Components
+    /**
+     * 目前构建得到的 [Components]
+     */
+    public val components: Components
 }
 
 /**
  * 用于对 [PluginFactory] 进行聚合组装的配置器。
  */
 public class PluginFactoriesConfigurator(
-    configurators: Map<PluginFactory.Key, Configurator<Any, PluginConfigureContext>> = emptyMap(),
+    configurators: Map<PluginFactory.Key, ConfigurerFunction<Any>> = emptyMap(),
     factories: Map<PluginFactory.Key, (PluginConfigureContext) -> Plugin> = emptyMap(),
 ) : MergeableFactoriesConfigurator<PluginConfigureContext, Plugin, PluginFactory.Key>(configurators, factories)
 

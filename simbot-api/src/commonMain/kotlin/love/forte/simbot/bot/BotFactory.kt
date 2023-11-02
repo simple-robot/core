@@ -1,6 +1,6 @@
 package love.forte.simbot.bot
 
-import love.forte.simbot.application.Plugin
+import love.forte.simbot.plugin.Plugin
 
 /**
  *

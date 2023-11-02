@@ -1,6 +1,8 @@
 package love.forte.simbot.component
 
 import kotlinx.serialization.modules.SerializersModule
+import love.forte.simbot.application.ApplicationConfiguration
+import love.forte.simbot.function.ConfigurerFunction
 import love.forte.simbot.utils.MergeableFactoriesConfigurator
 import love.forte.simbot.utils.MergeableFactory
 
@@ -36,7 +38,7 @@ public interface Component {
  * @param COM 目标组件类型
  * @param CONF 配置类型。配置类型应是一个可变类，以便于在 DSL 中进行动态配置。
  */
-public interface ComponentFactory<COM : Component, CONF : Any> : MergeableFactory<ComponentFactory.Key, COM, CONF> {
+public interface ComponentFactory<COM : Component, CONF : Any> : MergeableFactory<ComponentFactory.Key, COM, CONF, ComponentConfigureContext> {
     /**
      * 用于 [ComponentFactory] 在内部整合时的标识类型。
      *
@@ -53,8 +55,10 @@ public interface ComponentFactory<COM : Component, CONF : Any> : MergeableFactor
  * 可以得到来自 [Application][love.forte.simbot.application.Application] 的初始化配置信息。
  */
 public interface ComponentConfigureContext {
-    // TODO application configurations
-
+    /**
+     * 构建 Application 的配置信息
+     */
+    public val applicationConfiguration: ApplicationConfiguration
 }
 
 
@@ -62,7 +66,7 @@ public interface ComponentConfigureContext {
  * 用于对 [ComponentFactory] 进行聚合组装的配置器。
  */
 public class ComponentFactoriesConfigurator(
-    configurators: Map<ComponentFactory.Key, Configurator<Any, ComponentConfigureContext>> = emptyMap(),
+    configurators: Map<ComponentFactory.Key, ConfigurerFunction<Any>> = emptyMap(),
     factories: Map<ComponentFactory.Key, (ComponentConfigureContext) -> Component> = emptyMap(),
 ) : MergeableFactoriesConfigurator<ComponentConfigureContext, Component, ComponentFactory.Key>(configurators, factories)
 
