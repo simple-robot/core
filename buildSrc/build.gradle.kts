@@ -13,7 +13,7 @@ val kotlinVersion = "1.9.20"
 val dokkaPluginVersion = "1.9.10"
 val suspendTransformVersion = "0.5.0"
 val gradleCommon = "0.1.1"
-val ktor = "2.3.1"
+val ktor = "2.3.5"
 
 dependencies {
     implementation(kotlin("gradle-plugin", kotlinVersion))
