@@ -1,7 +1,7 @@
 package love.forte.simbot.event
 
-import love.forte.simbot.PriorityConstants
 import love.forte.simbot.function.ConfigurerFunction
+import love.forte.simbot.utils.PriorityConstant
 
 
 /**
@@ -39,7 +39,7 @@ public interface EventListenerRegistrar {
  */
 public interface EventListenerRegistrationProperties {
     /**
-     * 优先级。数值越小优先级越高。通常默认为 [PriorityConstants.NORMAL]。
+     * 优先级。数值越小优先级越高。通常默认为 [PriorityConstant.NORMAL]。
      */
     public var priority: Int
 
