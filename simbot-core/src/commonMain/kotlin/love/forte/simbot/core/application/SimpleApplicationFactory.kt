@@ -98,8 +98,12 @@ public object Simple :
             dispatcherConfiguration.invokeBy(cf)
         }
 
-        // TODO 合并 Application coroutineContext into dispatcher coroutineContext
+        // 合并 Application coroutineContext into dispatcher coroutineContext, 且不要Job
 
+        val minJobDispatcherContext = dispatcherConfiguration.coroutineContext.minusKey(Job)
+        val minJobApplicationContext = configuration.coroutineContext.minusKey(Job)
+
+        dispatcherConfiguration.coroutineContext = minJobApplicationContext + minJobDispatcherContext
         val eventDispatcher: SimpleEventDispatcher = SimpleEventDispatcherImpl(dispatcherConfiguration)
 
         // 事件注册器
