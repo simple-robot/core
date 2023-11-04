@@ -1,8 +1,8 @@
-@file:JvmName("EventListenerJvm")
-
 package love.forte.simbot.event
 
 import kotlinx.coroutines.future.await
+import love.forte.simbot.event.JAsyncEventListener.Companion.toEventListener
+import love.forte.simbot.event.JBlockingEventListener.Companion.toEventListener
 import love.forte.simbot.utils.runInNoScopeBlocking
 import org.jetbrains.annotations.Blocking
 import java.util.concurrent.CompletionStage
@@ -23,12 +23,15 @@ public interface JAsyncEventListener {
      *
      */
     public fun handle(context: EventContext): CompletionStage<out EventResult>
-}
 
-/**
- * 将 [JAsyncEventListener] 转化为 [EventListener]。
- */
-public fun JAsyncEventListener.toEventListener(): EventListener = JAsyncEventListenerImpl(this)
+    public companion object {
+        /**
+         * 将 [JAsyncEventListener] 转化为 [EventListener]。
+         */
+        @JvmStatic
+        public fun JAsyncEventListener.toEventListener(): EventListener = JAsyncEventListenerImpl(this)
+    }
+}
 
 private class JAsyncEventListenerImpl(private val jaListener: JAsyncEventListener) : EventListener {
     override suspend fun handle(context: EventContext): EventResult =
@@ -67,14 +70,17 @@ public interface JBlockingEventListener {
     @Throws(Exception::class)
     @Blocking
     public fun handle(context: EventContext): EventResult
-}
 
-/**
- * 将 [JBlockingEventListener] 转化为 [EventListener]。
- *
- * 使用 [runInNoScopeBlocking] 作为内部的阻塞调度器。
- */
-public fun JBlockingEventListener.toEventListener(): EventListener = JBlockingEventListenerImpl(this)
+    public companion object {
+        /**
+         * 将 [JBlockingEventListener] 转化为 [EventListener]。
+         *
+         * 使用 [runInNoScopeBlocking] 作为内部的阻塞调度器。
+         */
+        @JvmStatic
+        public fun JBlockingEventListener.toEventListener(): EventListener = JBlockingEventListenerImpl(this)
+    }
+}
 
 private class JBlockingEventListenerImpl(private val jbListener: JBlockingEventListener) : EventListener {
     override suspend fun handle(context: EventContext): EventResult = runInNoScopeBlocking {

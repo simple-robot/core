@@ -41,7 +41,7 @@ public interface EventResult {
          *
          * [invalid] 通常用于表示事件不匹配、逻辑不匹配等情况。
          *
-         * 如果你的监听函数正常执行，只是没有可用的结果或无需提供结果，
+         * 如果你的监听器正常执行，只是没有可用的结果或无需提供结果，
          * 那么推荐使用 [empty]。
          *
          * @see StandardEventResult.Invalid
@@ -56,7 +56,7 @@ public interface EventResult {
          *
          * [empty] 通常用于表示事件处理正常、但是无可用结果或无需提供结果时。
          *
-         * 如果监听函数内对本次事件处理无效（例如类型不匹配、逻辑不匹配等），推荐使用 [invalid]。
+         * 如果监听器内对本次事件处理无效（例如类型不匹配、逻辑不匹配等），推荐使用 [invalid]。
          *
          * @see StandardEventResult.Empty
          */
@@ -182,7 +182,7 @@ public sealed class StandardEventResult : EventResult {
          * 那么它将会被收集为 [List] 后重新作为 [content] 并通过 [collected] 构建为一个新的 [EventResult].
          * 同样的，如果你返回的是 [kotlinx.coroutines.flow.Flow], 也会在函数返回后进行收集。
          *
-         * 收集行为会在返回值返回后(某个监听函数处理结束后, 下一个监听函数开始执行前)立即执行, 而不是等待所有监听函数执行结束后。
+         * 收集行为会在返回值返回后(某个监听器处理结束后, 下一个监听器开始执行前)立即执行, 而不是等待所有监听器执行结束后。
          *
          * 支持的收集类型有：
          * - `java.util.concurrent.CompletionStage` (`java.util.concurrent.CompletableFuture`) (JVM)

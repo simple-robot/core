@@ -11,7 +11,7 @@ suspend fun main() {
 sealed class MyState : State<MyState>() {
 
     /** 一个用于启动状态循环的状态 */
-    object Start : MyState() {
+    data object Start : MyState() {
         override suspend fun invoke(): MyState = Process(0)
     }
 

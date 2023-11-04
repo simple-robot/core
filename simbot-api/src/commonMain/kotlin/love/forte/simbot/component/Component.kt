@@ -2,6 +2,7 @@ package love.forte.simbot.component
 
 import kotlinx.serialization.modules.SerializersModule
 import love.forte.simbot.application.ApplicationConfiguration
+import love.forte.simbot.application.ApplicationEventRegistrar
 import love.forte.simbot.function.ConfigurerFunction
 import love.forte.simbot.utils.MergeableFactoriesConfigurator
 import love.forte.simbot.utils.MergeableFactory
@@ -38,7 +39,8 @@ public interface Component {
  * @param COM 目标组件类型
  * @param CONF 配置类型。配置类型应是一个可变类，以便于在 DSL 中进行动态配置。
  */
-public interface ComponentFactory<COM : Component, CONF : Any> : MergeableFactory<ComponentFactory.Key, COM, CONF, ComponentConfigureContext> {
+public interface ComponentFactory<COM : Component, CONF : Any> :
+    MergeableFactory<ComponentFactory.Key, COM, CONF, ComponentConfigureContext> {
     /**
      * 用于 [ComponentFactory] 在内部整合时的标识类型。
      *
@@ -59,6 +61,12 @@ public interface ComponentConfigureContext {
      * 构建 Application 的配置信息
      */
     public val applicationConfiguration: ApplicationConfiguration
+
+    /**
+     * Application 的阶段事件注册器。
+     *
+     */
+    public val applicationEventRegistrar: ApplicationEventRegistrar
 }
 
 

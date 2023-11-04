@@ -8,8 +8,8 @@ import love.forte.simbot.function.ConfigurerFunction
  * @author ForteScarlet
  */
 public open class MergeableFactoriesConfigurator<CONTEXT : Any, V : Any, K : MergeableFactory.Key>(
-    configurators: Map<K, ConfigurerFunction<Any>> = emptyMap(),
-    factories: Map<K, (CONTEXT) -> V> = emptyMap(),
+    configurators: Map<K, ConfigurerFunction<Any>>,
+    factories: Map<K, (CONTEXT) -> V>,
 ) {
     private val configurators = configurators.toMutableMap()
     private val factories = factories.toMutableMap()

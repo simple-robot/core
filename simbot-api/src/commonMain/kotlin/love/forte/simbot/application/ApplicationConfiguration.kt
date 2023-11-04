@@ -31,24 +31,25 @@ public interface ApplicationConfiguration {
 }
 
 /**
- * 用于构建 [ApplicationConfiguration] 的基础实现，提供针对 [ApplicationConfiguration] 基础属性的配置能力。
- * 也可用于其他实现者进行扩展。
+ * 用于构建 [Application] 的构建器，同时也提供针对 [ApplicationConfiguration] 基础属性的配置能力。
+ *
+ * @see Application
+ * @see ApplicationConfiguration
  *
  */
-public open class ApplicationConfigurationBuilder {
-
+public interface ApplicationBuilder {
     /**
      * [ApplicationConfiguration.coroutineContext] 配置属性，默认为 [EmptyCoroutineContext]。
      *
      * @see ApplicationConfiguration.coroutineContext
      */
-    public open var coroutineContext: CoroutineContext = EmptyCoroutineContext
+    public var coroutineContext: CoroutineContext
+}
 
-    /**
-     * 构建并得到一个 [ApplicationConfiguration] 结果。
-     */
-    public open fun build(): ApplicationConfiguration = Impl(coroutineContext)
-
-
-    private data class Impl(override val coroutineContext: CoroutineContext) : ApplicationConfiguration
+/**
+ * [ApplicationBuilder] 的基础抽象实现。
+ *
+ */
+public abstract class AbstractApplicationBuilder : ApplicationBuilder {
+    override var coroutineContext: CoroutineContext = EmptyCoroutineContext
 }

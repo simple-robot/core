@@ -1,13 +1,14 @@
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import love.forte.simbot.application.ApplicationConfiguration
-import love.forte.simbot.application.ApplicationConfigurationBuilder
+import love.forte.simbot.application.ApplicationEventRegistrar
 import love.forte.simbot.application.Components
 import love.forte.simbot.application.toComponents
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
 import love.forte.simbot.component.ComponentFactory
+import love.forte.simbot.event.EventDispatcher
 import love.forte.simbot.function.ConfigurerFunction
 import love.forte.simbot.function.invokeWith
 import love.forte.simbot.plugin.Plugin
@@ -69,7 +70,10 @@ class MergeableConfiguratorTests {
         }
 
         val context = object : ComponentConfigureContext {
-            override val applicationConfiguration: ApplicationConfiguration = ApplicationConfigurationBuilder().build()
+            override val applicationConfiguration: ApplicationConfiguration
+                get() = TODO("Not yet implemented")
+            override val applicationEventRegistrar: ApplicationEventRegistrar
+                get() = TODO("Not yet implemented")
         }
 
         configurator.create(context, TestComponent)
@@ -90,8 +94,13 @@ class MergeableConfiguratorTests {
         }
 
         val context = object : PluginConfigureContext {
-            override val applicationConfiguration: ApplicationConfiguration = ApplicationConfigurationBuilder().build()
+            override val applicationConfiguration: ApplicationConfiguration
+                get() = TODO("Not yet implemented")
+            override val applicationEventRegistrar: ApplicationEventRegistrar
+                get() = TODO("Not yet implemented")
             override val components: Components = emptyList<Component>().toComponents()
+            override val eventDispatcher: EventDispatcher
+                get() = TODO("Not yet implemented")
         }
 
         configurator.create(context, TestPlugin)

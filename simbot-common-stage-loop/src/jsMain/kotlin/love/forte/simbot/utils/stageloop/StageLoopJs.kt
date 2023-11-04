@@ -35,14 +35,14 @@ package love.forte.simbot.utils.stageloop
  *
  * @author ForteScarlet
  */
-public actual open class StageLoop<S : Stage<S>> actual constructor() {
+private class StageLoopImpl<S : Stage<S>> : StageLoop<S> {
 
     private val deque = mutableListOf<S>()
 
     /**
      * 向事件队列尾部追加事件。
      */
-    public actual open fun appendStage(stage: S) {
+    override fun appendStage(stage: S) {
         deque.add(stage)
     }
 
@@ -52,14 +52,14 @@ public actual open class StageLoop<S : Stage<S>> actual constructor() {
      * 在 [run] 中**正在执行**的状态实例。
      * 如果为null则代表没有循环在进行。
      */
-    public actual open val currentStage: S?
+    override val currentStage: S?
         get() = _currentStage
 
     /**
      * 根据提供的 [stage] 变更 [currentStage] 的状态并执行它（如果不为null的话）
      *
      */
-    public actual open suspend operator fun invoke(stage: S?) {
+    override suspend operator fun invoke(stage: S?) {
         _currentStage = stage
         stage?.invoke(this)
     }
@@ -67,8 +67,13 @@ public actual open class StageLoop<S : Stage<S>> actual constructor() {
     /**
      * 取出下一个需要执行的状态。
      */
-    public actual open fun poll(): S? {
+    override fun poll(): S? {
         return deque.removeFirstOrNull()
     }
-
 }
+
+/**
+ * 创建一个默认的 [StageLoop] 实现。
+ */
+@Suppress("FunctionName")
+public actual fun <S : Stage<S>> DefaultStageLoop(): StageLoop<S> = StageLoopImpl()

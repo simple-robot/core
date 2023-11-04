@@ -8,7 +8,7 @@ import kotlin.jvm.JvmSynthetic
  *
  * @author ForteScarlet
  */
-public interface EventListener {
+public fun interface EventListener {
     /**
      * 处理事件，并得到一个处理的响应。
      *

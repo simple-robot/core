@@ -2,8 +2,10 @@ package love.forte.simbot.plugin
 
 import love.forte.simbot.application.Application
 import love.forte.simbot.application.ApplicationConfiguration
+import love.forte.simbot.application.ApplicationEventRegistrar
 import love.forte.simbot.application.Components
 import love.forte.simbot.component.Component
+import love.forte.simbot.event.EventDispatcher
 import love.forte.simbot.function.ConfigurerFunction
 import love.forte.simbot.utils.MergeableFactoriesConfigurator
 import love.forte.simbot.utils.MergeableFactory
@@ -59,9 +61,19 @@ public interface PluginConfigureContext {
     public val applicationConfiguration: ApplicationConfiguration
 
     /**
+     * Application 的阶段事件注册器。
+     */
+    public val applicationEventRegistrar: ApplicationEventRegistrar
+
+    /**
      * 目前构建得到的 [Components]
      */
     public val components: Components
+
+    /**
+     * 事件调度器。
+     */
+    public val eventDispatcher: EventDispatcher
 }
 
 /**

@@ -1,0 +1,98 @@
+package love.forte.simbot.event
+
+import love.forte.simbot.PriorityConstants
+import kotlin.jvm.JvmSynthetic
+
+
+/**
+ * 事件拦截器。在 [EventDispatcher] 调度事件的过程中针对全链路或各监听器的拦截器。
+ *
+ * 也可以通过 [EventListenerRegistrationProperties] 针对某指定的监听器进行拦截。
+ *
+ * @author ForteScarlet
+ */
+public fun interface EventInterceptor {
+
+    /**
+     * 对被拦截的内容进行处理。
+     *
+     * 想要继续流程则使用 [Context.invoke] 进入到下一个拦截器，或者进入正常流程。
+     *
+     * 例如放行:
+     * ```kotlin
+     * override suspend fun intercept(context: Context): EventResult {
+     *    // do something...?
+     *
+     *    // 执行 context.invoke() 就是放行。
+     *    val result = context.invoke()
+     *    // and do something...?
+     *
+     *    return result
+     * }
+     * ```
+     *
+     * 例如拦截:
+     * ```kotlin
+     * override suspend fun intercept(context: Context): EventResult {
+     *    // 不执行 context.invoke() 就是拦截。
+     *    // 自行构建一个result实例
+     *    return EventResult(...)
+     * }
+     * ```
+     *
+     *
+     */
+    @JvmSynthetic
+    public suspend fun intercept(context: Context): EventResult
+
+    /**
+     * 拦截器中被拦截的对象信息。
+     */
+    public interface Context {
+        /**
+         * 当前被处理的事件上下文。
+         */
+        public val eventContext: EventContext
+
+        /**
+         * 执行被拦截的逻辑并得到事件处理结果 [EventResult]。
+         */
+        @JvmSynthetic
+        @Throws(Exception::class)
+        public suspend fun invoke(): EventResult
+    }
+
+
+    /**
+     * 拦截器在 [EventDispatcher] 中针对的“作用域”。
+     *
+     */
+    public enum class Scope {
+        /**
+         * 全局性作用域。
+         * 会针对单次、整个事件处理链进行一次统一的拦截。
+         *
+         */
+        GLOBAL,
+
+        /**
+         * 会在一次事件调度过程中拦截每一个事件监听器。
+         */
+        EACH
+    }
+}
+
+
+/**
+ * 注册 [EventInterceptor] 的额外属性。
+ *
+ * [EventInterceptorRegistrationProperties] 可由 [EventListenerRegistrar] 的实现者自由扩展，
+ * 但应当至少能够支持最基础的几项属性，并至少在不支持的情况下提供警告日志或异常。
+ */
+public interface EventInterceptorRegistrationProperties {
+    /**
+     * 优先级。数值越小优先级越高。通常默认为 [PriorityConstants.NORMAL]。
+     * 此优先级与在 [EventDispatcher] 中全局性添加到所有事件监听器上的拦截器共用。
+     */
+    public var priority: Int
+}

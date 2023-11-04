@@ -35,29 +35,36 @@ package love.forte.simbot.utils.stageloop
  *
  * @author ForteScarlet
  */
-public expect open class StageLoop<S : Stage<S>>() {
+public interface StageLoop<S : Stage<S>> {
     /**
      * 向事件队列尾部追加事件。
      */
-    public open fun appendStage(stage: S)
+    public fun appendStage(stage: S)
 
     /**
      * 在 [run] 中**正在执行**的状态实例。
      * 如果为null则代表没有循环在进行。
      */
-    public open val currentStage: S?
+    public val currentStage: S?
 
     /**
      * 根据提供的 [stage] 变更 [currentStage] 的状态并执行它（如果不为null的话）
      *
      */
-    public open suspend operator fun invoke(stage: S?)
+    public suspend operator fun invoke(stage: S?)
 
     /**
      * 取出下一个需要执行的状态。
      */
-    public open fun poll(): S?
+    public fun poll(): S?
 }
+
+/**
+ * 创建一个默认的 [StageLoop] 实现。
+ */
+@Suppress("FunctionName")
+public expect fun <S : Stage<S>> DefaultStageLoop(): StageLoop<S>
+
 
 /**
  * 用于 [StageLoop] 中进行循环的状态集。

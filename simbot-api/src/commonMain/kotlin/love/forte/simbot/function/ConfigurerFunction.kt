@@ -31,3 +31,11 @@ public inline fun <CONF> toConfigurerFunction(crossinline block: CONF.() -> Unit
 public fun <CONF : Any> ConfigurerFunction<CONF>.invokeWith(conf: CONF) {
     conf.apply { invoke() }
 }
+
+
+/**
+ * Invoke [configurer] with [CONF]。
+ */
+public fun <CONF : Any> CONF.invokeBy(configurer: ConfigurerFunction<CONF>): CONF {
+    return this.also { configurer.invokeWith(it) }
+}

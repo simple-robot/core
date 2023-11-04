@@ -1,9 +1,13 @@
+@file:JvmMultifileClass
+@file:JvmName("EventProcessors")
 package love.forte.simbot.event
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 
 /**

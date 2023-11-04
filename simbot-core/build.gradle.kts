@@ -1,3 +1,5 @@
+import love.forte.plugin.suspendtrans.gradle.withKotlinTargets
+
 plugins {
 //    `java-library`
     kotlin("multiplatform")
@@ -24,8 +26,6 @@ kotlin {
 
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xjvm-default=all",
-                    // 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. You can use -Xexpect-actual-classes flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
-                    "-Xexpect-actual-classes"
                 )
             }
         }
@@ -72,6 +72,13 @@ kotlin {
 //    @Suppress("OPT_IN_USAGE")
 //    wasmWasi()
 
+    withKotlinTargets { target ->
+        targets.findByName(target.name)?.compilations?.all {
+            // 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. You can use -Xexpect-actual-classes flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
+            kotlinOptions.freeCompilerArgs += "-Xexpect-actual-classes"
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -85,6 +92,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.kotlinx.serialization.json)
             }
         }
