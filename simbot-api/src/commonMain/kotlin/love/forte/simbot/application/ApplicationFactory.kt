@@ -217,8 +217,6 @@ public interface ApplicationLauncher<out A : Application> {
      */
     @JvmSynthetic
     public suspend fun launch(): A
-
-    // TODO JAVA Blocking and Async API
 }
 
 /**

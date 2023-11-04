@@ -20,8 +20,6 @@ public fun interface SuspendApplicationEventHandler<in C> : ApplicationEventHand
      */
     @JvmSynthetic
     public suspend fun invoke(context: C)
-
-    // TODO JAVA Blocking and Async API
 }
 
 /**
