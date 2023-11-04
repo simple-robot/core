@@ -30,7 +30,7 @@ private class SimpleApplicationImpl(
     override val eventDispatcher: SimpleEventDispatcher,
     override val components: Components,
     override val plugins: Plugins,
-    internal val events: ApplicationLaunchStages
+    val events: ApplicationLaunchStages
 ) : SimpleApplication {
     private val job: Job
     override val coroutineContext: CoroutineContext
