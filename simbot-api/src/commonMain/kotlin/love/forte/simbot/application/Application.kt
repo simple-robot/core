@@ -62,8 +62,6 @@ public interface Application : CoroutineScope {
     public suspend fun join() {
         coroutineContext[Job]?.join()
     }
-
-    // TODO JAVA 'join' API (Job.asCompletableFuture)
 }
 
 //region Components
@@ -82,7 +80,8 @@ public inline fun <reified C : Component> Components.find(): C? = find { it is C
  *
  * @throws NoSuchElementException 如果没找到匹配的类型
  */
-public inline fun <reified C : Component> Components.get(): C = find<C>() ?: throw NoSuchElementException(C::class.toString())
+public inline fun <reified C : Component> Components.get(): C =
+    find<C>() ?: throw NoSuchElementException(C::class.toString())
 
 
 /**

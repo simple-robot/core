@@ -1,11 +1,14 @@
 package love.forte.simbot.event
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
+import kotlinx.coroutines.withContext
 import love.forte.simbot.event.JAsyncEventListener.Companion.toEventListener
 import love.forte.simbot.event.JBlockingEventListener.Companion.toEventListener
 import love.forte.simbot.utils.runInNoScopeBlocking
 import org.jetbrains.annotations.Blocking
 import java.util.concurrent.CompletionStage
+import kotlin.coroutines.CoroutineContext
 
 /**
  * 一个事件 [Event] 的异步监听器。也可以称之为事件处理器。
@@ -78,25 +81,39 @@ public interface JBlockingEventListener {
          * 使用 [runInNoScopeBlocking] 作为内部的阻塞调度器。
          */
         @JvmStatic
-        public fun JBlockingEventListener.toEventListener(): EventListener = JBlockingEventListenerImpl(this)
+        @JvmOverloads
+        public fun JBlockingEventListener.toEventListener(dispatcherContext: CoroutineContext = Dispatchers.IO): EventListener =
+            JBlockingEventListenerImpl(this, dispatcherContext)
     }
 }
 
-private class JBlockingEventListenerImpl(private val jbListener: JBlockingEventListener) : EventListener {
-    override suspend fun handle(context: EventContext): EventResult = runInNoScopeBlocking {
-        jbListener.handle(context)
+private class JBlockingEventListenerImpl(
+    private val jbListener: JBlockingEventListener,
+    private val dispatcherContext: CoroutineContext
+) : EventListener {
+    override suspend fun handle(context: EventContext): EventResult {
+        return withContext(Dispatchers.IO) {
+            jbListener.handle(context)
+        }
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other === this) return true
+        if (this === other) return true
         if (other !is JBlockingEventListenerImpl) return false
 
-        return jbListener == other.jbListener
+        if (jbListener != other.jbListener) return false
+        if (dispatcherContext != other.dispatcherContext) return false
+
+        return true
     }
 
-    override fun hashCode(): Int = jbListener.hashCode()
+    override fun hashCode(): Int {
+        var result = jbListener.hashCode()
+        result = 31 * result + dispatcherContext.hashCode()
+        return result
+    }
 
     override fun toString(): String {
-        return "JBlockingEventListener($jbListener)"
+        return "JBlockingEventListener(dispatcherContext=$dispatcherContext)"
     }
 }
