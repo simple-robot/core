@@ -95,6 +95,12 @@ kotlin {
             }
         }
 
+        jvmMain {
+            dependencies {
+                compileOnly(libs.kotlinx.coroutines.core)
+            }
+        }
+
         jvmTest {
             dependencies {
                 implementation(kotlin("test-junit5"))
@@ -103,11 +109,16 @@ kotlin {
 
         jsMain {
             dependencies {
+                compileOnly(libs.kotlinx.coroutines.core)
                 implementation(project(":simbot-common-annotations"))
             }
         }
 
-        nativeMain
+        nativeMain {
+            dependencies {
+                compileOnly(libs.kotlinx.coroutines.core)
+            }
+        }
         nativeTest
 
         linuxMain

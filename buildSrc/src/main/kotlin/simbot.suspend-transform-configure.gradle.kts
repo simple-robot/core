@@ -10,8 +10,6 @@
  * You should have received a copy of the GNU Lesser General Public License along with Simple Robot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import gradle.kotlin.dsl.accessors._9ff533653bcf3d9b8e3335d2aa928c14.suspendTransform
-
 /*
  *  Copyright (c) 2022 ForteScarlet <ForteScarlet@163.com>
  *
