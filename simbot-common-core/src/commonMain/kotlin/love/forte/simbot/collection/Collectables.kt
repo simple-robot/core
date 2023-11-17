@@ -15,10 +15,11 @@
 package love.forte.simbot.collection
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
+import love.forte.simbot.async.Async
+import love.forte.simbot.async.completedAsync
 import love.forte.simbot.function.Action
 import kotlin.jvm.JvmName
 
@@ -27,22 +28,21 @@ import kotlin.jvm.JvmName
  */
 public fun <T> emptyCollectable(): Collectable<T> = EmptyCollectable
 
-private data object EmptyCollectable : IterableCollectable<Nothing> {
+private data object EmptyCollectable : Collectable<Nothing> {
     override suspend fun collect(collector: Action<Nothing>) {
-        // nothing.
     }
 
-    override fun forEach(action: Action<Nothing>) {
-    }
-
-    override fun launchAndCollect(scope: CoroutineScope, collector: Action<Nothing>): Job {
-        return Job().apply { complete() }
+    override fun collectAsync(scope: CoroutineScope, collector: Action<Nothing>): Async<Unit> {
+        return completedAsync(Unit)
     }
 
     override fun asFlow(): Flow<Nothing> = emptyFlow()
-
-    override fun asSequence(): Sequence<Nothing> = emptySequence()
 }
+
+/**
+ * Checks if the collectable is [EmptyCollectable].
+ */
+internal fun Collectable<*>.isEmptyCollectable(): Boolean = this === EmptyCollectable
 
 /**
  * 将一个 [Flow] 转化为 [Collectable]。
@@ -50,7 +50,6 @@ private data object EmptyCollectable : IterableCollectable<Nothing> {
  */
 public fun <T> Flow<T>.asCollectable(): Collectable<T> = FlowCollectable(this)
 
-// TODO Expect
 
 private class FlowCollectable<T>(private val flow: Flow<T>) : Collectable<T> {
     override fun asFlow(): Flow<T> = flow
@@ -59,26 +58,38 @@ private class FlowCollectable<T>(private val flow: Flow<T>) : Collectable<T> {
     }
 }
 
+/**
+ * Checks if the given [Collectable] implementation is a [FlowCollectable].
+ *
+ * @return `true` if the [Collectable] is a [FlowCollectable], `false` otherwise.
+ */
+internal fun Collectable<*>.isFlowCollectable(): Boolean = this is FlowCollectable
+
 // TODO
 
-public fun <T> Iterable<T>.asCollectable(): Collectable<T> = IterableCollectableImpl(this)
+/**
+ * 将 [Iterable] 转换为 [IterableCollectable] 的函数.
+ */
+public fun <T> Iterable<T>.asCollectable(): IterableCollectable<T> = IterableCollectableImpl(this)
 
 
 private class IterableCollectableImpl<T>(private val collection: Iterable<T>) : IterableCollectable<T> {
     override fun asFlow(): Flow<T> = collection.asFlow()
-    override fun asSequence(): Sequence<T> = collection.asSequence()
 
     override fun forEach(action: Action<T>): Unit = collection.forEach(action::invoke)
+
+    override fun iterator(): Iterator<T> = collection.iterator()
 }
 
 // TODO
 
-public fun <T> Sequence<T>.asCollectable(): Collectable<T> = SequenceCollectable(this)
+/**
+ * 将 [Iterable] 转换为 [Collectable] 的函数.
+ */
+public fun <T> Sequence<T>.asCollectable(): Collectable<T> = SequenceCollectableImpl(this)
 
 
-private class SequenceCollectable<T>(private val collection: Sequence<T>) : IterableCollectable<T> {
-    override fun asFlow(): Flow<T> = collection.asFlow()
+private class SequenceCollectableImpl<T>(private val collection: Sequence<T>) : SequenceCollectable<T> {
     override fun asSequence(): Sequence<T> = collection
-
     override fun forEach(action: Action<T>): Unit = collection.forEach(action::invoke)
 }

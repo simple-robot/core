@@ -201,6 +201,15 @@ public inline fun <T> CoroutineScope.toAsync(crossinline block: suspend () -> T)
 public fun <T> Deferred<T>.toAsync(): Async<T> = Async(this)
 
 /**
+ * 将给定的值封装为一个已完成的 `Async<T>` 对象。
+ *
+ * @param T 泛型参数，表示输入值和Async对象包含的结果类型
+ * @param value 需要被封装的值
+ * @return 返回一个包装了给定值的 `Async<T>` 对象（已完成状态）
+ */
+public fun <T> completedAsync(value: T): Async<T> = Async(CompletableDeferred(value))
+
+/**
  * 在协程中等待此 [Async] 任务完成，并返回它的结果（如果任务成功完成）或抛出异步抛出的异常（如果任务失败）。
  * 此函数会挂起协程直到任务完成。
  *
