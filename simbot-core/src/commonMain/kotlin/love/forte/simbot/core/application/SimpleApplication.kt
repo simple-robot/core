@@ -4,11 +4,7 @@ import love.forte.simbot.application.Application
 import love.forte.simbot.application.ApplicationConfiguration
 import love.forte.simbot.application.ApplicationLauncher
 
-/**
- *
- * @see Simple
- *
- */
+
 public interface SimpleApplication : Application {
     override val configuration: SimpleApplicationConfiguration
 }

@@ -125,30 +125,10 @@ public abstract class AbstractEventDispatcherConfiguration : EventDispatcherConf
         interceptor: EventInterceptor,
         propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
     ) {
-        interceptors[scope] ?: run {
-            mutableListOf<Pair<EventInterceptor, ConfigurerFunction<EventInterceptorRegistrationProperties>?>>().also {
-                interceptors[scope] = it
-            }
-        }.add(interceptor to propertiesConsumer)
+        interceptors.getOrPut(scope) { mutableListOf() }.add(interceptor to propertiesConsumer)
     }
     //endregion
 
 }
 
-// /**
-//  * 用于构建或在 [Application] 构建阶段配置 [EventDispatcher] 的构建工厂。
-//  */
-// public interface EventDispatcherFactory<out V : EventDispatcher, C : EventDispatcherConfiguration> {
-//     /**
-//      * 提供配置逻辑函数，并得到结果 [V] 。
-//      *
-//      * @param configurer 配置类的配置逻辑。
-//      */
-//     public fun create(configurer: ConfigurerFunction<C>): V
-//
-//     /**
-//      * 使用默认的配置（没有额外配置逻辑）构建并得到结果 [V] 。
-//      */
-//     public fun create(): V = create {}
-// }
 
