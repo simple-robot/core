@@ -90,8 +90,10 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.coroutines.test)
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.serialization.json)
+                implementation(libs.ktor.client.cio)
             }
         }
 

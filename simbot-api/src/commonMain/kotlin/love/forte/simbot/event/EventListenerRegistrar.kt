@@ -59,14 +59,6 @@ public inline fun <reified E : Event> EventListenerRegistrar.listen(
         })
 }
 
-private fun b(r: EventListenerRegistrar) {
-    r.listen<Event> {
-
-        TODO()
-    }
-}
-
-
 /**
  * 注册事件监听器的额外属性。
  *
