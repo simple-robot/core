@@ -23,13 +23,24 @@ public fun interface JBlockingSuspendApplicationEventHandler<in C> {
 
     public companion object {
         /**
+         * Converts a [JBlockingSuspendApplicationEventHandler] to a [SuspendApplicationEventHandler].
+         *
+         * @param dispatcherContext The coroutine context to use for executing the handler's suspend functions. Defaults to [Dispatchers.IO].
+         * @param handler The [JBlockingSuspendApplicationEventHandler] to convert.
+         * @return The converted [SuspendApplicationEventHandler].
+         */
+        @JvmStatic
+        @JvmOverloads
+        public fun <C> toHandler(dispatcherContext: CoroutineContext = Dispatchers.IO, handler: JBlockingSuspendApplicationEventHandler<C>): SuspendApplicationEventHandler<C> = handler.toHandler(dispatcherContext)
+
+                /**
          * 将 [JBlockingSuspendApplicationEventHandler] 转化为 [SuspendApplicationEventHandler]。
          *
          * @param dispatcherContext 执行阻塞API时切换到的上下文。默认会使用 [Dispatchers.IO].
          */
         @JvmStatic
         @JvmOverloads
-        public fun <C> JBlockingSuspendApplicationEventHandler<C>.toEventListener(dispatcherContext: CoroutineContext = Dispatchers.IO): SuspendApplicationEventHandler<C> =
+        public fun <C> JBlockingSuspendApplicationEventHandler<C>.toHandler(dispatcherContext: CoroutineContext = Dispatchers.IO): SuspendApplicationEventHandler<C> =
             JBlockingSuspendApplicationEventHandlerImpl(this, dispatcherContext)
     }
 }
@@ -78,10 +89,19 @@ public fun interface JAsyncSuspendApplicationEventHandler<in C> {
 
     public companion object {
         /**
+         * Converts a [JAsyncSuspendApplicationEventHandler] to a [SuspendApplicationEventHandler].
+         *
+         * @param handler The [JAsyncSuspendApplicationEventHandler] to convert.
+         * @return The converted [SuspendApplicationEventHandler].
+         */
+        @JvmStatic
+        public fun <C> toHandler(handler: JAsyncSuspendApplicationEventHandler<C>): SuspendApplicationEventHandler<C> = handler.toHandler()
+
+        /**
          * 将 [JAsyncSuspendApplicationEventHandler] 转化为 [SuspendApplicationEventHandler]。
          */
         @JvmStatic
-        public fun <C> JAsyncSuspendApplicationEventHandler<C>.toEventListener(): SuspendApplicationEventHandler<C> =
+        public fun <C> JAsyncSuspendApplicationEventHandler<C>.toHandler(): SuspendApplicationEventHandler<C> =
             JAsyncSuspendApplicationEventHandlerImpl(this)
     }
 }

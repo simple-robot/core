@@ -2,8 +2,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
-import love.forte.simbot.application.launchApplication
-import love.forte.simbot.core.application.Simple
+import love.forte.simbot.core.application.launchSimpleApplication
 import love.forte.simbot.event.Event
 import love.forte.simbot.event.EventResult
 import love.forte.simbot.event.takeWhileNotError
@@ -31,7 +30,7 @@ class AppTests {
 
     @Test
     fun appTest() = runTest {
-        val app = launchApplication(Simple) {
+        val app = launchSimpleApplication {
             eventDispatcher {
                 coroutineContext += d1
                 addDispatchInterceptor {
@@ -77,6 +76,17 @@ class AppTests {
     }
 
 
+    fun test2() = runTest {
+        val application = launchSimpleApplication {
+            eventDispatcher {
+                // ....
+            }
+            config {
+                this.coroutineContext
+            }
+        }
+
+    }
 }
 
 

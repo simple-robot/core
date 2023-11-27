@@ -59,8 +59,8 @@ public interface EventDispatcherConfiguration {
      */
     @EventDispatcherConfigurationDSL
     public fun addInterceptor(
-        interceptor: EventInterceptor,
-        propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
+        propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?,
+        interceptor: EventInterceptor
     )
 
     /**
@@ -68,7 +68,7 @@ public interface EventDispatcherConfiguration {
      */
     @EventDispatcherConfigurationDSL
     public fun addInterceptor(interceptor: EventInterceptor) {
-        addInterceptor(interceptor, null)
+        addInterceptor(null, interceptor)
     }
 
 
@@ -77,8 +77,8 @@ public interface EventDispatcherConfiguration {
      */
     @EventDispatcherConfigurationDSL
     public fun addDispatchInterceptor(
-        interceptor: EventDispatchInterceptor,
-        propertiesConsumer: ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>?
+        propertiesConsumer: ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>?,
+        interceptor: EventDispatchInterceptor
     )
 
     /**
@@ -88,7 +88,7 @@ public interface EventDispatcherConfiguration {
     public fun addDispatchInterceptor(
         interceptor: EventDispatchInterceptor
     ) {
-        addDispatchInterceptor(interceptor, null)
+        addDispatchInterceptor(null, interceptor)
     }
 }
 
@@ -109,15 +109,15 @@ public abstract class AbstractEventDispatcherConfiguration : EventDispatcherConf
         mutableListOf()
 
     override fun addInterceptor(
-        interceptor: EventInterceptor,
-        propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
+        propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?,
+        interceptor: EventInterceptor
     ) {
         interceptors.add(interceptor to propertiesConsumer)
     }
 
     override fun addDispatchInterceptor(
-        interceptor: EventDispatchInterceptor,
-        propertiesConsumer: ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>?
+        propertiesConsumer: ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>?,
+        interceptor: EventDispatchInterceptor
     ) {
         dispatchInterceptors.add(interceptor to propertiesConsumer)
     }

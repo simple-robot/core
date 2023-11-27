@@ -19,8 +19,8 @@ public interface EventListenerRegistrar {
      * @return 注册后的句柄。可用于撤销/消除此次注册
      */
     public fun register(
+        propertiesConsumer: ConfigurerFunction<EventListenerRegistrationProperties>?,
         listener: EventListener,
-        propertiesConsumer: ConfigurerFunction<EventListenerRegistrationProperties>?
     ): EventListenerRegistrationHandle
 
     /**
@@ -28,8 +28,44 @@ public interface EventListenerRegistrar {
      *
      * @return 注册后的句柄。可用于撤销/消除此次注册
      */
-    public fun register(listener: EventListener): EventListenerRegistrationHandle = register(listener, null)
+    public fun register(listener: EventListener): EventListenerRegistrationHandle = register(null, listener)
 }
+
+/**
+ * 为特定事件类型注册事件处理器函数。
+ *
+ * @param E The type of event to register the listener for.
+ * @param propertiesConsumer An optional function that consumes the configuration properties of the listener registration.
+ *        The function should have the signature `ConfigurerFunction<EventListenerRegistrationProperties>`.
+ * @param defaultResult The default result function that will be invoked if the event is not of type `E`.
+ *        The function should have the signature `EventContext.() -> EventResult`.
+ *        By default, it returns an invalid result.
+ * @param listenerFunction The listener function that will be invoked when the event is fired.
+ *        The function should have the signature `suspend EventContext.(E) -> EventResult`,
+ *        where `EventContext` represents the context of the event and `E` is the event type.
+ *
+ * @throws IllegalArgumentException If the listener function is not provided.
+ */
+public inline fun <reified E : Event> EventListenerRegistrar.listen(
+    propertiesConsumer: ConfigurerFunction<EventListenerRegistrationProperties>? = null,
+    crossinline defaultResult: EventContext.() -> EventResult = { EventResult.invalid },
+    crossinline listenerFunction: suspend EventContext.(E) -> EventResult,
+) {
+    register(
+        propertiesConsumer = propertiesConsumer,
+        listener = { context ->
+            val event = context.event
+            if (event is E) listenerFunction(context, event) else defaultResult(context)
+        })
+}
+
+private fun b(r: EventListenerRegistrar) {
+    r.listen<Event> {
+
+        TODO()
+    }
+}
+
 
 /**
  * 注册事件监听器的额外属性。
@@ -48,15 +84,15 @@ public interface EventListenerRegistrationProperties {
      * 拦截器的优先级与最终此监听函数被添加的全局性拦截器共享。
      */
     public fun addInterceptor(
-        interceptor: EventInterceptor,
-        propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
+        propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?,
+        interceptor: EventInterceptor
     )
 
     /**
      * 为此监听函数添加一个独特的拦截器。
      */
     public fun addInterceptor(interceptor: EventInterceptor) {
-        addInterceptor(interceptor, null)
+        addInterceptor(null, interceptor)
     }
 }
 

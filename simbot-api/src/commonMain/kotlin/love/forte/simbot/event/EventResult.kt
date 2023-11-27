@@ -52,6 +52,15 @@ public interface EventResult {
         public val invalid: EventResult get() = StandardEventResult.Invalid
 
         /**
+         * 得到一个代表错误的结果。
+         * 通常由事件调度器内部捕捉到未捕获异常时构建。
+         */
+        @JvmStatic
+        @JvmOverloads
+        public fun error(content: Throwable, isTruncated: Boolean = false): StandardEventResult.Error =
+            StandardEventResult.Error.of(content, isTruncated)
+
+        /**
          * 得到一个代表空内容的结果。
          *
          * [empty] 通常用于表示事件处理正常、但是无可用结果或无需提供结果时。

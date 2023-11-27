@@ -1,7 +1,6 @@
 package love.forte.simbot.core.application
 
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.runTest
 import love.forte.simbot.annotations.ExperimentalAPI
 import love.forte.simbot.application.launchApplication
@@ -50,24 +49,25 @@ class SimpleApplicationTests {
                 }
 
                 addInterceptor({
-                    it.invoke()
+                    priority = 1
                 }) {
+                    it.invoke()
+                }
+                addDispatchInterceptor({
                     priority = 1
                 }
-                addDispatchInterceptor(
-                    { it.invoke() }
                 ) {
-                    priority = 1
+                    it.invoke()
                 }
                 addInterceptor({
-                    it.invoke()
-                }) {
                     priority = 1
+                }) {
+                    it.invoke()
                 }
                 addInterceptor({
-                    it.invoke()
-                }) {
                     priority = 1
+                }) {
+                    it.invoke()
                 }
             }
 

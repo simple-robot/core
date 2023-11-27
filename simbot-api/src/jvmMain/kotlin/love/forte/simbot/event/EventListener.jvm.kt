@@ -20,7 +20,7 @@ import kotlin.coroutines.CoroutineContext
  *
  * @author ForteScarlet
  */
-public interface JAsyncEventListener {
+public fun interface JAsyncEventListener {
     /**
      * 通过 [context] 异步处理事件并得到异步响应。
      *
@@ -28,6 +28,16 @@ public interface JAsyncEventListener {
     public fun handle(context: EventContext): CompletionStage<out EventResult>
 
     public companion object {
+        /**
+         * Converts the given JAsyncEventListener to a standard EventListener.
+         *
+         * @param listener The JAsyncEventListener to convert.
+         * @return The converted EventListener.
+         */
+        @JvmStatic
+        public fun toListener(listener: JAsyncEventListener): EventListener = listener.toEventListener()
+
+
         /**
          * 将 [JAsyncEventListener] 转化为 [EventListener]。
          */
@@ -64,7 +74,7 @@ private class JAsyncEventListenerImpl(private val jaListener: JAsyncEventListene
  *
  * @author ForteScarlet
  */
-public interface JBlockingEventListener {
+public fun interface JBlockingEventListener {
     /**
      * 通过 [context] 异步处理事件并得到响应结果。
      *
@@ -75,6 +85,21 @@ public interface JBlockingEventListener {
     public fun handle(context: EventContext): EventResult
 
     public companion object {
+        /**
+         * Converts a JBlockingEventListener to an EventListener.
+         *
+         * @param dispatcherContext The coroutine context to be used for dispatching events. Default value is Dispatchers.IO.
+         * @param listener The JBlockingEventListener to be converted.
+         * @return The converted EventListener.
+         */
+        @JvmStatic
+        @JvmOverloads
+        public fun toListener(
+            dispatcherContext: CoroutineContext = Dispatchers.IO,
+            listener: JBlockingEventListener
+        ): EventListener = listener.toEventListener(dispatcherContext)
+
+
         /**
          * 将 [JBlockingEventListener] 转化为 [EventListener]。
          *

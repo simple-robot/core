@@ -1,5 +1,8 @@
 package love.forte.simbot.application
 
+import kotlinx.coroutines.CoroutineScope
+import love.forte.simbot.async.Async
+import love.forte.simbot.async.toAsync
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
@@ -217,13 +220,11 @@ public interface ApplicationLauncher<out A : Application> {
      */
     @JvmSynthetic
     public suspend fun launch(): A
+
+    /**
+     * 根据已经成型的配置，构建并在异步中启动一个 [Application][A]。
+     * 启动时会触发 [ApplicationLaunchStage.Launch] 事件线，调用所有的启动事件并集此启动所有的组件或插件。
+     */
+    public fun launchIn(scope: CoroutineScope): Async<A> = scope.toAsync { launch() }
 }
 
-/**
- * 构建一个内部的 [ApplicationLauncher] 默认实现并简单包装一个启动逻辑 [block]。
- */
-public inline fun <A : Application> applicationLauncher(
-    crossinline block: suspend () -> A
-): ApplicationLauncher<A> = object : ApplicationLauncher<A> {
-    override suspend fun launch(): A = block()
-}

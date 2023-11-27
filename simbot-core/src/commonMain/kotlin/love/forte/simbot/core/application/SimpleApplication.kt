@@ -36,7 +36,7 @@ public interface SimpleApplicationLauncher : ApplicationLauncher<SimpleApplicati
  *
  */
 public suspend inline fun launchSimpleApplication(
-    crossinline configurer: ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>.() -> Unit
+    crossinline configurer: ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>.() -> Unit = {}
 ): SimpleApplication {
     return launchApplication(Simple, configurer)
 }

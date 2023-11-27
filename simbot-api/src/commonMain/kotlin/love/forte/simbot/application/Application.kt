@@ -5,6 +5,8 @@ package love.forte.simbot.application
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import love.forte.simbot.ability.CompletionAware
+import love.forte.simbot.ability.LifecycleAware
 import love.forte.simbot.component.Component
 import love.forte.simbot.event.EventDispatcher
 import love.forte.simbot.plugin.Plugin
@@ -20,7 +22,7 @@ import kotlin.jvm.JvmSynthetic
  *
  * @author ForteScarlet
  */
-public interface Application : CoroutineScope {
+public interface Application : CoroutineScope, LifecycleAware, CompletionAware {
     /**
      * 构建 [Application] 提供并得到的最终配置信息。
      */

@@ -37,8 +37,8 @@ private class SimpleEventListenerRegistrationPropertiesImpl(private val intercep
     override var priority: Int = PriorityConstant.NORMAL
 
     override fun addInterceptor(
-        interceptor: EventInterceptor,
-        propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
+        propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?,
+        interceptor: EventInterceptor
     ) {
         interceptorBuilder.addInterceptor(interceptor, propertiesConsumer)
     }
@@ -162,8 +162,8 @@ internal class SimpleEventDispatcherImpl(
     private val listeners = createPriorityConcurrentQueue<SimpleEventListenerInvoker>()
 
     override fun register(
-        listener: EventListener,
-        propertiesConsumer: ConfigurerFunction<EventListenerRegistrationProperties>?
+        propertiesConsumer: ConfigurerFunction<EventListenerRegistrationProperties>?,
+        listener: EventListener
     ): EventListenerRegistrationHandle {
         val interceptorBuilder = SimpleEventInterceptorsBuilder()
         val prop = SimpleEventListenerRegistrationPropertiesImpl(interceptorBuilder).also { prop ->
@@ -247,8 +247,12 @@ internal class SimpleEventDispatcherImpl(
         }
     }
 
-    private inline fun orErrorResult(block: () -> EventResult): EventResult = runCatching { block() }.getOrElse { e -> StandardEventResult.Error.of(e) }
+    private inline fun orErrorResult(block: () -> EventResult): EventResult =
+        runCatching { block() }.getOrElse { e -> EventResult.error(e) }
 
+    override fun toString(): String {
+        return "SimpleEventDispatcher"
+    }
 }
 
 

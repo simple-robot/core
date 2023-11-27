@@ -2,6 +2,7 @@ package love.forte.simbot.core.application
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import love.forte.simbot.ability.OnCompletion
 import love.forte.simbot.application.*
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
@@ -67,6 +68,20 @@ private class SimpleApplicationImpl(
 
     override suspend fun join() {
         job.join()
+    }
+
+    override val isActive: Boolean
+        get() = job.isActive
+
+    override val isCompleted: Boolean
+        get() = job.isCompleted
+
+    override fun onCompletion(handle: OnCompletion) {
+        job.invokeOnCompletion { handle.invoke(it) }
+    }
+
+    override fun toString(): String {
+        return "SimpleApplication(isActive=$isActive, isCompleted=$isCompleted, eventDispatcher=$eventDispatcher, components=$components, plugins=$plugins)"
     }
 }
 
