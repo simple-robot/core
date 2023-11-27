@@ -75,17 +75,17 @@ private class SimpleApplicationImpl(
  *
  */
 public object Simple :
-    ApplicationFactory<SimpleApplication, SimpleAbstractApplicationBuilder, SimpleApplicationLauncher, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration> {
+    ApplicationFactory<SimpleApplication, SimpleApplicationBuilder, SimpleApplicationLauncher, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration> {
 
-    override fun create(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleAbstractApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>): SimpleApplicationLauncher {
+    override fun create(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>): SimpleApplicationLauncher {
         return SimpleApplicationLauncherImpl { create0(configurer) }
     }
 
-    private fun create0(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleAbstractApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>): SimpleApplicationImpl {
+    private fun create0(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>): SimpleApplicationImpl {
         val simpleConfigurer = SimpleApplicationFactoryConfigurer().invokeBy(configurer)
 
         // 配置信息
-        val configuration = simpleConfigurer.createConfigInternal(SimpleAbstractApplicationBuilder())
+        val configuration = simpleConfigurer.createConfigInternal(SimpleApplicationBuilder())
 
         val registrar = object : AbstractApplicationEventRegistrar() {
             public override val events: MutableMap<ApplicationLaunchStage<*>, MutableList<ApplicationEventHandler>>
@@ -148,19 +148,19 @@ public object Simple :
 }
 
 private class SimpleApplicationFactoryConfigurer(
-    public override val configConfigurers: MutableList<ConfigurerFunction<SimpleAbstractApplicationBuilder>> = mutableListOf(),
+    public override val configConfigurers: MutableList<ConfigurerFunction<SimpleApplicationBuilder>> = mutableListOf(),
     public override val applicationEventRegistrarConfigurations: MutableList<ConfigurerFunction<ApplicationEventRegistrar>> = mutableListOf(),
     public override val eventDispatcherConfigurers: MutableList<ConfigurerFunction<SimpleEventDispatcherConfiguration>> = mutableListOf(),
     public override val componentFactoriesConfigurator: ComponentFactoriesConfigurator = ComponentFactoriesConfigurator(),
     public override val pluginFactoriesConfigurator: PluginFactoriesConfigurator = PluginFactoriesConfigurator(),
-) : AbstractApplicationFactoryConfigurer<SimpleAbstractApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>(
+) : AbstractApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>(
     configConfigurers,
     applicationEventRegistrarConfigurations,
     eventDispatcherConfigurers,
     componentFactoriesConfigurator,
     pluginFactoriesConfigurator
 ) {
-    fun createConfigInternal(configBuilder: SimpleAbstractApplicationBuilder): SimpleApplicationConfiguration {
+    fun createConfigInternal(configBuilder: SimpleApplicationBuilder): SimpleApplicationConfiguration {
         return createConfig(configBuilder) {
             it.build()
         }
@@ -175,8 +175,10 @@ private class SimpleApplicationFactoryConfigurer(
     }
 }
 
-
-public class SimpleAbstractApplicationBuilder : AbstractApplicationBuilder() {
+/**
+ * 通过 [Simple] 构建 [SimpleApplication] 时使用的构建器。
+ */
+public class SimpleApplicationBuilder : AbstractApplicationBuilder() {
     internal fun build(): SimpleApplicationConfiguration = SimpleApplicationConfigurationImpl(coroutineContext)
 }
 

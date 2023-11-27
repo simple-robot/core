@@ -8,9 +8,6 @@ import love.forte.simbot.application.launchApplication
 import love.forte.simbot.application.onCancelled
 import love.forte.simbot.application.onLaunch
 import love.forte.simbot.application.onRequestCancel
-import love.forte.simbot.event.EventInterceptor
-import love.forte.simbot.event.addEachScopeInterceptor
-import love.forte.simbot.event.addGlobalScopeInterceptor
 import love.forte.simbot.plugin.createPlugin
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -39,35 +36,35 @@ class SimpleApplicationTests {
 
             eventDispatcher {
                 coroutineContext = CoroutineName("TEST-DIS")
-                addInterceptor(EventInterceptor.Scope.GLOBAL) {
+                addInterceptor {
                     it.invoke()
                 }
-                addGlobalScopeInterceptor {
+                addDispatchInterceptor {
                     it.invoke()
                 }
-                addInterceptor(EventInterceptor.Scope.EACH) {
+                addInterceptor {
                     it.invoke()
                 }
-                addEachScopeInterceptor {
+                addInterceptor {
                     it.invoke()
                 }
 
-                addInterceptor(EventInterceptor.Scope.GLOBAL, {
+                addInterceptor({
                     it.invoke()
                 }) {
                     priority = 1
                 }
-                addGlobalScopeInterceptor(
+                addDispatchInterceptor(
                     { it.invoke() }
                 ) {
                     priority = 1
                 }
-                addInterceptor(EventInterceptor.Scope.EACH, {
+                addInterceptor({
                     it.invoke()
                 }) {
                     priority = 1
                 }
-                addEachScopeInterceptor({
+                addInterceptor({
                     it.invoke()
                 }) {
                     priority = 1

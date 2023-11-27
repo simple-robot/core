@@ -1,16 +1,23 @@
 package love.forte.simbot.bot
 
+import love.forte.simbot.ability.LifecycleAware
 import love.forte.simbot.id.ID
-
-// TODO
 
 /**
  *
- * @see BotFactory
+ * [Bot] 的管理器。
+ *
+ * ### 生命周期
+ *
+ * [BotManager] 持有一个会影响诞生自它的所有 [Bot] 的生命周期。
+ * 当 [BotManager] 被执行了 [BotManager.cancel]，除了影响 [BotManager] 自身的生命周期以外，
+ * 也会同样影响到所有由它产生的 [Bot]。
+ *
  *
  * @author ForteScarlet
+ * @see BotFactory
  */
-public interface BotManager : BotFactory {
+public interface BotManager : BotFactory, LifecycleAware {
 
     /**
      * 得到所有的 [Bot]，以序列的形式。

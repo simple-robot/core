@@ -111,6 +111,54 @@ public sealed class StandardEventResult : EventResult {
     }
 
     /**
+     * 异常的结果。当事件调度过程中产生了未捕获异常，则此异常将会被包装到 [Error.content] 中并被推送给下游。
+     *
+     * 通常用于在 [EventDispatcher] 中对对未捕获异常的处理，不过也可以选择主动构建此结果来向下游传递。
+     *
+     * 对异常结果的处理由下游自由决定。
+     * 例如可以通过 `filter { it !is StandardEventResult.Error }` 来忽略掉所有的异常结果，
+     * 或者通过 `takeWhile { it is StandardEventResult.Error }` 来在第一次出现异常时中断流的处理。
+     *
+     */
+    public class Error private constructor(override val content: Throwable, override val isTruncated: Boolean) :
+        StandardEventResult() {
+
+        override fun toString(): String = "Error(content=$content, isTruncated=$isTruncated)"
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Error) return false
+
+            if (content != other.content) return false
+            if (isTruncated != other.isTruncated) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = content.hashCode()
+            result = 31 * result + isTruncated.hashCode()
+            return result
+        }
+
+
+        public companion object {
+
+            /**
+             * Creates an [Error] object with the given content and optional truncate flag.
+             *
+             * @param content The Throwable object representing the error content.
+             * @param isTruncated Flag indicating whether the error is truncated or not. Defaults to false.
+             * @return The Error object representing the event result.
+             */
+            @JvmOverloads
+            @JvmStatic
+            public fun of(content: Throwable, isTruncated: Boolean = false): Error = Error(content, isTruncated)
+
+        }
+    }
+
+    /**
      * 空结果。当响应 [Empty] 时代表此事件对于本次处理来说是正常处理的，
      * 但是没有可用的响应结果或无需提供结果。
      *
@@ -122,6 +170,22 @@ public sealed class StandardEventResult : EventResult {
      */
     public class Empty private constructor(override val isTruncated: Boolean) : EmptyResult() {
         override val content: Any? get() = null
+
+        override fun toString(): String =
+            "Empty(isTruncated=${Invalid.isTruncated})"
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Empty) return false
+
+            if (isTruncated != other.isTruncated) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return isTruncated.hashCode()
+        }
 
         public companion object {
             private val Truncated = Empty(true)
@@ -149,7 +213,7 @@ public sealed class StandardEventResult : EventResult {
      */
     public abstract class Async : StandardEventResult() {
         /**
-         * 用来表示一个异步任务的 [content], 例如 [Deferred] 或 [Future].
+         * 用来表示一个异步任务的 [content], 例如 [Deferred] 或 `Future`.
          */
         abstract override val content: Any?
 

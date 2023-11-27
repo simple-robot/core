@@ -5,9 +5,11 @@ import kotlin.jvm.JvmSynthetic
 
 
 /**
- * 事件拦截器。在 [EventDispatcher] 调度事件的过程中针对全链路或各监听器的拦截器。
+ * 事件拦截器。在 [EventDispatcher] 调度事件的过程中针对各监听器的拦截器。
  *
  * 也可以通过 [EventListenerRegistrationProperties] 针对某指定的监听器进行拦截。
+ *
+ * @see EventDispatchInterceptor
  *
  * @author ForteScarlet
  */
@@ -63,23 +65,23 @@ public fun interface EventInterceptor {
     }
 
 
-    /**
-     * 拦截器在 [EventDispatcher] 中针对的“作用域”。
-     *
-     */
-    public enum class Scope {
-        /**
-         * 全局性作用域。
-         * 会针对单次、整个事件处理链进行一次统一的拦截。
-         *
-         */
-        GLOBAL,
-
-        /**
-         * 会在一次事件调度过程中拦截每一个事件监听器。
-         */
-        EACH
-    }
+    // /**
+    //  * 拦截器在 [EventDispatcher] 中针对的“作用域”。
+    //  *
+    //  */
+    // public enum class Scope {
+    //     /**
+    //      * 全局性作用域。
+    //      * 会针对单次、整个事件处理链进行一次统一的拦截。
+    //      *
+    //      */
+    //     GLOBAL,
+    //
+    //     /**
+    //      * 会在一次事件调度过程中拦截每一个事件监听器。
+    //      */
+    //     EACH
+    // }
 }
 
 

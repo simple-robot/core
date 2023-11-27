@@ -2,6 +2,7 @@ package love.forte.simbot.event
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import love.forte.simbot.function.ConfigurerFunction
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -36,13 +37,19 @@ public annotation class EventDispatcherConfigurationDSL
 public interface EventDispatcherConfiguration {
 
     /**
-     * 用于 [EventDispatcher] 中进行事件调度的协程上下文。
+     * 用于 [EventDispatcher] 中进行事件调度的协程上下文。每一次事件处理都会被切换至此上下文中。
      * [coroutineContext] 会作为调度事件时候使用的调度器，
      * 事件在处理的时候会被切换至此上下文中（例如使用其中的调度器等）。
      *
      * 如果 [coroutineContext] 中存在 [Job]，则此 [Job] 会**被剔除**。
      * [EventDispatcher] 的调度结果最终以流 [Flow] 的形式提供，
      * 因此每次调度任务的生命周期由接收者决定，[Job] 不起作用（[Flow] 的调度上下文中也不允许 [Job] 存在）。
+     *
+     * 当同时使用 [coroutineContext] 和 [Flow.flowOn] 对时间调度流指定调度器时，
+     * [coroutineContext] 会优先生效于事件调度逻辑本身。
+     *
+     * 注：当配置了 [coroutineContext]，那么每次进行事件调度的时候都会产生大量的上下文切换行为。
+     * 切换的次数取决于事件处理器的数量和事件调度链结果流最终被收集的数量。
      *
      */
     public var coroutineContext: CoroutineContext
@@ -52,7 +59,6 @@ public interface EventDispatcherConfiguration {
      */
     @EventDispatcherConfigurationDSL
     public fun addInterceptor(
-        scope: EventInterceptor.Scope,
         interceptor: EventInterceptor,
         propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
     )
@@ -61,49 +67,31 @@ public interface EventDispatcherConfiguration {
      * 添加一个拦截器与它可能存在的配置信息。
      */
     @EventDispatcherConfigurationDSL
-    public fun addInterceptor(scope: EventInterceptor.Scope, interceptor: EventInterceptor) {
-        addInterceptor(scope, interceptor, null)
+    public fun addInterceptor(interceptor: EventInterceptor) {
+        addInterceptor(interceptor, null)
+    }
+
+
+    /**
+     * 添加一个事件调度拦截器与它可能存在的配置信息。
+     */
+    @EventDispatcherConfigurationDSL
+    public fun addDispatchInterceptor(
+        interceptor: EventDispatchInterceptor,
+        propertiesConsumer: ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>?
+    )
+
+    /**
+     * 添加一个事件调度拦截器与它可能存在的配置信息。
+     */
+    @EventDispatcherConfigurationDSL
+    public fun addDispatchInterceptor(
+        interceptor: EventDispatchInterceptor
+    ) {
+        addDispatchInterceptor(interceptor, null)
     }
 }
 
-
-/**
- * 添加一个作用域为 [EventInterceptor.Scope.GLOBAL] 拦截器与它可能存在的配置信息。
- */
-@EventDispatcherConfigurationDSL
-public fun EventDispatcherConfiguration.addGlobalScopeInterceptor(
-    interceptor: EventInterceptor,
-    propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
-) {
-    addInterceptor(EventInterceptor.Scope.GLOBAL, interceptor, propertiesConsumer)
-}
-
-/**
- * 添加一个作用域为 [EventInterceptor.Scope.GLOBAL] 拦截器与它可能存在的配置信息。
- */
-@EventDispatcherConfigurationDSL
-public fun EventDispatcherConfiguration.addGlobalScopeInterceptor(interceptor: EventInterceptor) {
-    addInterceptor(EventInterceptor.Scope.GLOBAL, interceptor)
-}
-
-/**
- * 添加一个作用域为 [EventInterceptor.Scope.EACH] 拦截器与它可能存在的配置信息。
- */
-@EventDispatcherConfigurationDSL
-public fun EventDispatcherConfiguration.addEachScopeInterceptor(
-    interceptor: EventInterceptor,
-    propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
-) {
-    addInterceptor(EventInterceptor.Scope.EACH, interceptor, propertiesConsumer)
-}
-
-/**
- * 添加一个作用域为 [EventInterceptor.Scope.EACH] 拦截器与它可能存在的配置信息。
- */
-@EventDispatcherConfigurationDSL
-public fun EventDispatcherConfiguration.addEachScopeInterceptor(interceptor: EventInterceptor) {
-    addInterceptor(EventInterceptor.Scope.EACH, interceptor)
-}
 
 /**
  * [EventDispatcherConfiguration] 的基础抽象类，提供 [EventDispatcherConfiguration] 中基本能力的部分实现或抽象。
@@ -114,18 +102,24 @@ public abstract class AbstractEventDispatcherConfiguration : EventDispatcherConf
     override var coroutineContext: CoroutineContext = EmptyCoroutineContext
 
     //region interceptors
-    protected open val interceptors: MutableMap<EventInterceptor.Scope, MutableList<Pair<EventInterceptor, ConfigurerFunction<EventInterceptorRegistrationProperties>?>>> =
-        mutableMapOf()
+    protected open val interceptors: MutableList<Pair<EventInterceptor, ConfigurerFunction<EventInterceptorRegistrationProperties>?>> =
+        mutableListOf()
 
-    /**
-     * 添加一个拦截器与它可能存在的配置信息。
-     */
+    protected open val dispatchInterceptors: MutableList<Pair<EventDispatchInterceptor, ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>?>> =
+        mutableListOf()
+
     override fun addInterceptor(
-        scope: EventInterceptor.Scope,
         interceptor: EventInterceptor,
         propertiesConsumer: ConfigurerFunction<EventInterceptorRegistrationProperties>?
     ) {
-        interceptors.getOrPut(scope) { mutableListOf() }.add(interceptor to propertiesConsumer)
+        interceptors.add(interceptor to propertiesConsumer)
+    }
+
+    override fun addDispatchInterceptor(
+        interceptor: EventDispatchInterceptor,
+        propertiesConsumer: ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>?
+    ) {
+        dispatchInterceptors.add(interceptor to propertiesConsumer)
     }
     //endregion
 
