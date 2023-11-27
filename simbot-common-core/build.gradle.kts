@@ -83,6 +83,7 @@ kotlin {
         commonMain {
             dependencies {
                 compileOnly(project(":simbot-common-annotations"))
+                api(project(":simbot-common-suspend-runner"))
                 compileOnly(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
             }
