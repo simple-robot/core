@@ -693,6 +693,22 @@ public fun <T> runInAsync(
 public fun <T> runInAsync(block: suspend CoroutineScope.() -> T): CompletableFuture<T> =
     runInAsync(scope = `$$DefaultScope`, context = EmptyCoroutineContext, block = block)
 
+/**
+ * @see Reserve
+ */
+@InternalAPI
+public fun <T> asReserve(scope: CoroutineScope? = null, context: CoroutineContext? = null, block: suspend () -> T): Reserve<T> =
+    Reserve(scope = scope ?: `$$DefaultScope`, context = context ?: EmptyCoroutineContext, block = block)
+
+/**
+ * @see asReserve
+ */
+@InternalAPI
+@Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
+public fun <T> `$$asReserve`(scope: CoroutineScope? = null, block: suspend () -> T): Reserve<T> =
+    asReserve(scope = scope, context = EmptyCoroutineContext, block = block)
+
+
 @InternalAPI
 @Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
 @Throws(RunInBlockingException::class)
@@ -763,7 +779,7 @@ private class SuspendRunner<T>(override val context: CoroutineContext = EmptyCor
                 if (result.isSuccess) SIGNAL_RESUME_SUCCESS else SIGNAL_RESUME_FAILED
             )
         if (!resumed) {
-            // value is future.
+            // value is a Future.
             @Suppress("UNCHECKED_CAST")
             valueUpdater.updateAndGet(this) { curr ->
                 ((curr as? CompletableFuture<T>) ?: CompletableFuture<T>()).also { f ->
