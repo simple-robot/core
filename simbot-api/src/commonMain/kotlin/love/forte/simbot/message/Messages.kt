@@ -2,6 +2,7 @@ package love.forte.simbot.message
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.StringFormat
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -63,6 +64,7 @@ public sealed interface Messages : Message, Iterable<Message.Element> {
                 subclass(AtAll.serializer())
                 // images
                 subclass(OfflineByteArrayImage.serializer())
+                subclass(SimpleOfflineResourceImage.serializer())
                 subclass(RemoteIDImage.serializer())
 
                 subclass(Emoji.serializer())
@@ -349,6 +351,14 @@ public class MessagesBuilder private constructor(private val container: MutableL
     public fun add(element: Message.Element): MessagesBuilder = apply { container.add(element) }
 
     /**
+     * Adds the given text to the [MessagesBuilder] container.
+     *
+     * @param text the text to add to the container
+     * @return the updated MessagesBuilder object
+     */
+    public fun add(text: String): MessagesBuilder = apply { container.add(text.toText()) }
+
+    /**
      * Build method.
      *
      * This method constructs and returns a Messages object using the container.
@@ -357,3 +367,19 @@ public class MessagesBuilder private constructor(private val container: MutableL
      */
     public fun build(): Messages = container.toMessages()
 }
+
+/**
+ * Encodes the given [messages] object to a String representation using the StringFormat.
+ *
+ * @param messages The Messages object that needs to be encoded.
+ * @return The encoded String representation of the Messages object.
+ */
+public fun StringFormat.encodeMessagesToString(messages: Messages): String = encodeToString(Messages.serializer, messages)
+
+/**
+ * Decodes a string representation of Messages using the provided StringFormat.
+ *
+ * @param string The string representation of Messages to decode.
+ * @return The deserialized Messages object.
+ */
+public fun StringFormat.decodeMessagesFromString(string: String): Messages = decodeFromString(Messages.serializer, string)

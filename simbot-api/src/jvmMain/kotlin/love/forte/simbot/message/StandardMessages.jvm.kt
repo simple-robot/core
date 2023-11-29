@@ -11,7 +11,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import love.forte.simbot.message.OfflineFileImage.Companion.toOfflineFileImage
 import love.forte.simbot.message.OfflinePathImage.Companion.toOfflinePathImage
-import love.forte.simbot.message.OfflineURLImage.Companion.toOfflineURLImage
+import love.forte.simbot.message.OfflineURLImage.Companion.toOfflineImage
 import love.forte.simbot.resource.*
 import java.io.File
 import java.io.IOException
@@ -36,7 +36,7 @@ public actual fun Resource.toOfflineResourceImage(): OfflineResourceImage {
     return when (this) {
         is FileResource -> toOfflineFileImage()
         is PathResource -> toOfflinePathImage()
-        is URLResource -> toOfflineURLImage()
+        is URLResource -> toOfflineImage()
         else -> SimpleOfflineResourceImage(this)
     }
 }
@@ -222,16 +222,17 @@ public data class OfflineURLImage(@Serializable(URLSerializer::class) public val
         @JvmStatic
         @JvmName("of")
         @Throws(MalformedURLException::class)
-        public fun URI.toOfflineURLImage(): OfflineURLImage = OfflineURLImage(toURL())
+        public fun URI.toOfflineImage(): OfflineURLImage = OfflineURLImage(toURL())
 
         @JvmStatic
         @JvmName("of")
-        public fun URLResource.toOfflineURLImage(): OfflineURLImage =
+        public fun URLResource.toOfflineImage(): OfflineURLImage =
             OfflineURLImage(url).also { image ->
                 image._resource = this
             }
     }
 
+    @Transient
     private var _resource: URLResource? = null
 
     override val resource: URLResource
