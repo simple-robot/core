@@ -16,7 +16,7 @@ import kotlin.coroutines.EmptyCoroutineContext
  * @author ForteScarlet
  */
 public interface EventDispatcher : EventProcessor, EventListenerRegistrar {
-    // TODO ..?
+    // ..?
 }
 
 /**

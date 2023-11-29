@@ -6,6 +6,10 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.modules.PolymorphicModuleBuilder
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
@@ -49,6 +53,26 @@ public sealed interface Messages : Message, Iterable<Message.Element> {
     public operator fun plus(messages: Iterable<Message.Element>): Messages
 
     public companion object {
+        /**
+         * 由标准API默认提供的消息类型的序列化信息。
+         */
+        public val standardSerializersModule: SerializersModule = SerializersModule {
+            polymorphic(Message.Element::class) {
+                subclass(Text.serializer())
+                subclass(At.serializer())
+                subclass(AtAll.serializer())
+                // images
+                subclass(OfflineByteArrayImage.serializer())
+                subclass(RemoteIDImage.serializer())
+
+                subclass(Emoji.serializer())
+                subclass(Face.serializer())
+
+                resolveStandardSerializersModule()
+            }
+        }
+
+
         /**
          * 可用于 [Messages] 进行序列化的 [KSerializer].
          *
@@ -104,8 +128,11 @@ public sealed interface Messages : Message, Iterable<Message.Element> {
         @JvmStatic
         public fun of(iterable: Iterable<Message.Element>): Messages = iterable.toMessages()
     }
-
 }
+
+
+internal expect fun PolymorphicModuleBuilder<Message.Element>.resolveStandardSerializersModule()
+
 
 private object EmptyMessages : Messages {
     override fun iterator(): Iterator<Message.Element> = toList().iterator()
@@ -289,7 +316,10 @@ public fun Iterable<Message.Element>.toMessages(): Messages {
  * @param block The lambda expression where the MessagesBuilder functions are called to populate the message elements.
  * @return The built Messages object.
  */
-public inline fun buildMessages(container: MutableList<Message.Element> = mutableListOf(), block: MessagesBuilder.() -> Unit): Messages = MessagesBuilder.create(container).apply(block).build()
+public inline fun buildMessages(
+    container: MutableList<Message.Element> = mutableListOf(),
+    block: MessagesBuilder.() -> Unit
+): Messages = MessagesBuilder.create(container).apply(block).build()
 
 
 /**

@@ -11,6 +11,7 @@
  */
 
 @file:JvmName("Collectables")
+@file:JvmMultifileClass
 
 package love.forte.simbot.collection
 
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import love.forte.simbot.async.Async
 import love.forte.simbot.async.completedAsync
 import love.forte.simbot.function.Action
+import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 /**
@@ -48,6 +50,7 @@ internal fun Collectable<*>.isEmptyCollectable(): Boolean = this === EmptyCollec
  * 将一个 [Flow] 转化为 [Collectable]。
  *
  */
+@JvmName("valueOf")
 public fun <T> Flow<T>.asCollectable(): Collectable<T> = FlowCollectable(this)
 
 
@@ -59,37 +62,31 @@ private class FlowCollectable<T>(private val flow: Flow<T>) : Collectable<T> {
 }
 
 /**
- * Checks if the given [Collectable] implementation is a [FlowCollectable].
- *
- * @return `true` if the [Collectable] is a [FlowCollectable], `false` otherwise.
- */
-internal fun Collectable<*>.isFlowCollectable(): Boolean = this is FlowCollectable
-
-// TODO
-
-/**
  * 将 [Iterable] 转换为 [IterableCollectable] 的函数.
  */
+@JvmName("valueOf")
 public fun <T> Iterable<T>.asCollectable(): IterableCollectable<T> = IterableCollectableImpl(this)
 
 
-private class IterableCollectableImpl<T>(private val collection: Iterable<T>) : IterableCollectable<T> {
-    override fun asFlow(): Flow<T> = collection.asFlow()
+private class IterableCollectableImpl<T>(private val iterable: Iterable<T>) : IterableCollectable<T> {
+    override fun asFlow(): Flow<T> = iterable.asFlow()
 
-    override fun forEach(action: Action<T>): Unit = collection.forEach(action::invoke)
+    override fun forEach(action: Action<T>): Unit = iterable.forEach(action::invoke)
 
-    override fun iterator(): Iterator<T> = collection.iterator()
+    override fun iterator(): Iterator<T> = iterable.iterator()
+
+    override fun toList(): List<T> = iterable.toList()
 }
 
-// TODO
-
 /**
- * 将 [Iterable] 转换为 [Collectable] 的函数.
+ * 将 [Sequence] 转换为 [Collectable] 的函数.
  */
-public fun <T> Sequence<T>.asCollectable(): Collectable<T> = SequenceCollectableImpl(this)
+@JvmName("valueOf")
+public fun <T> Sequence<T>.asCollectable(): SequenceCollectable<T> = SequenceCollectableImpl(this)
 
 
-private class SequenceCollectableImpl<T>(private val collection: Sequence<T>) : SequenceCollectable<T> {
-    override fun asSequence(): Sequence<T> = collection
-    override fun forEach(action: Action<T>): Unit = collection.forEach(action::invoke)
+private class SequenceCollectableImpl<T>(private val sequence: Sequence<T>) : SequenceCollectable<T> {
+    override fun asSequence(): Sequence<T> = sequence
+    override fun forEach(action: Action<T>): Unit = sequence.forEach(action::invoke)
+    override fun toList(): List<T> = sequence.toList()
 }

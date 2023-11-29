@@ -65,16 +65,16 @@ private class SkipListPriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> {
         private val entries = list.entries.iterator()
 
         @Volatile
-        private var currentIter: Iterator<T>? = next0()
+        private var currentIter: Iterator<T>? = nextIter()
 
-        private fun next0(): Iterator<T>? {
+        private fun nextIter(): Iterator<T>? {
             return entries.takeIf { it.hasNext() }?.next()?.value?.iterator()
         }
 
         override fun hasNext(): Boolean {
             var ci = currentIter
             while (ci != null && !ci.hasNext()) {
-                ci = next0()
+                ci = nextIter()
                 currentIter = ci
             }
 

@@ -6,7 +6,12 @@ import love.forte.simbot.id.ID
 import love.forte.simbot.message.At.Companion.equals
 import love.forte.simbot.message.At.Companion.hashCode
 import love.forte.simbot.message.Text.Companion.of
+import love.forte.simbot.resource.ByteArrayResource
+import love.forte.simbot.resource.Resource
+import love.forte.simbot.resource.ResourceBase64Serializer
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.js.JsName
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
@@ -15,7 +20,8 @@ import kotlin.jvm.JvmStatic
  * 标准消息中，仅提供如下实现：
  * - [纯文本消息][PlainText]
  * - [AT消息][At]
- * - [图片消息][Image]
+ * - [OfflineImage]
+ * - [RemoteImage]
  * - [表情消息][Face]
  * - [emoji][Emoji]
  *
@@ -166,7 +172,6 @@ public data object AtAll : MentionMessage
 //endregion
 
 //region Description
-// TODO
 /**
  * 一个图片消息元素类型。
  *
@@ -184,15 +189,8 @@ public interface ImageMessage : StandardMessage
  *
  * “离线”主要表示此图片并未上传到某个目标平台中，也没有与某个远程服务器互相对应的唯一标识。
  *
- * [OfflineImage] 提供一些默认实现，其中最通用的为 [OfflineByteArrayImage]，它直接针对原始数据进行包装。
- *
- * 在 JVM 平台下会额外提供更多基于文件系统的扩展类型，例如通过 `File` 或 `Path` 来构建一个 [OfflineImage]。
- *
  */
 public interface OfflineImage : ImageMessage {
-
-    // TODO 拆出 [Resource] ?
-
     /**
      * 得到图片的二进制数据
      */
@@ -201,15 +199,67 @@ public interface OfflineImage : ImageMessage {
 
     public companion object {
         /**
-         * Creates an [OfflineImage] from a byte array.
+         * Converts a byte array to an offline image.
          *
-         * @param data the byte array containing the image data
-         * @return the [OfflineImage] created from the byte array
+         * @return [OfflineImage] - The offline image representation of the byte array.
          */
         @JvmStatic
-        public fun ofBytes(data: ByteArray): OfflineImage = OfflineByteArrayImage(data)
+        @JvmName("ofBytes")
+        public fun ByteArray.toOfflineImage(): OfflineImage = OfflineByteArrayImage(this)
+
+        /**
+         * Converts the given [Resource] to an [OfflineImage].
+         *
+         * @return [OfflineImage] object representing the converted Resource.
+         *
+         * @see toOfflineImage
+         */
+        @JvmStatic
+        @JvmName("ofResource")
+        public fun Resource.toOfflineImage(): OfflineImage = when (this) {
+            is ByteArrayResource -> OfflineByteArrayImage(data())
+            else -> toOfflineResourceImage()
+        }
+
     }
 }
+
+/**
+ * 一个基于 [Resource] 的 [OfflineImage] 实现。
+ */
+public interface OfflineResourceImage : OfflineImage {
+    /**
+     * 关联的资源对象
+     */
+    public val resource: Resource
+
+    /**
+     * 字节数据。默认通过 [Resource.data] 获取。
+     */
+    @Throws(Exception::class)
+    override fun data(): ByteArray = resource.data()
+}
+
+/**
+ * 将 [Resource] 转化为 [OfflineResourceImage]。
+ *
+ */
+public expect fun Resource.toOfflineResourceImage(): OfflineResourceImage
+
+/**
+ * 最基础的、基于 [Resource] 实现的 [OfflineResourceImage]。
+ *
+ * ### 序列化
+ *
+ * 序列化中 [resource] 会使用基于 `Base64` 实现的 [ResourceBase64Serializer] 来作为其序列化器。
+ * 请谨慎使用，频繁地将具有一定尺寸的 bytes 数据进行 base64 编码或解码可能会存在一定的性能损耗。
+ */
+@OptIn(ExperimentalEncodingApi::class)
+@Serializable
+@SerialName("m.std.img.offline.resource")
+public data class SimpleOfflineResourceImage(@Serializable(ResourceBase64Serializer::class) override val resource: Resource) :
+    OfflineResourceImage
+
 
 /**
  * 直接针对一个 [ByteArray] 进行包装的 [OfflineImage] 实现。

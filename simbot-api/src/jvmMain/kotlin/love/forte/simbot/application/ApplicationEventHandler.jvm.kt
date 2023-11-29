@@ -31,16 +31,14 @@ public fun interface JBlockingSuspendApplicationEventHandler<in C> {
          */
         @JvmStatic
         @JvmOverloads
-        public fun <C> toHandler(dispatcherContext: CoroutineContext = Dispatchers.IO, handler: JBlockingSuspendApplicationEventHandler<C>): SuspendApplicationEventHandler<C> = handler.toHandler(dispatcherContext)
+        public fun <C> toHandler(dispatcherContext: CoroutineContext = Dispatchers.IO, handler: JBlockingSuspendApplicationEventHandler<C>): SuspendApplicationEventHandler<C> = handler.toHandlerInternal(dispatcherContext)
 
                 /**
          * 将 [JBlockingSuspendApplicationEventHandler] 转化为 [SuspendApplicationEventHandler]。
          *
          * @param dispatcherContext 执行阻塞API时切换到的上下文。默认会使用 [Dispatchers.IO].
          */
-        @JvmStatic
-        @JvmOverloads
-        public fun <C> JBlockingSuspendApplicationEventHandler<C>.toHandler(dispatcherContext: CoroutineContext = Dispatchers.IO): SuspendApplicationEventHandler<C> =
+        private fun <C> JBlockingSuspendApplicationEventHandler<C>.toHandlerInternal(dispatcherContext: CoroutineContext = Dispatchers.IO): SuspendApplicationEventHandler<C> =
             JBlockingSuspendApplicationEventHandlerImpl(this, dispatcherContext)
     }
 }
@@ -95,13 +93,12 @@ public fun interface JAsyncSuspendApplicationEventHandler<in C> {
          * @return The converted [SuspendApplicationEventHandler].
          */
         @JvmStatic
-        public fun <C> toHandler(handler: JAsyncSuspendApplicationEventHandler<C>): SuspendApplicationEventHandler<C> = handler.toHandler()
+        public fun <C> toHandler(handler: JAsyncSuspendApplicationEventHandler<C>): SuspendApplicationEventHandler<C> = handler.toHandlerInternal()
 
         /**
          * 将 [JAsyncSuspendApplicationEventHandler] 转化为 [SuspendApplicationEventHandler]。
          */
-        @JvmStatic
-        public fun <C> JAsyncSuspendApplicationEventHandler<C>.toHandler(): SuspendApplicationEventHandler<C> =
+        private fun <C> JAsyncSuspendApplicationEventHandler<C>.toHandlerInternal(): SuspendApplicationEventHandler<C> =
             JAsyncSuspendApplicationEventHandlerImpl(this)
     }
 }

@@ -7,15 +7,22 @@ import love.forte.simbot.function.invokeBy
 
 // TODO
 
-private data class PluginKey(val name: String) : PluginFactory.Key
+public interface SimplePlugin : Plugin {
+    public val key: Key
+    public interface Key : PluginFactory.Key {
+        public val name: String
+    }
+}
 
-private data class SimplePlugin<CONF>(val configuration: CONF) : Plugin
+private data class PluginKey(override val name: String) : SimplePlugin.Key
+
+private data class SimplePluginImpl<CONF>(override val key: SimplePlugin.Key, val configuration: CONF) : SimplePlugin
 
 @PublishedApi
-internal fun nameBasedPluginKey(name: String): PluginFactory.Key = PluginKey(name)
+internal fun nameBasedPluginKey(name: String): SimplePlugin.Key = PluginKey(name)
 
 @PublishedApi
-internal fun <CONF : Any> simplePlugin(conf: CONF): Plugin = SimplePlugin(conf)
+internal fun <CONF : Any> simplePlugin(key: SimplePlugin.Key, conf: CONF): SimplePlugin = SimplePluginImpl(key, conf)
 
 @ExperimentalAPI
 public inline fun <CONF : Any> createPlugin(
@@ -30,13 +37,13 @@ public inline fun <CONF : Any> createPlugin(
         override fun create(context: PluginConfigureContext, configurer: ConfigurerFunction<CONF>): Plugin {
             val conf = configCreator().invokeBy(configurer)
             context.creator(conf)
-            return simplePlugin(conf)
+            return simplePlugin(key, conf)
         }
     }
 }
 
 
-@OptIn(ExperimentalAPI::class)
+@ExperimentalAPI
 public inline fun createPlugin(
     name: String,
     crossinline creator: PluginConfigureContext.(Unit) -> Unit

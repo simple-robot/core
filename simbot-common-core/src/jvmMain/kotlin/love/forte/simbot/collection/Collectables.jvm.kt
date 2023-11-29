@@ -1,4 +1,5 @@
-@file:JvmName("CollectablesJVM")
+@file:JvmName("Collectables")
+@file:JvmMultifileClass
 
 package love.forte.simbot.collection
 
@@ -6,13 +7,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.toList
 import love.forte.simbot.async.Async
 import love.forte.simbot.async.toAsync
 import love.forte.simbot.function.Action
 import love.forte.simbot.utils.asIterator
 import love.forte.simbot.utils.runInNoScopeBlocking
 import java.util.stream.Stream
+import kotlin.streams.asSequence
 import kotlin.streams.asStream
+import kotlin.streams.toList
 
 
 /**
@@ -150,7 +154,7 @@ private class FlowSynchronouslyIterateCollectableImpl<T>(
             next = { runInNoScopeBlocking { next() } })
     }
 
-
+    override fun toList(): List<T> = runInNoScopeBlocking { flow.toList() }
 }
 
 private data object EmptySynchronouslyIterateCollectable : SynchronouslyIterateCollectable<Nothing> {
@@ -159,6 +163,7 @@ private data object EmptySynchronouslyIterateCollectable : SynchronouslyIterateC
 
     override fun asFlow(): Flow<Nothing> = emptyFlow()
     override fun iterator(): Iterator<Nothing> = emptyList<Nothing>().iterator()
+    override fun toList(): List<Nothing> = emptyList()
 }
 
 /**
@@ -176,3 +181,17 @@ public fun <T> IterableCollectable<T>.asStream(): Stream<T> = asSequence().asStr
  * @return the Stream representation of the [SequenceCollectable].
  */
 public fun <T> SequenceCollectable<T>.asStream(): Stream<T> = asSequence().asStream()
+
+
+/**
+ * 将 [Stream] 转换为 [Collectable] 的函数.
+ */
+@JvmName("valueOf")
+public fun <T> Stream<T>.asCollectable(): SequenceCollectable<T> = StreamCollectableImpl(this)
+
+private class StreamCollectableImpl<T>(private val stream: Stream<T>) : SequenceCollectable<T> {
+    override fun asSequence(): Sequence<T> = stream.asSequence()
+    override fun forEach(action: Action<T>): Unit = stream.forEach(action::invoke)
+    override fun toList(): List<T> = stream.toList()
+}
+

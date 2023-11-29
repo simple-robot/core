@@ -96,6 +96,11 @@ public interface SynchronouslyIterateCollectable<out T> : Collectable<T>, Iterab
      */
     override fun collectAsync(scope: CoroutineScope, collector: Action<T>): Async<Unit> =
         scope.async { forEach(collector) }.toAsync()
+
+    /**
+     * 转化或收集为一个 [List]。
+     */
+    public fun toList(): List<T>
 }
 
 
