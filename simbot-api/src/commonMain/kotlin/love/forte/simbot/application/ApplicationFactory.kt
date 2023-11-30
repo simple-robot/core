@@ -47,7 +47,12 @@ public interface ApplicationFactory<out A : Application, C : ApplicationBuilder,
      * ```
      *
      */
-    public fun create(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<C, AER, DC>>): L
+    public fun create(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<C, AER, DC>>?): L
+
+    /**
+     * 构建一个预处理启动器 [ApplicationLauncher]。
+     */
+    public fun create(): L = create(null)
 }
 
 /**
@@ -148,37 +153,9 @@ public abstract class AbstractApplicationFactoryConfigurer<C : AbstractApplicati
         applicationEventRegistrarConfigurations.add(configurer)
     }
 
-
     override fun eventDispatcher(configurer: ConfigurerFunction<DC>) {
         eventDispatcherConfigurers.add(configurer)
     }
-
-    // protected open fun createDispatcher(defaultFactory: EventDispatcherFactory<*, EventDispatcherConfiguration, *, *>): EventDispatcher<*, *> {
-    //     val f = dispatcherFactory
-    //     if (f != null) {
-    //         if (eventDispatcherConfigurers.isEmpty()) {
-    //             return f.create()
-    //         }
-    //
-    //         return f.create {
-    //             val conf = this
-    //             eventDispatcherConfigurers.forEach { configurerFunction ->
-    //                 configurerFunction.invokeWith(conf)
-    //             }
-    //         }
-    //     }
-    //
-    //     if (eventDispatcherConfigurers.isEmpty()) {
-    //         return defaultFactory.create()
-    //     }
-    //
-    //     return defaultFactory.create {
-    //         val conf = this
-    //         eventDispatcherConfigurers.forEach { configurerFunction ->
-    //             configurerFunction.invokeWith(conf)
-    //         }
-    //     }
-    // }
 
     override fun <COM : Component, CONF : Any> install(
         componentFactory: ComponentFactory<COM, CONF>, configurer: ConfigurerFunction<CONF>
@@ -211,6 +188,13 @@ public abstract class AbstractApplicationFactoryConfigurer<C : AbstractApplicati
 /**
  * [Application] 的预处理启动器。
  * 当执行 [ApplicationLauncher.launch] 时会构建并启动 [Application]。
+ *
+ * JVM 中提供了一些额外的扩展类型来支持使用 Java 的阻塞或异步风格 API 实现 [ApplicationLauncher]:
+ * - [JBlockingApplicationLauncher][love.forte.simbot.application.JBlockingApplicationLauncher]
+ * - [JAsyncApplicationLauncher][love.forte.simbot.application.JAsyncApplicationLauncher]
+ *
+ * @see love.forte.simbot.application.JBlockingApplicationLauncher
+ * @see love.forte.simbot.application.JAsyncApplicationLauncher
  */
 public interface ApplicationLauncher<out A : Application> {
 

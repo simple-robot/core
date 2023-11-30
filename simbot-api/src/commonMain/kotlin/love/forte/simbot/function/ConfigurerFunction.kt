@@ -36,6 +36,6 @@ public fun <CONF : Any> ConfigurerFunction<CONF>.invokeWith(conf: CONF) {
 /**
  * Invoke [configurer] with [CONF]。
  */
-public fun <CONF : Any> CONF.invokeBy(configurer: ConfigurerFunction<CONF>): CONF {
-    return this.also { configurer.invokeWith(it) }
+public fun <CONF : Any> CONF.invokeBy(configurer: ConfigurerFunction<CONF>?): CONF {
+    return this.also { configurer?.invokeWith(it) }
 }

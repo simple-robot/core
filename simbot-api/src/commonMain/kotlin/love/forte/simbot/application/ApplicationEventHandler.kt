@@ -13,6 +13,13 @@ public sealed interface ApplicationEventHandler
 
 /**
  * 针对一些不同的 [ApplicationLaunchStage] 的事件可挂起处理器。
+ *
+ * JVM 中提供了一些额外的扩展类型来支持使用 Java 的阻塞或异步风格 API 实现 [SuspendApplicationEventHandler]:
+ * - [JBlockingSuspendApplicationEventHandler][love.forte.simbot.application.JBlockingSuspendApplicationEventHandler]
+ * - [JAsyncSuspendApplicationEventHandler][love.forte.simbot.application.JAsyncSuspendApplicationEventHandler]
+ *
+ * @see love.forte.simbot.application.JBlockingSuspendApplicationEventHandler
+ * @see love.forte.simbot.application.JAsyncSuspendApplicationEventHandler
  */
 public fun interface SuspendApplicationEventHandler<in C> : ApplicationEventHandler {
     /**

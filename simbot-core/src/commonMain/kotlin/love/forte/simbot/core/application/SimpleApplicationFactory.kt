@@ -1,9 +1,11 @@
 package love.forte.simbot.core.application
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import love.forte.simbot.ability.OnCompletion
 import love.forte.simbot.application.*
+import love.forte.simbot.bot.BotManager
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
@@ -31,6 +33,7 @@ private class SimpleApplicationImpl(
     override val eventDispatcher: SimpleEventDispatcher,
     override val components: Components,
     override val plugins: Plugins,
+    override val botManagers: BotManagers,
     val events: ApplicationLaunchStages
 ) : SimpleApplication {
     private val job: Job
@@ -54,12 +57,12 @@ private class SimpleApplicationImpl(
         }
     }
 
-    override fun cancel() {
+    override fun cancel(reason: Throwable?) {
         invokeNormalHandler(ApplicationLaunchStage.RequestCancel) {
             invoke(this@SimpleApplicationImpl)
         }
 
-        job.cancel()
+        job.cancel(reason?.let { CancellationException(reason.message, it) })
 
         invokeNormalHandler(ApplicationLaunchStage.Cancelled) {
             invoke(this@SimpleApplicationImpl)
@@ -92,11 +95,12 @@ private class SimpleApplicationImpl(
 public object Simple :
     ApplicationFactory<SimpleApplication, SimpleApplicationBuilder, SimpleApplicationLauncher, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration> {
 
-    override fun create(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>): SimpleApplicationLauncher {
+    override fun create(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>?): SimpleApplicationLauncher {
         return SimpleApplicationLauncherImpl { create0(configurer) }
     }
 
-    private fun create0(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>): SimpleApplicationImpl {
+    private fun create0(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>?): SimpleApplicationImpl {
+
         val simpleConfigurer = SimpleApplicationFactoryConfigurer().invokeBy(configurer)
 
         // 配置信息
@@ -136,7 +140,7 @@ public object Simple :
         }).toComponents()
 
         // plugins
-        val plugins = simpleConfigurer.pluginFactoriesConfigurator.createAll(object : PluginConfigureContext {
+        val pluginCollections = simpleConfigurer.pluginFactoriesConfigurator.createAll(object : PluginConfigureContext {
             override val applicationConfiguration: ApplicationConfiguration
                 get() = configuration
 
@@ -148,7 +152,11 @@ public object Simple :
 
             override val eventDispatcher: EventDispatcher
                 get() = eventDispatcher
-        }).toPlugins()
+        })
+
+
+        val plugins = pluginCollections.toPlugins()
+        val botManagers = pluginCollections.filterIsInstance<BotManager>().toBotManagers()
 
         val events = applicationLaunchStages(registrar.events.mapValues { it.value.toList() })
 
@@ -157,6 +165,7 @@ public object Simple :
             eventDispatcher,
             components,
             plugins,
+            botManagers,
             events
         )
     }

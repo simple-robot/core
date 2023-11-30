@@ -93,7 +93,6 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.ktor.client.cio)
             }
         }
 
@@ -109,6 +108,7 @@ kotlin {
         jvmTest {
             dependencies {
                 implementation(kotlin("test-junit5"))
+                implementation(libs.ktor.client.cio)
             }
         }
 
