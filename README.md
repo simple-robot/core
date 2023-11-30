@@ -6,7 +6,7 @@
 
 
 ```kotlin
-val application = launchSimpleApplication {
+val application = launchApplication(Simple) {
     config {
         // 部分配置属性...
     }
@@ -36,7 +36,7 @@ eventDispatcher.push(event).collect {
 }
 
 // 使用Bot管理器
-// TODO API待定
-val botManager = application.botManagers.firstIsInstance<FooBotManager>()
+val botManager = application.botManagers.get<FooBotManager>()
 
+// ...
 ```
