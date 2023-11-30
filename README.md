@@ -1,6 +1,9 @@
 ## Simple Robot v4
 
-施工中。
+> [!important]
+> 此仓库是 Simple Robot v4 版本的临时开发仓库，会在大部分基本工作都完成或接近尾声的时候合并至 [主仓库](https://github.com/simple-robot/simpler-robot)
+> 的相关分支并移除此仓库。
+
 
 ```kotlin
 val application = launchSimpleApplication {
@@ -37,7 +40,3 @@ eventDispatcher.push(event).collect {
 val botManager = application.botManagers.firstIsInstance<FooBotManager>()
 
 ```
-
-> [!important]
-> 此仓库是 Simple Robot v4 版本的临时开发仓库，会在大部分基本工作都完成或接近尾声的时候合并至 [主仓库](https://github.com/simple-robot/simpler-robot)
-> 的相关分支并移除此仓库。
