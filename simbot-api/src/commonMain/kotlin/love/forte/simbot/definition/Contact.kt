@@ -1,5 +1,6 @@
 package love.forte.simbot.definition
 
+import love.forte.simbot.ability.DeleteSupport
 import love.forte.simbot.ability.SendSupport
 
 
