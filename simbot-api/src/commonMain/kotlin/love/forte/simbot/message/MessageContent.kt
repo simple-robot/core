@@ -31,7 +31,7 @@ public interface MessageContent : DeleteSupport {
     public val messages: Messages
 
     /**
-     * 消息本体中提取出的所有普通文本消息的合并结果。
+     * 消息本体中提取出的所有 [文本消息][PlainText] 的合并结果。
      *
      * 类似于:
      * ```kotlin

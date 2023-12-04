@@ -54,10 +54,15 @@ public enum class StandardDeleteOption : DeleteOption {
     IGNORE_ON_NO_SUCH_TARGET,
 
     /**
+     * 忽略由业务引发的 [DeleteFailureException] 相关异常。
+     */
+    IGNORE_ON_FAILURE,
+
+    /**
      * 忽略所有由业务引发的异常。
      * 这不会忽略由于不支持而产生的 [UnsupportedOperationException]。
      */
-    IGNORE_ON_FAILURE,
+    IGNORE_ON_ANY_FAILURE,
 
     /**
      * 忽略由于不支持而产生的 [UnsupportedOperationException] 异常。

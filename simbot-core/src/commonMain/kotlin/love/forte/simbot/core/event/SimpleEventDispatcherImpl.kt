@@ -226,15 +226,9 @@ internal class SimpleEventDispatcherImpl(
 
         for (listenerInvoker in listenerIterator) {
             val result = orErrorResult {
-                var r= withContext(dispatcherContext) {
-                    listenerInvoker.invoke(context)
+                withContext(dispatcherContext) {
+                    listenerInvoker.invoke(context).collected()
                 }
-
-                if (r is StandardEventResult.CollectableReactivelyResult) {
-                    r = r.collectCollectableReactivelyToResult()
-                }
-
-                r
             }
 
             collector.emit(result)

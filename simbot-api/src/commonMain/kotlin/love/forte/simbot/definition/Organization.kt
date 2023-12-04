@@ -12,6 +12,9 @@ import love.forte.simbot.id.ID
  *
  * 一个组织是一个拥有多个 [成员][Member] 的行为主体。
  *
+ * @see Guild
+ * @see ChatGroup
+ *
  * @author ForteScarlet
  */
 public interface Organization : Actor {

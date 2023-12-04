@@ -22,7 +22,7 @@ class DeleteOptionTests {
 
         assertTrue(StandardDeleteOption.IGNORE_ON_NO_SUCH_TARGET in standardAnalysis)
         assertTrue(StandardDeleteOption.IGNORE_ON_UNSUPPORTED in standardAnalysis)
-        assertFalse(StandardDeleteOption.IGNORE_ON_FAILURE in standardAnalysis)
+        assertFalse(StandardDeleteOption.IGNORE_ON_ANY_FAILURE in standardAnalysis)
     }
 
     @Test
@@ -33,7 +33,7 @@ class DeleteOptionTests {
 
         assertFalse(StandardDeleteOption.IGNORE_ON_NO_SUCH_TARGET in standardAnalysis)
         assertFalse(StandardDeleteOption.IGNORE_ON_UNSUPPORTED in standardAnalysis)
-        assertFalse(StandardDeleteOption.IGNORE_ON_FAILURE in standardAnalysis)
+        assertFalse(StandardDeleteOption.IGNORE_ON_ANY_FAILURE in standardAnalysis)
     }
 
     @Test

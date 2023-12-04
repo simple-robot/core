@@ -73,7 +73,6 @@ public object ResourceBase64Serializer : KSerializer<Resource> {
     }
 }
 
-
 /**
  * 直接基于 [ByteArray] 的 [Resource] 实现。
  *
@@ -95,4 +94,27 @@ private data class ByteArrayResourceImpl(private val raw: ByteArray) : ByteArray
     override fun hashCode(): Int {
         return raw.contentHashCode()
     }
+}
+
+/**
+ * 可以读取到 [String] 格式内容的 [Resource]。
+ */
+public interface StringResource : Resource {
+    /**
+     * 读取此资源的 [String] 内容。
+     */
+    @Throws(Exception::class)
+    public fun string(): String
+}
+
+/**
+ * 通过提供的 [String] 直接构建一个 [StringResource]。
+ */
+@JvmName("valueOf")
+public fun String.toStringResource(): StringResource = StringResourceImpl(this)
+
+
+private data class StringResourceImpl(private val string: String) : StringResource {
+    override fun string(): String = string
+    override fun data(): ByteArray = string().encodeToByteArray()
 }

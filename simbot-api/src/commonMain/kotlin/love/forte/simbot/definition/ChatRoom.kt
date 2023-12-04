@@ -16,6 +16,9 @@ import love.forte.simbot.id.ID
  * [ChatRoom] 通常与 [Organization] 配合实现，
  * 例如最常见的概念：[群聊][ChatGroup] 和 [频道服务器][Guild] 中的 [频道][Channel] 的相关子类型 [聊天频道][ChatChannel]。
  *
+ * @see ChatGroup
+ * @see ChatChannel
+ *
  * @author ForteScarlet
  */
 public interface ChatRoom : Actor, SendSupport {

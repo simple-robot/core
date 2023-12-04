@@ -19,6 +19,11 @@ import love.forte.simbot.id.ID
  * 如果 `cancel` 一个 [Actor] 也可能会导致与之关联的 [Bot] 被关闭，也可能无法关闭。
  * 这一切取决于 [Actor] 的具体实现。
  *
+ * @see Contact
+ * @see Member
+ * @see ChatRoom
+ * @see Organization
+ *
  * @author ForteScarlet
  */
 public interface Actor : CoroutineScope {

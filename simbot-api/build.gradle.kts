@@ -84,7 +84,7 @@ kotlin {
                 api(project(":simbot-common-suspend-runner"))
                 api(project(":simbot-common-core"))
                 api(libs.kotlinx.coroutines.core)
-                // api(libs.kotlinx.serialization.core)
+                api(libs.kotlinx.serialization.core)
             }
         }
         commonTest {

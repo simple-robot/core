@@ -3,17 +3,17 @@
 
 package love.forte.simbot.resource
 
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.io.InputStream
+import java.io.*
 import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
+import java.nio.charset.Charset
 import java.nio.file.OpenOption
 import java.nio.file.Path
 import kotlin.io.path.inputStream
 import kotlin.io.path.readBytes
+import kotlin.io.path.readText
+import kotlin.io.path.reader
 
 /**
  * 能够获取到 [InputStream] 资源的 [Resource] 扩展实现。
@@ -35,7 +35,25 @@ public interface InputStreamResource : Resource {
      */
     @Throws(Exception::class)
     public fun inputStream(): InputStream
+}
 
+/**
+ * 能够获取到 [Reader] 资源的 [Resource] 扩展实现。
+ *
+ * @author forte
+ */
+public interface ReaderResource : StringResource {
+    /**
+     * 读取当前资源的字符串数据。
+     */
+    @Throws(Exception::class)
+    override fun string(): String = reader().use { it.readText() }
+
+    /**
+     * 获取可用于读取当前资源数据的读取流。
+     */
+    @Throws(Exception::class)
+    public fun reader(): Reader
 }
 
 /**
@@ -44,7 +62,7 @@ public interface InputStreamResource : Resource {
  *
  * @author forte
  */
-public interface FileResource : InputStreamResource {
+public interface FileResource : InputStreamResource, ReaderResource {
     /**
      * 与此资源关联的 [File]
      */
@@ -58,11 +76,25 @@ public interface FileResource : InputStreamResource {
     override fun inputStream(): InputStream = file.inputStream()
 
     /**
+     * 从与此资源关联的 [File] 创建新的 [Reader]
+     * @throws FileNotFoundException 如果文件不存在
+     */
+    @Throws(FileNotFoundException::class)
+    override fun reader(): Reader
+
+    /**
      * 将与此资源关联的 [File] 读取为字节数组
      * @throws IOException 如果文件无法读取
      */
     @Throws(IOException::class)
     override fun data(): ByteArray = file.readBytes()
+
+    /**
+     * 将与此资源关联的 [File] 读取为字符串
+     * @throws IOException 如果文件无法读取
+     */
+    @Throws(IOException::class)
+    override fun string(): String
 }
 
 /**
@@ -71,9 +103,13 @@ public interface FileResource : InputStreamResource {
  * @return The converted [FileResource].
  */
 @JvmName("valueOf")
-public fun File.toResource(): FileResource = FileResourceImpl(this)
+@JvmOverloads
+public fun File.toResource(charset: Charset = Charsets.UTF_8): FileResource = FileResourceImpl(this, charset)
 
-private data class FileResourceImpl(override val file: File) : FileResource
+private data class FileResourceImpl(override val file: File, private val charset: Charset) : FileResource {
+    override fun string(): String = file.readText(charset)
+    override fun reader(): Reader = file.reader(charset)
+}
 
 /**
  * [PathResource] 接口表示一个可从 [Path] 获取流的资源。
@@ -81,7 +117,7 @@ private data class FileResourceImpl(override val file: File) : FileResource
  *
  * @author forte
  */
-public interface PathResource : InputStreamResource {
+public interface PathResource : InputStreamResource, ReaderResource {
     /**
      * 与此资源关联的 [Path]
      */
@@ -95,11 +131,25 @@ public interface PathResource : InputStreamResource {
     override fun inputStream(): InputStream
 
     /**
+     * 从与此资源关联的 [Path] 创建新的 [Reader]
+     * @throws IOException 如果路径无法打开
+     */
+    @Throws(IOException::class)
+    override fun reader(): Reader
+
+    /**
      * 将与此资源关联的 [Path] 读取为字节数组
      * @throws Exception 如果在路径上执行该操作时出现错误
      */
     @Throws(Exception::class)
     override fun data(): ByteArray = path.readBytes()
+
+    /**
+     * 将与此资源关联的 [Path] 读取为字符串
+     * @throws Exception 如果在路径上执行该操作时出现错误
+     */
+    @Throws(Exception::class)
+    override fun string(): String
 }
 
 /**
@@ -109,17 +159,27 @@ public interface PathResource : InputStreamResource {
  * @return the [PathResource] representing the converted path
  */
 @JvmName("valueOf")
-public fun Path.toResource(vararg options: OpenOption): PathResource = PathResourceImpl(this, options)
+@JvmOverloads
+public fun Path.toResource(charset: Charset = Charsets.UTF_8, vararg options: OpenOption): PathResource =
+    PathResourceImpl(this, charset, options)
 
-private data class PathResourceImpl(override val path: Path, private val openOptions: Array<out OpenOption>) :
+private data class PathResourceImpl(
+    override val path: Path,
+    private val charset: Charset,
+    private val openOptions: Array<out OpenOption>
+) :
     PathResource {
     override fun inputStream(): InputStream = path.inputStream(options = openOptions)
 
+    override fun reader(): Reader = path.reader(charset, options = openOptions)
+
+    override fun string(): String = path.readText(charset)
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is PathResourceImpl) return false
 
         if (path != other.path) return false
+        if (charset != other.charset) return false
         if (!openOptions.contentEquals(other.openOptions)) return false
 
         return true
@@ -127,6 +187,7 @@ private data class PathResourceImpl(override val path: Path, private val openOpt
 
     override fun hashCode(): Int {
         var result = path.hashCode()
+        result = 31 * result + charset.hashCode()
         result = 31 * result + openOptions.contentHashCode()
         return result
     }
@@ -137,7 +198,7 @@ private data class PathResourceImpl(override val path: Path, private val openOpt
  *
  * @author forte
  */
-public interface URLResource : InputStreamResource {
+public interface URLResource : InputStreamResource, StringResource {
     /**
      * 与此资源关联的 [URI]
      */
@@ -153,6 +214,13 @@ public interface URLResource : InputStreamResource {
     @Throws(IOException::class)
     override fun inputStream(): InputStream = url.openStream()
 
+    /**
+     * 读取 [url] 中的内容并作为字符串返回。
+     *
+     * @throws IOException 如果无法打开输入流，则抛出此异常。具体参看 [URL.openStream][java.net.URL.openStream]
+     */
+    @Throws(IOException::class)
+    override fun string(): String
 }
 
 /**
@@ -161,7 +229,8 @@ public interface URLResource : InputStreamResource {
  * @return The converted [URLResource].
  */
 @JvmName("valueOf")
-public fun URL.toResource(): URLResource = URLResourceImpl(this)
+@JvmOverloads
+public fun URL.toResource(charset: Charset = Charsets.UTF_8): URLResource = URLResourceImpl(this, charset)
 
 /**
  * Converts the current [URI] to a [URLResource].
@@ -175,6 +244,9 @@ public fun URL.toResource(): URLResource = URLResourceImpl(this)
  */
 @Throws(MalformedURLException::class)
 @JvmName("valueOf")
-public fun URI.toResource(): URLResource = toURL().toResource()
+@JvmOverloads
+public fun URI.toResource(charset: Charset = Charsets.UTF_8): URLResource = toURL().toResource(charset = charset)
 
-private data class URLResourceImpl(override val url: URL) : URLResource
+private data class URLResourceImpl(override val url: URL, val charset: Charset) : URLResource {
+    override fun string(): String = url.readText(charset)
+}

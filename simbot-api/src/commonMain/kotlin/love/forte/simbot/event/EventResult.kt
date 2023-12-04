@@ -327,3 +327,11 @@ public suspend fun StandardEventResult.CollectableReactivelyResult.collectCollec
  * @return The collected result.
  */
 public expect suspend fun StandardEventResult.CollectableReactivelyResult.collectCollectableReactively(): Any?
+
+/**
+ * Collects the event result.
+ * This method is suspending and can be used in a coroutine.
+ *
+ * @return The collected event result.
+ */
+public suspend fun EventResult.collected(): EventResult = if (this is StandardEventResult.CollectableReactivelyResult) collectCollectableReactivelyToResult() else this
