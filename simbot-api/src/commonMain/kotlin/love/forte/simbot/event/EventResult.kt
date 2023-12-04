@@ -244,11 +244,11 @@ public sealed class StandardEventResult : EventResult {
     /**
      * 代表 [content] 可能为一个反应式的结果，并且允许其在一个函数结束时进行收集。
      */
-    public abstract class CollectableReactively : StandardEventResult() {
+    public abstract class CollectableReactivelyResult : StandardEventResult() {
 
         /**
          *
-         * 当 [content] 的返回值为 _reactive api_ 相关或异步结果相关的内容，且当前 [EventResult] 实例为 **[CollectableReactively]** 类型的时候，
+         * 当 [content] 的返回值为 _reactive api_ 相关或异步结果相关的内容，且当前 [EventResult] 实例为 **[CollectableReactivelyResult]** 类型的时候，
          * 处理器应当对这类相关的api进行收集。这通常使用在Java使用者或者与其他reactive API配合使用的时候。
          *
          * 比如当你的函数返回了 [flux](https://projectreactor.io/docs/core/3.4.1/api/reactor/core/publisher/Flux.html),
@@ -260,21 +260,21 @@ public sealed class StandardEventResult : EventResult {
          * 支持的收集类型有：
          * - `java.util.concurrent.CompletionStage` (`java.util.concurrent.CompletableFuture`) (JVM)
          * - [kotlinx.coroutines.Deferred] (不支持 [kotlinx.coroutines.Job])
-         * - [kotlinx.coroutines.flow.Flow]
+         * - [kotlinx.coroutines.flow.Flow] (会被收集为 [List])
          * - `kotlin.js.Promise` (JS)
-         * - `org.reactivestreams.Publisher` (JVM)
-         * - `reactor.core.publisher.Flux` (JVM)
+         * - `org.reactivestreams.Publisher` (JVM) (不是 `reactor.core.publisher.Mono` 或 `reactor.core.publisher.Flux` 时: 会被收集为 [List])
+         * - `reactor.core.publisher.Flux` (JVM) (会被收集为 [List])
          * - `reactor.core.publisher.Mono` (JVM)
-         * - `io.reactivex.CompletableSource` (JVM)
+         * - `io.reactivex.CompletableSource` (JVM) (会挂起，但是结果始终为 `null`)
          * - `io.reactivex.SingleSource` (JVM)
          * - `io.reactivex.MaybeSource` (JVM)
-         * - `io.reactivex.ObservableSource` (JVM)
-         * - `io.reactivex.Flowable` (JVM)
+         * - `io.reactivex.ObservableSource` (JVM) (会被收集为 [List])
+         * - `io.reactivex.Flowable` (JVM) (会被收集为 [List])
          * - `io.reactivex.rxjava3.core.CompletableSource` (JVM)
          * - `io.reactivex.rxjava3.core.SingleSource` (JVM)
          * - `io.reactivex.rxjava3.core.MaybeSource` (JVM)
-         * - `io.reactivex.rxjava3.core.ObservableSource` (JVM)
-         * - `io.reactivex.rxjava3.core.Flowable` (JVM)
+         * - `io.reactivex.rxjava3.core.ObservableSource` (JVM) (会被收集为 [List])
+         * - `io.reactivex.rxjava3.core.Flowable` (JVM) (会被收集为 [List])
          *
          * 其他详情请见 [kotlinx-coroutines-reactive](https://github.com/Kotlin/kotlinx.coroutines/blob/master/reactive/README.md) .
          *
@@ -291,7 +291,6 @@ public sealed class StandardEventResult : EventResult {
          * [collected] 的结果可能会与当前类型不同（例如 [Simple] 中的结果收集完成后可能会被作为一个 [Empty] 进行流转）。
          *
          */
-        @JvmSynthetic
         public abstract fun collected(collectedContent: Any?): EventResult
     }
 
@@ -302,7 +301,29 @@ public sealed class StandardEventResult : EventResult {
      * 建议通过工厂函数 [EventResult.of] 来间接获取 [Simple] 并在可能的情况下使用其他选项来减少对象实例的构建。
      *
      */
-    public data class Simple(override val content: Any?, override val isTruncated: Boolean) :
-        StandardEventResult() // TODO CollectableReactively
+    public data class Simple(override val content: Any?, override val isTruncated: Boolean) : CollectableReactivelyResult() {
+        override fun collected(collectedContent: Any?): EventResult = EventResult.of(collectedContent)
+    }
 
 }
+
+/**
+ * Collects the result of a `CollectableReactivelyResult` by invoking the `collectCollectableReactively()` method
+ * and returning the result as an `EventResult`.
+ *
+ * @return The `EventResult` obtained from collecting the `CollectableReactivelyResult`
+ * @see StandardEventResult.CollectableReactivelyResult.content
+ * @see EventResult
+ */
+public suspend fun StandardEventResult.CollectableReactivelyResult.collectCollectableReactivelyToResult(): EventResult = collected(collectCollectableReactively())
+
+/**
+ * 收集 [StandardEventResult.CollectableReactivelyResult.content] 的结果并返回。
+ * 如果结果不可收集或不支持收集，则得到原值。
+ *
+ * 可收集类型参考 [StandardEventResult.CollectableReactivelyResult.content] 说明。
+ *
+ * @see StandardEventResult.CollectableReactivelyResult.content
+ * @return The collected result.
+ */
+public expect suspend fun StandardEventResult.CollectableReactivelyResult.collectCollectableReactively(): Any?

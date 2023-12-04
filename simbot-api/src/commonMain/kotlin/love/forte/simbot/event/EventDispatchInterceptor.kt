@@ -2,7 +2,6 @@ package love.forte.simbot.event
 
 import kotlinx.coroutines.flow.Flow
 import love.forte.simbot.utils.PriorityConstant
-import kotlin.jvm.JvmSynthetic
 
 
 /**
@@ -49,7 +48,7 @@ public fun interface EventDispatchInterceptor {
      *
      *
      */
-    @JvmSynthetic
+    @Throws(Exception::class)
     public fun intercept(context: Context): Flow<EventResult>
 
     /**

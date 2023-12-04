@@ -191,7 +191,15 @@ internal class SimpleEventDispatcherImpl(
     private fun pushWithInterceptor(event: Event): Flow<EventResult> {
         val context = EventContextImpl(event)
 
-        return dispatchInterceptorsInvoker?.invoke(context) { eventFlow(context) } ?: eventFlow(context)
+        return runCatching {
+            dispatchInterceptorsInvoker?.invoke(context) { eventFlow(context) } ?: eventFlow(context)
+        }.getOrElse { e ->
+            return flow {
+                // emit exception
+                throw e
+            }
+        }
+
     }
 
     private fun eventFlow(context: EventContext): Flow<EventResult> {
@@ -218,9 +226,15 @@ internal class SimpleEventDispatcherImpl(
 
         for (listenerInvoker in listenerIterator) {
             val result = orErrorResult {
-                withContext(dispatcherContext) {
+                var r= withContext(dispatcherContext) {
                     listenerInvoker.invoke(context)
                 }
+
+                if (r is StandardEventResult.CollectableReactivelyResult) {
+                    r = r.collectCollectableReactivelyToResult()
+                }
+
+                r
             }
 
             collector.emit(result)

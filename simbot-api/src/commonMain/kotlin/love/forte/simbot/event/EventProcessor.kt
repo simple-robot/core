@@ -62,14 +62,24 @@ public interface EventProcessor {
      * 但并非通过 [Flow.flowOn] 进行切换，不会导致实际执行的事件调度逻辑比收集到的逻辑更多。
      *
      * ```kotlin
-     * val flow = eventDispatcher.push(event).take(3)
-     * flow.collect { ... } // flow 中只会执行优先级最高的三个 listener 并收集到它们的结果
+     * eventDispatcher.push(event)
+     *   .take(3)
+     *   .collect { ... } // flow 中只会执行优先级最高的三个 listener 并收集到它们的结果
      *
-     * val flow1 = eventDispatcher.push(event)
+     * eventDispatcher.push(event)
      *      .flowOn(Dispatchers.IO) // 切换事件调度流程中的上下文
      *      .take(3)
-     * flow.collect { ... } // flow 中切换了调度上下文，这可能会使所有的listener都被实际上的执行，但是只收集到3个最新的结果。
+     *      .collect { ... } // flow 中切换了调度上下文，这可能会使所有的listener都被实际上的执行，但是只收集到3个最新的结果。
      * ```
+     *
+     * ### 异常
+     *
+     * 如果事件处理器 [EventListener] 或者事件拦截器 [EventInterceptor] 的执行过程中产生了异常，则对应位置的 [EventResult] 将会是包装了此异常的 [StandardEventResult.Error]，
+     * 且不会中断后续其他处理器或拦截器的执行。
+     *
+     * 如果事件调度拦截器在执行的过程中产生了异常，则会直接向 [Flow] 中抛出异常。此异常可通过 [Flow.catch] 得到。
+     *
+     * @return [EventResult] 结果。如果具有特殊含义，那么可能是 [StandardEventResult] 中的某类型。
      *
      */
     public fun push(event: Event): Flow<EventResult>

@@ -100,6 +100,11 @@ kotlin {
 
         jvmMain {
             dependencies {
+                compileOnly(libs.kotlinx.coroutines.reactive)
+                compileOnly(libs.kotlinx.coroutines.reactor)
+                compileOnly(libs.kotlinx.coroutines.rx2)
+                compileOnly(libs.kotlinx.coroutines.rx3)
+
                 compileOnly(libs.jetbrains.annotations)
                 compileOnly(project(":simbot-common-annotations"))
             }
@@ -107,6 +112,11 @@ kotlin {
 
         jvmTest {
             dependencies {
+                implementation(libs.kotlinx.coroutines.reactive)
+                implementation(libs.kotlinx.coroutines.reactor)
+                implementation(libs.kotlinx.coroutines.rx2)
+                implementation(libs.kotlinx.coroutines.rx3)
+
                 implementation(kotlin("test-junit5"))
                 implementation(libs.ktor.client.cio)
             }
