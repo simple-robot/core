@@ -1,3 +1,5 @@
+@file:JvmName("StandardMessages")
+@file:JvmMultifileClass
 package love.forte.simbot.message
 
 import kotlinx.serialization.KSerializer

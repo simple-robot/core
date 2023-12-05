@@ -10,4 +10,4 @@ import love.forte.simbot.annotations.InternalAPI
  */
 @Suppress("unused")
 @InternalAPI
-public actual interface PlatformCollection<out T>
+public actual interface PlatformCollection<out T> : Collection<T>

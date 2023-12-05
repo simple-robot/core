@@ -1,11 +1,12 @@
 [versions]
 kotlinx-coroutines = "1.7.3"
 kotlinx-serialization = "1.6.0"
-spring-boot = "2.7.12"
+spring-boot-v2 = "2.7.18"
+spring-boot-v3 = "3.2.0"
 openjdk-jmh = "1.36"
 #forte-di = "0.0.3"
 #forte-annotationTool = "0.6.3"
-ktor = "2.3.1"
+ktor = "2.3.6"
 
 slf4j = "2.0.7"
 
@@ -43,30 +44,33 @@ slf4j-nop = { group = "org.slf4j", name = "slf4j-nop", version.ref = "slf4j" }
 javax-inject = "javax.inject:javax.inject:1"
 javax-annotation-api = "javax.annotation:javax.annotation-api:1.3.2"
 
-# spring-boot
-spring-boot-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure", version.ref = "spring-boot" }
-spring-boot-logging = { group = "org.springframework.boot", name = "spring-boot-starter-logging", version.ref = "spring-boot" }
-spring-boot-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator", version.ref = "spring-boot" }
-spring-boot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot" }
-spring-boot-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop", version.ref = "spring-boot" }
-spring-boot-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "spring-boot" }
-spring-boot-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux", version.ref = "spring-boot" }
+# spring-boot-v2
+spring-boot-v2-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure", version.ref = "spring-boot-v2" }
+spring-boot-v2-logging = { group = "org.springframework.boot", name = "spring-boot-starter-logging", version.ref = "spring-boot-v2" }
+spring-boot-v2-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator", version.ref = "spring-boot-v2" }
+spring-boot-v2-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-v2" }
+spring-boot-v2-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop", version.ref = "spring-boot-v2" }
+spring-boot-v2-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "spring-boot-v2" }
+spring-boot-v2-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux", version.ref = "spring-boot-v2" }
+
+# spring-boot-v3
+spring-boot-v3-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure", version.ref = "spring-boot-v3" }
+spring-boot-v3-logging = { group = "org.springframework.boot", name = "spring-boot-starter-logging", version.ref = "spring-boot-v3" }
+spring-boot-v3-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator", version.ref = "spring-boot-v3" }
+spring-boot-v3-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-v3" }
+spring-boot-v3-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop", version.ref = "spring-boot-v3" }
+spring-boot-v3-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "spring-boot-v3" }
+spring-boot-v3-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux", version.ref = "spring-boot-v3" }
 
 # spring-boot-data
-spring-boot-data-redis-reactive = { module = "org.springframework.boot:spring-boot-starter-data-redis-reactive", version.ref = "spring-boot" }
+#spring-boot-data-redis-reactive = { module = "org.springframework.boot:spring-boot-starter-data-redis-reactive", version.ref = "spring-boot" }
+
 # lmax-disruptor
 lmax-disruptor = "com.lmax:disruptor:3.4.4"
+
 # jmh
 openjdk-jmh-core = { group = "org.openjdk.jmh", name = "jmh-core", version.ref = "openjdk-jmh" }
 openjdk-jmh-generator-annprocess = { group = "org.openjdk.jmh", name = "jmh-generator-annprocess", version.ref = "openjdk-jmh" }
-
-#forte-di-api = { group = "love.forte.di", name = "di-api", version.ref = "forte-di" }
-#forte-di-core = { group = "love.forte.di", name = "di-core", version.ref = "forte-di" }
-#forte-di-spring = { group = "love.forte.di", name = "di-spring", version.ref = "forte-di" }
-#
-#forte-annotationTool-api = { group = "love.forte.annotation-tool", name = "api", version.ref = "forte-annotationTool" }
-#forte-annotationTool-core = { group = "love.forte.annotation-tool", name = "core", version.ref = "forte-annotationTool" }
-#forte-annotationTool-kcore = { group = "love.forte.annotation-tool", name = "kcore", version.ref = "forte-annotationTool" }
 
 # ktor
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }

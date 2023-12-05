@@ -1,12 +1,23 @@
 import love.forte.plugin.suspendtrans.gradle.withKotlinTargets
 
+/*
+ * Copyright (c) 2023 ForteScarlet.
+ *
+ * This file is part of Simple Robot.
+ *
+ * Simple Robot is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * Simple Robot is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with Simple Robot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 plugins {
-//    `java-library`
+    `java-library`
     kotlin("multiplatform")
     kotlin("plugin.serialization")
 //    `simbot-multiplatform-maven-publish`
     id("simbot.dokka-module-configuration")
-//    id("io.gitlab.arturbosch.detekt")
 }
 
 repositories {
@@ -15,6 +26,7 @@ repositories {
 
 kotlin {
     explicitApi()
+
     applyDefaultHierarchyTemplate()
 
     jvm {
@@ -22,9 +34,10 @@ kotlin {
             kotlinOptions {
                 jvmTarget = JVMConstants.KT_JVM_TARGET
                 javaParameters = true
-                freeCompilerArgs += "-Xjvm-default=all"
+                freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
             }
         }
+
         withJava()
         testRuns["test"].executionTask.configure {
             useJUnitPlatform()
@@ -62,12 +75,6 @@ kotlin {
     mingwX64()
     watchosDeviceArm64()
 
-    // wasm?
-//    @Suppress("OPT_IN_USAGE")
-//    wasmJs()
-//    @Suppress("OPT_IN_USAGE")
-//    wasmWasi()
-
     withKotlinTargets { target ->
         targets.findByName(target.name)?.compilations?.all {
             // 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. You can use -Xexpect-actual-classes flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
@@ -78,62 +85,26 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                // jvm compile only
-                api(libs.jetbrains.annotations)
-                api(project(":simbot-common-annotations"))
-                api(project(":simbot-common-suspend-runner"))
-                api(project(":simbot-common-core"))
-                api(libs.kotlinx.coroutines.core)
-                api(libs.kotlinx.serialization.core)
+                compileOnly(project(":simbot-api"))
             }
         }
+
         commonTest {
             dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio)
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.coroutines.test)
                 implementation(kotlin("test"))
-                implementation(libs.kotlinx.serialization.json)
-            }
-        }
-
-
-
-        jvmMain {
-            dependencies {
-                compileOnly(libs.kotlinx.coroutines.reactive)
-                compileOnly(libs.kotlinx.coroutines.reactor)
-                compileOnly(libs.kotlinx.coroutines.rx2)
-                compileOnly(libs.kotlinx.coroutines.rx3)
-
-                compileOnly(libs.jetbrains.annotations)
-                compileOnly(project(":simbot-common-annotations"))
+                implementation(kotlin("reflect"))
             }
         }
 
         jvmTest {
             dependencies {
-                implementation(libs.kotlinx.coroutines.reactive)
-                implementation(libs.kotlinx.coroutines.reactor)
-                implementation(libs.kotlinx.coroutines.rx2)
-                implementation(libs.kotlinx.coroutines.rx3)
-
                 implementation(kotlin("test-junit5"))
-                implementation(libs.ktor.client.cio)
             }
         }
-
-        nativeMain
-        nativeTest
-
-        linuxMain
-        linuxTest
-
-        appleMain
-        appleTest
     }
+
 }
+
 
 tasks.withType<JavaCompile> {
     sourceCompatibility = JVMConstants.KT_JVM_TARGET

@@ -9,4 +9,4 @@ import love.forte.simbot.annotations.InternalAPI
  *
  */
 @InternalAPI
-public actual interface PlatformCollection<out T>
+public actual interface PlatformCollection<out T> : Collection<T>

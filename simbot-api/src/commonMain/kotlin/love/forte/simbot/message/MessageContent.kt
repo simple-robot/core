@@ -38,10 +38,12 @@ public interface MessageContent : DeleteSupport {
      * messages.filterIsInstance<PlainText>().joinToString { it.text }
      * ```
      *
+     * 但是如果 [messages] 没有任何 [PlainText] 类型的消息元素，则会得到 `null`。
+     *
      * @see messages
      *
      */
-    public val plainText: String
+    public val plainText: String?
 
     /**
      * 删除、撤回、撤销此消息。
@@ -58,3 +60,9 @@ public interface MessageContent : DeleteSupport {
      */
     override suspend fun delete(vararg options: DeleteOption)
 }
+
+/**
+ * 如果 [MessageContent.plainText]，则以空字符串 `""` 替代之。
+ * @see MessageContent.plainText
+ */
+public inline val MessageContent.safePlainText: String get() = plainText ?: ""

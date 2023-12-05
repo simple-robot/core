@@ -13,13 +13,14 @@ import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.definition.Contact
 import love.forte.simbot.definition.Guild
 import love.forte.simbot.id.ID
+import love.forte.simbot.id.IDContainer
 
 /**
  * 一个 `Bot`。
  *
  * @author ForteScarlet
  */
-public interface Bot : LifecycleAware, CompletionAware, CoroutineScope, BotRelation {
+public interface Bot : IDContainer, LifecycleAware, CompletionAware, CoroutineScope, BotRelation {
     /**
      * 当前bot的标识。
      *
@@ -30,7 +31,7 @@ public interface Bot : LifecycleAware, CompletionAware, CoroutineScope, BotRelat
      * 通常情况下，它会是注册bot时候使用的某种唯一标识。
      *
      */
-    public val id: ID
+    public override val id: ID
 
     /**
      * 当前 [Bot] 作为用户的名称。

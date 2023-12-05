@@ -90,7 +90,7 @@ public interface Application : CoroutineScope, LifecycleAware, CompletionAware {
  *
  */
 @InternalAPI
-public expect interface PlatformCollection<out T>
+public expect interface PlatformCollection<out T> : Collection<T>
 
 
 //region Components
@@ -98,7 +98,7 @@ public expect interface PlatformCollection<out T>
  * 用于表示一组 [Component] 。
  */
 @OptIn(InternalAPI::class)
-public interface Components : Collection<Component>, PlatformCollection<Component>
+public interface Components : PlatformCollection<Component>
 
 /**
  * 根据类型寻找某个 [Component]。

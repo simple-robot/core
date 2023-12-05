@@ -2,6 +2,7 @@ package love.forte.simbot.event
 
 import love.forte.simbot.bot.Bot
 import love.forte.simbot.id.ID
+import love.forte.simbot.id.IDContainer
 import love.forte.simbot.timestamp.Timestamp
 
 /**
@@ -9,12 +10,12 @@ import love.forte.simbot.timestamp.Timestamp
  *
  * @author ForteScarlet
  */
-public interface Event {
+public interface Event : IDContainer {
     /**
      * 事件的ID。
      * 如果平台事件中不存在可用ID，则此值可能为一个随机值。
      */
-    public val id: ID
+    public override val id: ID
 
     /**
      * 事件发生的时间或此事件被接收到的时间。

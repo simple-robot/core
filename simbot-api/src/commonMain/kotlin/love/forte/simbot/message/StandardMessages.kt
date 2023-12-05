@@ -1,3 +1,6 @@
+@file:JvmName("StandardMessages")
+@file:JvmMultifileClass
+
 package love.forte.simbot.message
 
 import kotlinx.serialization.SerialName
@@ -5,12 +8,14 @@ import kotlinx.serialization.Serializable
 import love.forte.simbot.id.ID
 import love.forte.simbot.message.At.Companion.equals
 import love.forte.simbot.message.At.Companion.hashCode
+import love.forte.simbot.message.OfflineImage.Companion.toOfflineImage
 import love.forte.simbot.message.Text.Companion.of
 import love.forte.simbot.resource.ByteArrayResource
 import love.forte.simbot.resource.Resource
 import love.forte.simbot.resource.ResourceBase64Serializer
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.js.JsName
+import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
@@ -175,8 +180,12 @@ public data object AtAll : MentionMessage
 /**
  * 一个图片消息元素类型。
  *
+ * 图片消息可能被分为 [离线图片][OfflineImage] 和 [远端图片][RemoteImage]。
+ *
+ * @see OfflineImage
+ * @see RemoteImage
  */
-public interface ImageMessage : StandardMessage
+public interface Image : StandardMessage
 
 // 离线图片？
 // 远程图片？
@@ -188,9 +197,8 @@ public interface ImageMessage : StandardMessage
  * 它可能是内存中的一段二进制数据，或本地文件系统中的某个文件。
  *
  * “离线”主要表示此图片并未上传到某个目标平台中，也没有与某个远程服务器互相对应的唯一标识。
- *
  */
-public interface OfflineImage : ImageMessage {
+public interface OfflineImage : Image {
     /**
      * 得到图片的二进制数据
      */
@@ -208,7 +216,7 @@ public interface OfflineImage : ImageMessage {
         public fun ByteArray.toOfflineImage(): OfflineImage = OfflineByteArrayImage(this)
 
         /**
-         * Converts the given [Resource] to an [OfflineImage].
+         * 将给定的 [Resource] 转换为 [OfflineImage]。
          *
          * @return [OfflineImage] object representing the converted Resource.
          *
@@ -291,11 +299,11 @@ public data class OfflineByteArrayImage(private val data: ByteArray) : OfflineIm
  *
  * @see RemoteIDImage
  */
-public interface RemoteImage : ImageMessage {
+public interface RemoteImage : Image {
     /**
      * 在远程服务器上的唯一标识。
      *
-     * 可能是一个ID，也可能是一个资源定位符（即图片链接）。
+     * 可能是一个ID，也可能是一个资源定位符（例如图片链接）。
      */
     public val id: ID
 }
@@ -307,6 +315,19 @@ public interface RemoteImage : ImageMessage {
 @SerialName("m.std.img.remote.id")
 public data class RemoteIDImage(override val id: ID) : RemoteImage
 
+/**
+ * 一个可以感知或查询到图片链接的远程图片消息元素类型。
+ *
+ * [id] 与 [url] 的查询结果有可能是一样的。
+ *
+ * @see RemoteImage
+ */
+public interface RemoteUrlAwareImage : RemoteImage {
+    /**
+     * 获取或查询此图片的链接。
+     */
+    public suspend fun url(): String
+}
 
 //endregion
 

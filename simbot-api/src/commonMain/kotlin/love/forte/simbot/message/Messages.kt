@@ -39,6 +39,11 @@ public sealed interface Messages : Message, Iterable<Message.Element> {
     public fun isEmpty(): Boolean
 
     /**
+     * 判断 [Messages] 中是否包含元素 [element]。
+     */
+    public operator fun contains(element: Message.Element): Boolean
+
+    /**
      * 以当前消息链为准构建一个 [List] 类型的瞬时副本。
      */
     public fun toList(): List<Message.Element>
@@ -57,6 +62,8 @@ public sealed interface Messages : Message, Iterable<Message.Element> {
         /**
          * 由标准API默认提供的消息类型的序列化信息。
          */
+        @JvmStatic
+        @get:JvmName("standardSerializersModule")
         public val standardSerializersModule: SerializersModule = SerializersModule {
             polymorphic(Message.Element::class) {
                 subclass(Text.serializer())
@@ -70,7 +77,7 @@ public sealed interface Messages : Message, Iterable<Message.Element> {
                 subclass(Emoji.serializer())
                 subclass(Face.serializer())
 
-                resolveStandardSerializersModule()
+                resolvePlatformStandardSerializers()
             }
         }
 
@@ -133,13 +140,14 @@ public sealed interface Messages : Message, Iterable<Message.Element> {
 }
 
 
-internal expect fun PolymorphicModuleBuilder<Message.Element>.resolveStandardSerializersModule()
+internal expect fun PolymorphicModuleBuilder<Message.Element>.resolvePlatformStandardSerializers()
 
 
 private object EmptyMessages : Messages {
     override fun iterator(): Iterator<Message.Element> = toList().iterator()
     override val size: Int get() = 0
     override fun isEmpty(): Boolean = true
+    override fun contains(element: Message.Element): Boolean = false
     override fun toList(): List<Message.Element> = emptyList()
 
     override fun plus(element: Message.Element): Messages {
@@ -168,6 +176,8 @@ private class SingleElementMessages(private val element: Message.Element) : Mess
         get() = 1
 
     override fun isEmpty(): Boolean = false
+
+    override fun contains(element: Message.Element): Boolean = element == this.element
 
     override fun toList(): List<Message.Element> = listOf(element)
 
@@ -217,6 +227,8 @@ private class ListMessages(private val list: List<Message.Element>) : Messages {
         get() = list.size
 
     override fun isEmpty(): Boolean = list.isEmpty() // always true
+
+    override fun contains(element: Message.Element): Boolean = list.contains(element)
 
     override fun toList(): List<Message.Element> = list.toList()
 
@@ -374,7 +386,8 @@ public class MessagesBuilder private constructor(private val container: MutableL
  * @param messages The Messages object that needs to be encoded.
  * @return The encoded String representation of the Messages object.
  */
-public fun StringFormat.encodeMessagesToString(messages: Messages): String = encodeToString(Messages.serializer, messages)
+public fun StringFormat.encodeMessagesToString(messages: Messages): String =
+    encodeToString(Messages.serializer, messages)
 
 /**
  * Decodes a string representation of Messages using the provided StringFormat.
@@ -382,4 +395,5 @@ public fun StringFormat.encodeMessagesToString(messages: Messages): String = enc
  * @param string The string representation of Messages to decode.
  * @return The deserialized Messages object.
  */
-public fun StringFormat.decodeMessagesFromString(string: String): Messages = decodeFromString(Messages.serializer, string)
+public fun StringFormat.decodeMessagesFromString(string: String): Messages =
+    decodeFromString(Messages.serializer, string)

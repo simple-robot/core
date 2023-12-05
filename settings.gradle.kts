@@ -20,3 +20,7 @@ include(":simbot-core")
 
 include(":simbot-logger")
 include(":simbot-logger-slf4j2-impl")
+
+include(":simbot-annotation-listener")
+include(":simbot-core-spring-boot-v2-starter")
+include(":simbot-core-spring-boot-starter") // v3

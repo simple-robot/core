@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import love.forte.simbot.bot.Bot
 import love.forte.simbot.id.ID
+import love.forte.simbot.id.IDContainer
 
 /**
  *
@@ -26,11 +27,11 @@ import love.forte.simbot.id.ID
  *
  * @author ForteScarlet
  */
-public interface Actor : CoroutineScope {
+public interface Actor : CoroutineScope, IDContainer {
     /**
      * 行为主体的唯一标识。
      */
-    public val id: ID
+    public override val id: ID
 }
 
 
