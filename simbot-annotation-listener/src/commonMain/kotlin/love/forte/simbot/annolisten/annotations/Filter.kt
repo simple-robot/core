@@ -1,9 +1,8 @@
 package love.forte.simbot.annolisten.annotations
 
+import love.forte.simbot.annolisten.MatchType
 import love.forte.simbot.annolisten.annotations.Filter.Targets
 import love.forte.simbot.utils.PriorityConstant
-
-// TODO
 
 /**
  * 与 [@Listener][Listener] 配合使用，标记为对当前事件处理器的基础属性过滤器。
@@ -45,7 +44,11 @@ public annotation class Filter(
     val ifNullPass: Boolean = false,
     // 这并不仅仅局限于消息事件, 而生效与所有的事件类型。而对于那些本身即不是消息事件的事件来说, textContent 默认为null。 ?
 
-    // TODO matchType
+    /**
+     * 针对匹配目标所使用的匹配规则。
+     * 默认情况下使用 [正则完全匹配][MatchType.REGEX_MATCHES].
+     */
+    val matchType: MatchType = MatchType.REGEX_MATCHES
 
     // TODO by?
 

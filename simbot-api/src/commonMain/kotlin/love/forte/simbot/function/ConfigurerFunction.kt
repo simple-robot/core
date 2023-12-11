@@ -28,7 +28,7 @@ public inline fun <CONF> toConfigurerFunction(crossinline block: CONF.() -> Unit
 /**
  * Invoke [ConfigurerFunction] with [conf]。
  */
-public fun <CONF : Any> ConfigurerFunction<CONF>.invokeWith(conf: CONF) {
+public fun <CONF> ConfigurerFunction<CONF>.invokeWith(conf: CONF) {
     conf.apply { invoke() }
 }
 
@@ -36,6 +36,16 @@ public fun <CONF : Any> ConfigurerFunction<CONF>.invokeWith(conf: CONF) {
 /**
  * Invoke [configurer] with [CONF]。
  */
-public fun <CONF : Any> CONF.invokeBy(configurer: ConfigurerFunction<CONF>?): CONF {
+public fun <CONF> CONF.invokeBy(configurer: ConfigurerFunction<CONF>?): CONF {
     return this.also { configurer?.invokeWith(it) }
+}
+
+
+public operator fun <CONF> ConfigurerFunction<CONF>.plus(other: ConfigurerFunction<CONF>): ConfigurerFunction<CONF> {
+    val old = this
+    return ConfigurerFunction {
+        val value = this
+        old.invokeWith(value)
+        other.invokeWith(value)
+    }
 }
