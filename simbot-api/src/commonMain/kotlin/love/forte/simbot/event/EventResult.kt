@@ -1,11 +1,9 @@
 package love.forte.simbot.event
 
-import kotlinx.coroutines.Deferred
 import love.forte.simbot.event.StandardEventResult.Invalid.isTruncated
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
-import kotlin.jvm.JvmSynthetic
 
 
 /**
@@ -218,30 +216,6 @@ public sealed class StandardEventResult : EventResult {
     }
 
     /**
-     * 用于表示一个异步任务的结果。
-     */
-    public abstract class Async : StandardEventResult() {
-        /**
-         * 用来表示一个异步任务的 [content], 例如 [Deferred] 或 `Future`.
-         */
-        abstract override val content: Any?
-
-        /**
-         * 是否阻止下一个事件处理逻辑的执行。
-         * 默认情况下，异步任务将不会阻断后续事件的执行。
-         */
-        override val isTruncated: Boolean get() = false
-
-        /**
-         * 等待异步任务的结果。
-         *
-         * 异步任务的结果应当仍然是一个 [EventResult]，且此结果通常应当不再是 [Async] 类型。
-         */
-        @JvmSynthetic
-        public abstract suspend fun awaitContent(): EventResult
-    }
-
-    /**
      * 代表 [content] 可能为一个反应式的结果，并且允许其在一个函数结束时进行收集。
      */
     public abstract class CollectableReactivelyResult : StandardEventResult() {
@@ -296,7 +270,8 @@ public sealed class StandardEventResult : EventResult {
 
     /**
      * 一个对 [EventResult] 内容进行简单实现的 [StandardEventResult] 数据类型。
-     * 没有特殊含义，即为简单包装。
+     * 实现 [CollectableReactivelyResult], 在监听函数处理完成后会被尝试挂起收集 [content] 的结果。
+     * 详情参考 [CollectableReactivelyResult.content]。
      *
      * 建议通过工厂函数 [EventResult.of] 来间接获取 [Simple] 并在可能的情况下使用其他选项来减少对象实例的构建。
      *
@@ -315,7 +290,8 @@ public sealed class StandardEventResult : EventResult {
  * @see StandardEventResult.CollectableReactivelyResult.content
  * @see EventResult
  */
-public suspend fun StandardEventResult.CollectableReactivelyResult.collectCollectableReactivelyToResult(): EventResult = collected(collectCollectableReactively())
+public suspend fun StandardEventResult.CollectableReactivelyResult.collectCollectableReactivelyToResult(): EventResult =
+    collected(collectCollectableReactively())
 
 /**
  * 收集 [StandardEventResult.CollectableReactivelyResult.content] 的结果并返回。
@@ -334,4 +310,5 @@ public expect suspend fun StandardEventResult.CollectableReactivelyResult.collec
  *
  * @return The collected event result.
  */
-public suspend fun EventResult.collected(): EventResult = if (this is StandardEventResult.CollectableReactivelyResult) collectCollectableReactivelyToResult() else this
+public suspend fun EventResult.collected(): EventResult =
+    if (this is StandardEventResult.CollectableReactivelyResult) collectCollectableReactivelyToResult() else this

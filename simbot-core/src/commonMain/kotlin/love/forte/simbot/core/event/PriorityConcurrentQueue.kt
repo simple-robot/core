@@ -32,12 +32,18 @@ public interface PriorityConcurrentQueue<T> : Iterable<T> {
     public fun removeIf(priority: Int, predicate: (T) -> Boolean)
 
     /**
-     * 如果元素满足给定的条件，就从列表中删除所有元素。
+     * 根据给定的目标对象，从列表中删除指定的项。
      *
-     * @param priority 应删除的元素的优先级
-     * @param predicate 一个接受类型为T的元素并返回真如果元素应该被删除，否则返回假的函数
+     * @param target 从列表中删除的目标对象。
      */
-    public fun removeAllIf(priority: Int, predicate: (T) -> Boolean)
+    public fun remove(target: T)
+
+    /**
+     * 根据条件从列表中删除元素。
+     *
+     * @param predicate 用于确定是否应删除元素的条件。只有满足条件的元素才会被删除。
+     */
+    public fun removeIf(predicate: (T) -> Boolean)
 
     /**
      * 返回用于遍历此对象元素的迭代器。

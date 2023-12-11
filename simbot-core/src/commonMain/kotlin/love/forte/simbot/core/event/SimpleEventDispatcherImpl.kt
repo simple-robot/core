@@ -159,7 +159,10 @@ internal class SimpleEventDispatcherImpl(
 
     //endregion
 
-    private val listeners = createPriorityConcurrentQueue<SimpleEventListenerInvoker>()
+    private val listenersQueue = createPriorityConcurrentQueue<SimpleEventListenerInvoker>()
+
+    override val listeners: Sequence<EventListener>
+        get() = listenersQueue.asSequence().map { it.listener }
 
     override fun register(
         propertiesConsumer: ConfigurerFunction<EventListenerRegistrationProperties>?,
@@ -178,9 +181,13 @@ internal class SimpleEventDispatcherImpl(
         val priority = prop.priority
         val listenerInvoker = SimpleEventListenerInvoker(listenerInterceptors, listener)
 
-        listeners.add(priority, listenerInvoker)
+        listenersQueue.add(priority, listenerInvoker)
 
-        return createQueueRegistrationHandle(priority, listeners, listenerInvoker)
+        return createQueueRegistrationHandle(priority, listenersQueue, listenerInvoker)
+    }
+
+    override fun dispose(listener: EventListener) {
+        listenersQueue.removeIf { it.listener == listener }
     }
 
 
@@ -222,7 +229,7 @@ internal class SimpleEventDispatcherImpl(
         dispatcherContext: CoroutineContext,
         collector: FlowCollector<EventResult>
     ) {
-        val listenerIterator = listeners.iterator()
+        val listenerIterator = listenersQueue.iterator()
 
         for (listenerInvoker in listenerIterator) {
             val result = orErrorResult {
@@ -243,7 +250,7 @@ internal class SimpleEventDispatcherImpl(
         context: EventContext,
         collector: FlowCollector<EventResult>
     ) {
-        val listenerIterator = listeners.iterator()
+        val listenerIterator = listenersQueue.iterator()
         for (listenerInvoker in listenerIterator) {
             val result = orErrorResult { listenerInvoker.invoke(context) }
 
@@ -269,7 +276,7 @@ private class SimpleEventListenerInvoker(
      * 合并了全局配置的拦截器和单独添加的拦截器
      */
     interceptors: List<SimpleEventInterceptorInvoker>,
-    private val listener: EventListener
+    val listener: EventListener
 ) {
     private val interceptorsInvoker = interceptors.takeIf { it.isNotEmpty() }?.let { interceptorList ->
         SimpleEventInterceptorsInvoker(interceptorList)

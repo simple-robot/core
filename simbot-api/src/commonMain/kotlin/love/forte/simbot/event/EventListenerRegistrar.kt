@@ -5,8 +5,8 @@ import love.forte.simbot.utils.PriorityConstant
 
 
 /**
- * 事件监听器的注册器。
- * 用于承载注册、管理监听器的职责。
+ * 事件处理器的注册器。
+ * 用于承载注册、管理处理器的职责。
  *
  * @author ForteScarlet
  */
@@ -14,9 +14,9 @@ public interface EventListenerRegistrar {
     /**
      * 注册一个 [EventListener] 并附加部分额外属性信息。
      *
-     * 不同的 [EventListenerRegistrar] 可能会支持属性更丰富的 [EventListenerRegistrationProperties],
+     * 不同的 [EventListenerRegistrar] 可能会支持属性更丰富的 [EventListenerRegistrationProperties]
      *
-     * @return 注册后的句柄。可用于撤销/消除此次注册
+     * @return 注册后的句柄。可用于注销此次注册
      */
     public fun register(
         propertiesConsumer: ConfigurerFunction<EventListenerRegistrationProperties>?,
@@ -29,6 +29,14 @@ public interface EventListenerRegistrar {
      * @return 注册后的句柄。可用于撤销/消除此次注册
      */
     public fun register(listener: EventListener): EventListenerRegistrationHandle = register(null, listener)
+
+    /**
+     * 注销所有通过指定的 [EventListener] 所注册的事件处理器。
+     *
+     * 进行匹配时会使用 [EventListener.equals] 作为匹配是否相等的依据。
+     */
+    public fun dispose(listener: EventListener)
+
 }
 
 /**

@@ -17,18 +17,18 @@ public actual fun <T> createPriorityConcurrentQueue(): PriorityConcurrentQueue<T
 
 
 private class SkipListPriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> {
-    private val list = ConcurrentSkipListMap<Int, ConcurrentLinkedQueue<T>>()
+    private val queueMap = ConcurrentSkipListMap<Int, ConcurrentLinkedQueue<T>>()
 
     override fun add(priority: Int, value: T) {
-        val queue = list.computeIfAbsent(priority) { ConcurrentLinkedQueue() }
+        val queue = queueMap.computeIfAbsent(priority) { ConcurrentLinkedQueue() }
         queue.add(value)
     }
 
     override fun remove(priority: Int, target: T) {
-        list.compute(priority) { _, q ->
+        queueMap.compute(priority) { _, q ->
             if (q != null) {
                 q.remove(target)
-                if (q.isEmpty()) null else q
+                q.takeIf { it.isNotEmpty() }
             } else {
                 null
             }
@@ -36,23 +36,35 @@ private class SkipListPriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> {
     }
 
     override fun removeIf(priority: Int, predicate: (T) -> Boolean) {
-        list.compute(priority) { _, q ->
+        queueMap.compute(priority) { _, q ->
             if (q != null) {
                 q.removeIf(predicate)
-                if (q.isEmpty()) null else q
+                q.takeIf { it.isNotEmpty() }
             } else {
                 null
             }
         }
     }
 
-    override fun removeAllIf(priority: Int, predicate: (T) -> Boolean) {
-        list.compute(priority) { _, q ->
-            if (q != null) {
-                q.removeAll(predicate)
-                if (q.isEmpty()) null else q
-            } else {
-                null
+    override fun remove(target: T) {
+        for (entry in queueMap) {
+            val (priority, queue) = entry
+            if (queue.remove(target)) {
+                queueMap.compute(priority) { _, queue0 ->
+                    queue0?.takeIf { it.isNotEmpty() }
+                }
+                break
+            }
+        }
+    }
+
+    override fun removeIf(predicate: (T) -> Boolean) {
+        for (entry in queueMap) {
+            val (priority, queue) = entry
+            if (queue.removeIf(predicate)) {
+                queueMap.compute(priority) { _, queue0 ->
+                    queue0?.takeIf { it.isNotEmpty() }
+                }
             }
         }
     }
@@ -62,7 +74,7 @@ private class SkipListPriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> {
     }
 
     private inner class Iter : Iterator<T> {
-        private val entries = list.entries.iterator()
+        private val entries = queueMap.entries.iterator()
 
         @Volatile
         private var currentIter: Iterator<T>? = nextIter()

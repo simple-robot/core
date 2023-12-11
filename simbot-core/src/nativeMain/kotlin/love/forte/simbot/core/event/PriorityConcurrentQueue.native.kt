@@ -56,8 +56,7 @@ private class AtomicCopyOnWritePriorityConcurrentQueue<T> : PriorityConcurrentQu
             do {
                 val list = found.list.value
                 val newList = list - target
-                val done = updateListForRemoveElement(found, list, newList)
-            } while (done)
+            } while (!updateListForRemoveElement(found, list, newList).value)
         }
     }
 
@@ -67,56 +66,142 @@ private class AtomicCopyOnWritePriorityConcurrentQueue<T> : PriorityConcurrentQu
         if (found != null) {
             do {
                 val list = found.list.value
-                val newList = ArrayList<T>(list.size)
-                var removed = false
-                list.filterTo(newList) { v ->
-                    if (!removed && predicate(v)) {
-                        removed = true; false
-                    } else true
-                }
-
-                val done = updateListForRemoveElement(found, list, newList)
-            } while (done)
-        }
-    }
-
-    override fun removeAllIf(priority: Int, predicate: (T) -> Boolean) {
-        val found = findByPriority(priority)
-
-        if (found != null) {
-            do {
-                val list = found.list.value
                 val newList = list.filterNot(predicate)
-
-                val done = updateListForRemoveElement(found, list, newList)
-            } while (done)
+            } while (!updateListForRemoveElement(found, list, newList).value)
         }
     }
 
+    override fun remove(target: T) {
+        head@while (true) {
+            for (listWithPriority in lists.value) {
+                while (true) {
+                    val list = listWithPriority.list.value
+                    val newList = list - target
+
+                    when (val result = updateListForRemoveElement(listWithPriority, list, newList)) {
+                        is ElementRemoveResult.RemoveTargetList -> {
+                            // 如果企图直接更新 list 且更新成功（移除了当前的 listWithPriority），
+                            // 则说明当前 lists 已经发生了改变，重新遍历
+                            if (result.value) {
+                                continue@head
+                            }
+
+                            // 想要删除 listWithPriority，但是删除失败，重新尝试
+                            // Just do nothing.
+                        }
+
+                        // 没有 target 元素
+                        is ElementRemoveResult.SameSize -> break
+
+                        // 删除列表元素
+                        is ElementRemoveResult.RemoveElement -> {
+                            // 删除成功
+                            if (result.value) {
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun removeIf(predicate: (T) -> Boolean) {
+        head@while (true) {
+            for (listWithPriority in lists.value) {
+                while (true) {
+                    val list = listWithPriority.list.value
+                    val newList = list.filterNot(predicate)
+
+                    when (val result = updateListForRemoveElement(listWithPriority, list, newList)) {
+                        is ElementRemoveResult.RemoveTargetList -> {
+                            // 如果企图直接更新 list 且更新成功（移除了当前的 listWithPriority），
+                            // 则说明当前 lists 已经发生了改变，重新遍历
+                            if (result.value) {
+                                continue@head
+                            }
+
+                            // 想要删除 listWithPriority，但是删除失败，重新尝试
+                            // Just do nothing.
+                        }
+
+                        // 没有 target 元素
+                        is ElementRemoveResult.SameSize -> break
+
+                        // 删除列表元素
+                        is ElementRemoveResult.RemoveElement -> {
+                            // 删除成功，跳出当前 listWithPriority，进入下一个 listWithPriority
+                            if (result.value) {
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @return Is done
+     */
     private fun updateListForRemoveElement(
         target: ListWithPriority<T>,
         expectList: List<T>,
         newList: List<T>
-    ): Boolean {
+    ): ElementRemoveResult {
         return when {
             expectList.isEmpty() || newList.isEmpty() -> {
                 // try to remove found
                 val listsValue = lists.value
-                lists.compareAndSet(listsValue, listsValue - target)
+                val result = lists.compareAndSet(listsValue, listsValue - target)
+                return ElementRemoveResult.RemoveTargetList.of(result)
             }
 
             expectList.size == newList.size -> {
                 // nothing updated.
-                true
+                ElementRemoveResult.SameSize
             }
 
             else -> {
                 // remove element
-                target.list.compareAndSet(expectList, newList)
+                val result = target.list.compareAndSet(expectList, newList)
+                ElementRemoveResult.RemoveElement.of(result)
+            }
+        }
+    }
+
+    private sealed class ElementRemoveResult {
+        abstract val value: Boolean
+
+        /**
+         * 由于 expectList 或 newList 为空，所以尝试从 lists 中直接移除 target 时的响应
+         */
+        class RemoveTargetList private constructor(override val value: Boolean) : ElementRemoveResult() {
+            companion object {
+                val True = RemoveTargetList(true)
+                val False = RemoveTargetList(false)
+                fun of(value: Boolean) = if (value) True else False
             }
         }
 
+        /**
+         * 当 expectList 与 newList 内容长度相同时返回的恒为 true 的结果
+         */
+        data object SameSize : ElementRemoveResult() {
+            override val value: Boolean
+                get() = true
+        }
+
+
+        class RemoveElement private constructor(override val value: Boolean) : ElementRemoveResult() {
+            companion object {
+                val True = RemoveElement(true)
+                val False = RemoveElement(false)
+                fun of(value: Boolean) = if (value) True else False
+            }
+        }
     }
+
 
     override fun iterator(): Iterator<T> {
         return lists.value.asSequence().flatMap { it.list.value }.iterator()

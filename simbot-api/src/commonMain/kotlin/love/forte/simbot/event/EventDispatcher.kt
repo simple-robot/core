@@ -15,7 +15,7 @@ import kotlin.coroutines.EmptyCoroutineContext
  *
  * @author ForteScarlet
  */
-public interface EventDispatcher : EventProcessor, EventListenerRegistrar {
+public interface EventDispatcher : EventProcessor, EventListenerRegistrar, EventListenerContainer {
     // ..?
 }
 
