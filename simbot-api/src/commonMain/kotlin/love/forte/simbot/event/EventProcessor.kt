@@ -92,6 +92,15 @@ public fun EventProcessor.pushAndLaunch(scope: CoroutineScope, event: Event): Jo
     return push(event).launchIn(scope)
 }
 
+/**
+ * 将事件推送并收集处理。
+ */
+public suspend fun EventProcessor.pushAndCollect(event: Event, collector: FlowCollector<EventResult>? = null) {
+    with(push(event)) {
+        if (collector != null) collect(collector) else collect()
+    }
+}
+
 
 /**
  * Filters out any invalid [EventResult] objects from the flow.

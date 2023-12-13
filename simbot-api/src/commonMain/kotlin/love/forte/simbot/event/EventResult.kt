@@ -79,7 +79,7 @@ public interface EventResult {
          */
         @JvmStatic
         @JvmOverloads
-        public fun of(content: Any?, isTruncated: Boolean = false): EventResult {
+        public fun of(content: Any? = null, isTruncated: Boolean = false): EventResult {
             if (content != null) return StandardEventResult.Simple(content, isTruncated)
             return empty(isTruncated)
         }
@@ -277,7 +277,7 @@ public sealed class StandardEventResult : EventResult {
      *
      */
     public data class Simple(override val content: Any?, override val isTruncated: Boolean) : CollectableReactivelyResult() {
-        override fun collected(collectedContent: Any?): EventResult = EventResult.of(collectedContent)
+        override fun collected(collectedContent: Any?): EventResult = EventResult.of(collectedContent, isTruncated)
     }
 
 }

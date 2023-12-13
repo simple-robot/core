@@ -53,6 +53,8 @@ public fun interface EventDispatchInterceptor {
 
     /**
      * 拦截器中被拦截的对象信息。
+     *
+     * Note: [Context] 通常由内部调度器实现，其使用稳定而实现不稳定。
      */
     public interface Context {
         /**
@@ -65,6 +67,12 @@ public fun interface EventDispatchInterceptor {
          */
         @Throws(Exception::class)
         public fun invoke(): Flow<EventResult>
+
+        /**
+         * 执行被拦截的逻辑并得到本次事件处理链的结果流。
+         */
+        @Throws(Exception::class)
+        public fun invoke(eventContext: EventContext): Flow<EventResult>
     }
 }
 

@@ -11,16 +11,18 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
 }
 
-include(":simbot-common-annotations")
-include(":simbot-common-core")
-include(":simbot-common-suspend-runner")
-include(":simbot-common-stage-loop")
+include(":simbot-commons:simbot-common-annotations")
+include(":simbot-commons:simbot-common-core")
+include(":simbot-commons:simbot-common-suspend-runner")
+include(":simbot-commons:simbot-common-stage-loop")
 include(":simbot-api")
-include(":simbot-core")
+include(":simbot-cores:simbot-core")
 
 include(":simbot-logger")
 include(":simbot-logger-slf4j2-impl")
 
-include(":simbot-annotation-listener")
-include(":simbot-core-spring-boot-v2-starter")
-include(":simbot-core-spring-boot-starter") // v3
+include(":simbot-quantcat:simbot-quantcat-annotations")
+include(":simbot-quantcat:simbot-quantcat-common")
+
+include(":simbot-cores:simbot-core-spring-boot-v2-starter")
+include(":simbot-cores:simbot-core-spring-boot-starter") // v3

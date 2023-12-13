@@ -49,12 +49,14 @@ public fun interface EventInterceptor {
 
     /**
      * 拦截器中被拦截的对象信息。
+     *
+     * Note: [Context] 通常由内部调度器实现，其使用稳定而实现不稳定。
      */
     public interface Context {
         /**
          * 当前被处理的事件上下文。
          */
-        public val eventContext: EventContext
+        public val eventListenerContext: EventListenerContext
 
         /**
          * 执行被拦截的逻辑并得到事件处理结果 [EventResult]。
@@ -62,26 +64,14 @@ public fun interface EventInterceptor {
         @JvmSynthetic
         @Throws(Exception::class)
         public suspend fun invoke(): EventResult
+
+        /**
+         * 执行被拦截的逻辑并得到事件处理结果 [EventResult]。
+         */
+        @JvmSynthetic
+        @Throws(Exception::class)
+        public suspend fun invoke(eventListenerContext: EventListenerContext): EventResult
     }
-
-
-    // /**
-    //  * 拦截器在 [EventDispatcher] 中针对的“作用域”。
-    //  *
-    //  */
-    // public enum class Scope {
-    //     /**
-    //      * 全局性作用域。
-    //      * 会针对单次、整个事件处理链进行一次统一的拦截。
-    //      *
-    //      */
-    //     GLOBAL,
-    //
-    //     /**
-    //      * 会在一次事件调度过程中拦截每一个事件监听器。
-    //      */
-    //     EACH
-    // }
 }
 
 

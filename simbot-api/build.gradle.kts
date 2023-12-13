@@ -80,9 +80,9 @@ kotlin {
             dependencies {
                 // jvm compile only
                 api(libs.jetbrains.annotations)
-                api(project(":simbot-common-annotations"))
-                api(project(":simbot-common-suspend-runner"))
-                api(project(":simbot-common-core"))
+                api(project(":simbot-commons:simbot-common-annotations"))
+                api(project(":simbot-commons:simbot-common-suspend-runner"))
+                api(project(":simbot-commons:simbot-common-core"))
                 api(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
             }
@@ -108,7 +108,7 @@ kotlin {
                 compileOnly(libs.kotlinx.coroutines.rx3)
 
                 compileOnly(libs.jetbrains.annotations)
-                compileOnly(project(":simbot-common-annotations"))
+                compileOnly(project(":simbot-commons:simbot-common-annotations"))
             }
         }
 

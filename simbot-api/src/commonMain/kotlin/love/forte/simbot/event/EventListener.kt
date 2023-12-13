@@ -18,5 +18,5 @@ public fun interface EventListener {
      */
     @JvmSynthetic
     @Throws(Exception::class)
-    public suspend fun handle(context: EventContext): EventResult
+    public suspend fun handle(context: EventListenerContext): EventResult
 }

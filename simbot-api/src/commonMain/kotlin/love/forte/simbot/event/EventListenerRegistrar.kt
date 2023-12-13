@@ -56,8 +56,8 @@ public interface EventListenerRegistrar {
  */
 public inline fun <reified E : Event> EventListenerRegistrar.listen(
     propertiesConsumer: ConfigurerFunction<EventListenerRegistrationProperties>? = null,
-    crossinline defaultResult: EventContext.() -> EventResult = { EventResult.invalid },
-    crossinline listenerFunction: suspend EventContext.(E) -> EventResult,
+    crossinline defaultResult: EventListenerContext.() -> EventResult = { EventResult.invalid },
+    crossinline listenerFunction: suspend EventListenerContext.(E) -> EventResult,
 ) {
     register(
         propertiesConsumer = propertiesConsumer,

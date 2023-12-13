@@ -32,7 +32,7 @@ public fun interface JAsyncEventListener {
      */
     @Throws(Exception::class)
     @NonBlocking
-    public fun handle(context: EventContext): CompletionStage<out EventResult>
+    public fun handle(context: EventListenerContext): CompletionStage<out EventResult>
 
     public companion object {
         /**
@@ -69,7 +69,7 @@ public fun interface TypedJAsyncEventListener<E : Event> {
      */
     @Throws(Exception::class)
     @NonBlocking
-    public fun handle(context: EventContext, event: E): CompletionStage<out EventResult>
+    public fun handle(context: EventListenerContext, event: E): CompletionStage<out EventResult>
 
     public companion object {
         /**
@@ -92,7 +92,7 @@ public fun interface TypedJAsyncEventListener<E : Event> {
 }
 
 private class JAsyncEventListenerImpl(private val jaListener: JAsyncEventListener) : EventListener {
-    override suspend fun handle(context: EventContext): EventResult =
+    override suspend fun handle(context: EventListenerContext): EventResult =
         jaListener.handle(context).await()
 
     override fun equals(other: Any?): Boolean {
@@ -113,8 +113,8 @@ private class TypedJAsyncEventListenerImpl<E : Event>(
     private val type: Class<E>,
     private val jaListener: TypedJAsyncEventListener<E>
 ) : EventListener {
-    override suspend fun handle(context: EventContext): EventResult {
-        val event = context.event
+    override suspend fun handle(context: EventListenerContext): EventResult {
+        val event = context.context.event
         if (type.isInstance(event)) {
             return jaListener.handle(context, type.cast(event)).await()
         }
@@ -164,7 +164,7 @@ public fun interface JBlockingEventListener {
      */
     @Throws(Exception::class)
     @Blocking
-    public fun handle(context: EventContext): EventResult
+    public fun handle(context: EventListenerContext): EventResult
 
     public companion object {
         /**
@@ -210,7 +210,7 @@ public fun interface TypedJBlockingEventListener<E : Event> {
      */
     @Throws(Exception::class)
     @Blocking
-    public fun handle(context: EventContext, event: E): EventResult
+    public fun handle(context: EventListenerContext, event: E): EventResult
 
     public companion object {
         /**
@@ -244,7 +244,7 @@ private class JBlockingEventListenerImpl(
     private val jbListener: JBlockingEventListener,
     private val dispatcherContext: CoroutineContext
 ) : EventListener {
-    override suspend fun handle(context: EventContext): EventResult {
+    override suspend fun handle(context: EventListenerContext): EventResult {
         return withContext(dispatcherContext) {
             jbListener.handle(context)
         }
@@ -276,8 +276,8 @@ private class TypedJBlockingEventListenerImpl<E : Event>(
     private val jbListener: TypedJBlockingEventListener<E>,
     private val dispatcherContext: CoroutineContext
 ) : EventListener {
-    override suspend fun handle(context: EventContext): EventResult {
-        val event = context.event
+    override suspend fun handle(context: EventListenerContext): EventResult {
+        val event = context.context.event
         if (type.isInstance(event)) {
             return withContext(dispatcherContext) {
                 jbListener.handle(context, type.cast(event))
