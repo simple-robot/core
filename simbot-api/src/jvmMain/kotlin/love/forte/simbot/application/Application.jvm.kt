@@ -52,6 +52,8 @@ public fun <A : Application, C : AbstractApplicationBuilder, L : ApplicationLaun
  */
 public class ApplicationLaunchBlockingFailureException internal constructor(cause: Throwable?) : RuntimeException(cause)
 
+// TODO
+
 /**
  * 提供给 [Components]、[Plugins]、[BotManagers] 实现的平台额外能力的接口。
  *

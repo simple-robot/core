@@ -138,7 +138,7 @@ public interface ApplicationFactoryConfigurer<C : ApplicationBuilder, AER : Appl
  *
  * @see ApplicationFactoryConfigurer
  */
-public abstract class AbstractApplicationFactoryConfigurer<C : AbstractApplicationBuilder, AER : ApplicationEventRegistrar, DC : EventDispatcherConfiguration>(
+public abstract class AbstractApplicationFactoryConfigurer<C : ApplicationBuilder, AER : ApplicationEventRegistrar, DC : EventDispatcherConfiguration>(
     protected open val configConfigurers: MutableList<ConfigurerFunction<C>> = mutableListOf(),
     protected open val applicationEventRegistrarConfigurations: MutableList<ConfigurerFunction<AER>> = mutableListOf(),
     protected open val eventDispatcherConfigurers: MutableList<ConfigurerFunction<DC>> = mutableListOf(),

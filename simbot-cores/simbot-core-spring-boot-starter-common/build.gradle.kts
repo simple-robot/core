@@ -15,20 +15,19 @@ plugins {
     // `simbot-jvm-maven-publish`
     kotlin("jvm")
     kotlin("plugin.serialization")
-    kotlin("kapt")
 }
 
 
 tasks.withType<JavaCompile> {
-    sourceCompatibility = "17"
-    targetCompatibility = "17"
+    sourceCompatibility = JVMConstants.KT_JVM_TARGET
+    targetCompatibility = JVMConstants.KT_JVM_TARGET
     options.encoding = "UTF-8"
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
         javaParameters = true
-        jvmTarget = "17"
+        jvmTarget = JVMConstants.KT_JVM_TARGET
         freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
     }
 }
@@ -42,23 +41,22 @@ dependencies {
     compileOnly(project(":simbot-quantcat:simbot-quantcat-annotations"))
     api(project(":simbot-quantcat:simbot-quantcat-common"))
     api(project(":simbot-cores:simbot-core"))
-    api(project(":simbot-cores:simbot-core-spring-boot-starter-common"))
-
-    compileOnly(libs.spring.boot.v3.logging)
-
-    compileOnly(libs.spring.boot.v3.autoconfigure)
-    compileOnly(libs.spring.boot.v3.configuration.processor)
-    annotationProcessor(libs.spring.boot.v3.configuration.processor)
-    kapt(libs.spring.boot.v3.configuration.processor)
+    
+    // compileOnly(libs.spring.boot.v3.logging)
+    //
+    // compileOnly(libs.spring.boot.v3.autoconfigure)
+    // compileOnly(libs.spring.boot.v3.configuration.processor)
+    // annotationProcessor(libs.spring.boot.v3.configuration.processor)
+    // kapt(libs.spring.boot.v3.configuration.processor)
 
     compileOnly(libs.javax.annotation.api)
 
-    testImplementation(libs.spring.boot.v3.test)
+    // testImplementation(libs.spring.boot.v3.test)
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.kotlinx.serialization.properties)
     testImplementation(libs.kotlinx.serialization.protobuf)
-    testImplementation(libs.spring.boot.v3.aop)
-    testImplementation(libs.spring.boot.v3.autoconfigure)
-    testImplementation(libs.spring.boot.v3.configuration.processor)
+    // testImplementation(libs.spring.boot.v3.aop)
+    // testImplementation(libs.spring.boot.v3.autoconfigure)
+    // testImplementation(libs.spring.boot.v3.configuration.processor)
 }
 
