@@ -9,7 +9,7 @@ package love.forte.simbot.common.collection
  * 当计算新值不为 `null` 时存入新值，否则移除旧值。
  *
  */
-public actual inline fun <K, V> MutableMap<K, V>.mergePlatform(
+public actual inline fun <K, V> MutableMap<K, V>.mergeValue(
     key: K,
     value: V & Any,
     remapping: (V & Any, V & Any) -> V?
@@ -24,7 +24,7 @@ public actual inline fun <K, V> MutableMap<K, V>.mergePlatform(
  * 当 [remapping] 的计算结果不为 `null` 时，插入此值并返回，否则删除原有的值（如果有的话）并返回 `null`。
  *
  */
-public actual inline fun <K, V> MutableMap<K, V>.computePlatform(key: K, remapping: (K, V?) -> V?): V? =
+public actual inline fun <K, V> MutableMap<K, V>.computeValue(key: K, remapping: (K, V?) -> V?): V? =
     internalComputeImpl(key, remapping)
 
 /**
@@ -34,7 +34,7 @@ public actual inline fun <K, V> MutableMap<K, V>.computePlatform(key: K, remappi
  * 则通过 [remapping] 计算并存入后返回此计算值，否则直接返回得到的匹配值。
  *
  */
-public actual inline fun <K, V> MutableMap<K, V>.computeIfAbsentPlatform(key: K, remapping: (K) -> V): V =
+public actual inline fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, remapping: (K) -> V): V =
     internalComputeIfAbsentImpl(key, remapping)
 
 /**
@@ -44,7 +44,7 @@ public actual inline fun <K, V> MutableMap<K, V>.computeIfAbsentPlatform(key: K,
  * 则通过 [mappingFunction] 计算并存入后返回此计算值，否则直接返回 `null`。
  * 如果 [mappingFunction] 的计算结果为 `null`，则会移除原本的值后返回 `null`。
  */
-public actual inline fun <K, V> MutableMap<K, V>.computeIfPresentPlatform(
+public actual inline fun <K, V> MutableMap<K, V>.computeValueIfPresent(
     key: K,
     mappingFunction: (K, V & Any) -> V?
 ): V? = internalComputeIfPresentImpl(key, mappingFunction)

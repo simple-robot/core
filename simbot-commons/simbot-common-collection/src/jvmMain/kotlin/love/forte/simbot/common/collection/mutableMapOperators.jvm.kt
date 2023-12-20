@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
  * 其他平台会有相应的实现，但是可能无法保证原子操作。
  *
  */
-public actual inline fun <K, V> MutableMap<K, V>.mergePlatform(
+public actual inline fun <K, V> MutableMap<K, V>.mergeValue(
     key: K,
     value: V & Any,
     crossinline remapping: (V & Any, V & Any) -> V?
@@ -32,7 +32,7 @@ public actual inline fun <K, V> MutableMap<K, V>.mergePlatform(
  * 其他平台会有相应的实现，但是可能无法保证原子操作。
  *
  */
-public actual inline fun <K, V> MutableMap<K, V>.computePlatform(key: K, crossinline remapping: (K, V?) -> V?): V? =
+public actual inline fun <K, V> MutableMap<K, V>.computeValue(key: K, crossinline remapping: (K, V?) -> V?): V? =
     compute(key) { k, v -> remapping(k, v) }
 
 /**
@@ -45,7 +45,7 @@ public actual inline fun <K, V> MutableMap<K, V>.computePlatform(key: K, crossin
  *
  * @see java.util.Map.computeIfPresent
  */
-public actual inline fun <K, V> MutableMap<K, V>.computeIfAbsentPlatform(key: K, crossinline remapping: (K) -> V): V =
+public actual inline fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, crossinline remapping: (K) -> V): V =
     computeIfAbsent(key) { k -> remapping(k) }
 
 /**
@@ -59,7 +59,7 @@ public actual inline fun <K, V> MutableMap<K, V>.computeIfAbsentPlatform(key: K,
  * 其他平台会有相应的实现，但是可能无法保证原子操作。
  *
  */
-public actual inline fun <K, V> MutableMap<K, V>.computeIfPresentPlatform(
+public actual inline fun <K, V> MutableMap<K, V>.computeValueIfPresent(
     key: K,
     crossinline mappingFunction: (K, V & Any) -> V?
 ): V? = computeIfPresent(key) { k, v -> mappingFunction(k, v) }

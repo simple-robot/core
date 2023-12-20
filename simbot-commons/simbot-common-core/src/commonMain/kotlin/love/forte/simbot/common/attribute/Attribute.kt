@@ -15,9 +15,9 @@
 package love.forte.simbot.common.attribute
 
 import kotlinx.serialization.Serializable
-import love.forte.simbot.common.collection.computeIfAbsentPlatform
-import love.forte.simbot.common.collection.computeIfPresentPlatform
-import love.forte.simbot.common.collection.mergePlatform
+import love.forte.simbot.common.collection.computeValueIfAbsent
+import love.forte.simbot.common.collection.computeValueIfPresent
+import love.forte.simbot.common.collection.mergeValue
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
@@ -316,7 +316,7 @@ private class MutableAttributeMapImpl(override val map: MutableMap<Attribute<*>,
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> merge(attribute: Attribute<T>, value: T, remapping: (T, T) -> T): T {
-        val newValue = map.mergePlatform(attribute, value) { old, now ->
+        val newValue = map.mergeValue(attribute, value) { old, now ->
             old as T; now as T
             remapping(old, now)
         }
@@ -325,7 +325,7 @@ private class MutableAttributeMapImpl(override val map: MutableMap<Attribute<*>,
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> safeMerge(attribute: Attribute<T>, value: T, remapping: (Any, T) -> T): Any {
-        return map.mergePlatform(attribute, value) { old, now ->
+        return map.mergeValue(attribute, value) { old, now ->
             now as T
             remapping(old, now)
         }!!
@@ -333,7 +333,7 @@ private class MutableAttributeMapImpl(override val map: MutableMap<Attribute<*>,
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> computeIfAbsent(attribute: Attribute<T>, mappingFunction: (Attribute<T>) -> T): T {
-        val value = map.computeIfAbsentPlatform(attribute) { k ->
+        val value = map.computeValueIfAbsent(attribute) { k ->
             mappingFunction(k as Attribute<T>)
         }
         return value as T
@@ -341,14 +341,14 @@ private class MutableAttributeMapImpl(override val map: MutableMap<Attribute<*>,
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> safeComputeIfAbsent(attribute: Attribute<T>, mappingFunction: (Attribute<T>) -> T): Any {
-        return map.computeIfAbsentPlatform(attribute) { k ->
+        return map.computeValueIfAbsent(attribute) { k ->
             mappingFunction(k as Attribute<T>)
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> computeIfPresent(attribute: Attribute<T>, remappingFunction: (Attribute<T>, T) -> T?): T? {
-        val value = map.computeIfPresentPlatform(attribute) { k, old ->
+        val value = map.computeValueIfPresent(attribute) { k, old ->
             k as Attribute<T>
             remappingFunction(k, old as T)
         }
@@ -361,7 +361,7 @@ private class MutableAttributeMapImpl(override val map: MutableMap<Attribute<*>,
         attribute: Attribute<T>,
         remappingFunction: (Attribute<T>, Any) -> T?
     ): Any? {
-        return map.computeIfPresentPlatform(attribute) { k, old ->
+        return map.computeValueIfPresent(attribute) { k, old ->
             k as Attribute<T>
             remappingFunction(k, old)
         }
