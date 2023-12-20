@@ -19,10 +19,10 @@ package love.forte.simbot.common.time
  *
  * @author ForteScarlet
  */
-public class MillisecondsTimestamp(override val milliseconds: Long) : Timestamp {
+public class MillisecondTimestamp(override val milliseconds: Long) : Timestamp {
 
     /**
-     * [MillisecondsTimestamp] 与其他 [Timestamp] 始终通过 [milliseconds] 进行比较。
+     * [MillisecondTimestamp] 与其他 [Timestamp] 始终通过 [milliseconds] 进行比较。
      *
      */
     override fun equals(other: Any?): Boolean {

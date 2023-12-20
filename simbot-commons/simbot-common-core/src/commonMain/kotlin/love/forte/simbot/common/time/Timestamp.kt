@@ -53,9 +53,9 @@ import kotlin.jvm.JvmStatic
  * [Timestamp] 应支持与任意 [Timestamp] 类型进行匹配，但是无法保证 [equals] 结果为 `true` 的两个结果的 [hashCode] 相同。
  *
  *
- * ### [MillisecondsTimestamp]
+ * ### [MillisecondTimestamp]
  *
- * [MillisecondsTimestamp] 是全平台的默认实现，提供一个毫秒值，进行一个简单的包装。
+ * [MillisecondTimestamp] 是全平台的默认实现，提供一个毫秒值，进行一个简单的包装。
  *
  * @author ForteScarlet
  */
@@ -79,10 +79,10 @@ public interface Timestamp : Comparable<Timestamp> {
         /**
          * 通过毫秒值得到一个 [Timestamp]。
          *
-         * @see MillisecondsTimestamp
+         * @see MillisecondTimestamp
          */
         @JvmStatic
-        public fun ofMilliseconds(milliseconds: Long): Timestamp = MillisecondsTimestamp(milliseconds)
+        public fun ofMilliseconds(milliseconds: Long): Timestamp = MillisecondTimestamp(milliseconds)
 
         /**
          * 得到一个记录了当前时间戳信息的 [Timestamp] 实例。

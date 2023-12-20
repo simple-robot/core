@@ -12,7 +12,7 @@ import platform.posix.timeval
  * 得到一个记录了当前时间戳信息的 [Timestamp] 实例。
  */
 @OptIn(ExperimentalForeignApi::class)
-internal actual fun nowInternal(): Timestamp = MillisecondsTimestamp(nowMillis)
+internal actual fun nowInternal(): Timestamp = MillisecondTimestamp(nowMillis)
 
 
 @ExperimentalForeignApi

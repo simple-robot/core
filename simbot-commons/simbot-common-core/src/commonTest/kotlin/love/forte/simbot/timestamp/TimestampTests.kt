@@ -1,7 +1,7 @@
 package love.forte.simbot.timestamp
 
 import love.forte.simbot.annotations.ExperimentalAPI
-import love.forte.simbot.common.time.MillisecondsTimestamp
+import love.forte.simbot.common.time.MillisecondTimestamp
 import love.forte.simbot.common.time.TimeUnit
 import love.forte.simbot.common.time.Timestamp
 import kotlin.test.Test
@@ -19,7 +19,7 @@ class TimestampTests {
         val millis = 1697822131902L
         assertEquals(Timestamp.ofMilliseconds(millis), Timestamp.ofMilliseconds(millis))
 
-        val timestamp = MillisecondsTimestamp(millis)
+        val timestamp = MillisecondTimestamp(millis)
         assertEquals(timestamp.timeAs(TimeUnit.SECONDS), millis / 1000)
     }
 
