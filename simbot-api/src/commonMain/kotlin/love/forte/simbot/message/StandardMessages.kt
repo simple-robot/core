@@ -5,7 +5,7 @@ package love.forte.simbot.message
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import love.forte.simbot.id.ID
+import love.forte.simbot.common.id.ID
 import love.forte.simbot.message.At.Companion.equals
 import love.forte.simbot.message.At.Companion.hashCode
 import love.forte.simbot.message.OfflineImage.Companion.toOfflineImage
@@ -94,14 +94,14 @@ public class Text private constructor(override val text: String) : PlainText {
  * val text: Text = "mua".toText()
  * ```
  */
-public fun String.toText(): Text = Text.of(this)
+public fun String.toText(): Text = of(this)
 
 /**
  * 得到一个空的 [Text].
  *
  */
 @JsName("emptyText")
-public fun Text(): Text = Text.of("")
+public fun Text(): Text = of("")
 
 /**
  * 构建一个 [Text].

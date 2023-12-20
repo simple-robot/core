@@ -83,6 +83,7 @@ kotlin {
         commonMain {
             dependencies {
                 compileOnly(project(":simbot-commons:simbot-common-annotations"))
+                compileOnly(project(":simbot-commons:simbot-common-collection"))
                 api(project(":simbot-api"))
                 api(libs.kotlinx.coroutines.core)
                 // api(libs.kotlinx.serialization.core)

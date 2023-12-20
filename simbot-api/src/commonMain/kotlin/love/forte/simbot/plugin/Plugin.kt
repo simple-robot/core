@@ -4,11 +4,11 @@ import love.forte.simbot.application.Application
 import love.forte.simbot.application.ApplicationConfiguration
 import love.forte.simbot.application.ApplicationEventRegistrar
 import love.forte.simbot.application.Components
+import love.forte.simbot.common.function.ConfigurerFunction
+import love.forte.simbot.common.function.MergeableFactoriesConfigurator
+import love.forte.simbot.common.function.MergeableFactory
 import love.forte.simbot.component.Component
 import love.forte.simbot.event.EventDispatcher
-import love.forte.simbot.function.ConfigurerFunction
-import love.forte.simbot.utils.MergeableFactoriesConfigurator
-import love.forte.simbot.utils.MergeableFactory
 
 /**
  *

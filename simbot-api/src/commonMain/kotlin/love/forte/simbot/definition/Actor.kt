@@ -3,8 +3,8 @@ package love.forte.simbot.definition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import love.forte.simbot.bot.Bot
-import love.forte.simbot.id.ID
-import love.forte.simbot.id.IDContainer
+import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.IDContainer
 
 /**
  *

@@ -1,6 +1,6 @@
 package love.forte.simbot
 
-import love.forte.simbot.utils.TimeUnit
+import love.forte.simbot.common.time.TimeUnit
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals

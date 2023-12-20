@@ -3,7 +3,7 @@ package love.forte.simbot.event
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
-import love.forte.simbot.function.ConfigurerFunction
+import love.forte.simbot.common.function.ConfigurerFunction
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 

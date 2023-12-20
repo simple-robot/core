@@ -3,7 +3,7 @@ package love.forte.simbot.message
 import love.forte.simbot.ability.DeleteFailureException
 import love.forte.simbot.ability.DeleteOption
 import love.forte.simbot.ability.DeleteSupport
-import love.forte.simbot.id.ID
+import love.forte.simbot.common.id.ID
 
 
 /**

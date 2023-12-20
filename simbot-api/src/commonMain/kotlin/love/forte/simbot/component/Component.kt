@@ -3,9 +3,9 @@ package love.forte.simbot.component
 import kotlinx.serialization.modules.SerializersModule
 import love.forte.simbot.application.ApplicationConfiguration
 import love.forte.simbot.application.ApplicationEventRegistrar
-import love.forte.simbot.function.ConfigurerFunction
-import love.forte.simbot.utils.MergeableFactoriesConfigurator
-import love.forte.simbot.utils.MergeableFactory
+import love.forte.simbot.common.function.ConfigurerFunction
+import love.forte.simbot.common.function.MergeableFactoriesConfigurator
+import love.forte.simbot.common.function.MergeableFactory
 
 /**
  * 一个 **组件**。

@@ -3,13 +3,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
 import love.forte.simbot.annotations.ExperimentalAPI
+import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.UUID
+import love.forte.simbot.common.time.Timestamp
 import love.forte.simbot.core.application.launchSimpleApplication
 import love.forte.simbot.event.Event
 import love.forte.simbot.event.EventResult
 import love.forte.simbot.event.takeWhileNotError
-import love.forte.simbot.id.ID
-import love.forte.simbot.id.UUID
-import love.forte.simbot.timestamp.Timestamp
 import java.util.concurrent.Executors
 import kotlin.test.Test
 

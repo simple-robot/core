@@ -84,6 +84,7 @@ kotlin {
             dependencies {
                 compileOnly(project(":simbot-commons:simbot-common-annotations"))
                 api(project(":simbot-commons:simbot-common-suspend-runner"))
+                api(project(":simbot-commons:simbot-common-collection"))
                 compileOnly(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
             }

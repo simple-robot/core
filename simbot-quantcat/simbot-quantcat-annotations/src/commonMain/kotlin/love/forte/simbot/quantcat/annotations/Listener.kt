@@ -1,6 +1,6 @@
 package love.forte.simbot.quantcat.annotations
 
-import love.forte.simbot.utils.PriorityConstant
+import love.forte.simbot.common.PriorityConstant
 
 /**
  * 标记一个函数为监听函数/事件处理器。

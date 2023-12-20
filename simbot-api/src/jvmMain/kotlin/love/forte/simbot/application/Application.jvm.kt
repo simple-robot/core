@@ -6,10 +6,10 @@ package love.forte.simbot.application
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.future.asCompletableFuture
 import love.forte.simbot.annotations.InternalAPI
+import love.forte.simbot.common.function.ConfigurerFunction
+import love.forte.simbot.common.function.invokeWith
+import love.forte.simbot.common.function.toConfigurerFunction
 import love.forte.simbot.event.EventDispatcherConfiguration
-import love.forte.simbot.function.ConfigurerFunction
-import love.forte.simbot.function.invokeWith
-import love.forte.simbot.function.toConfigurerFunction
 import love.forte.simbot.utils.runInNoScopeBlocking
 import java.util.concurrent.CompletableFuture
 

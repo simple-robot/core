@@ -1,15 +1,15 @@
 package love.forte.simbot.application
 
 import kotlinx.coroutines.CoroutineScope
-import love.forte.simbot.async.Async
-import love.forte.simbot.async.toAsync
+import love.forte.simbot.common.async.Async
+import love.forte.simbot.common.async.toAsync
+import love.forte.simbot.common.function.ConfigurerFunction
+import love.forte.simbot.common.function.invokeWith
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
 import love.forte.simbot.component.ComponentFactory
 import love.forte.simbot.event.EventDispatcherConfiguration
-import love.forte.simbot.function.ConfigurerFunction
-import love.forte.simbot.function.invokeWith
 import love.forte.simbot.plugin.Plugin
 import love.forte.simbot.plugin.PluginConfigureContext
 import love.forte.simbot.plugin.PluginFactoriesConfigurator

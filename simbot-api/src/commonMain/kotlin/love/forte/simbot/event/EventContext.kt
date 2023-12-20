@@ -1,7 +1,7 @@
 package love.forte.simbot.event
 
+import love.forte.simbot.common.attribute.MutableAttributeMap
 import love.forte.simbot.message.MessageContent
-import love.forte.simbot.utils.MutableAttributeMap
 
 /**
  * 一个在事件处理流程中流转的上下文。

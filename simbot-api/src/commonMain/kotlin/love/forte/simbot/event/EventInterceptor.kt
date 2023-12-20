@@ -1,6 +1,6 @@
 package love.forte.simbot.event
 
-import love.forte.simbot.utils.PriorityConstant
+import love.forte.simbot.common.PriorityConstant
 import kotlin.jvm.JvmSynthetic
 
 

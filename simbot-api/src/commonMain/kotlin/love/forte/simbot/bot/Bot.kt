@@ -6,14 +6,14 @@ import love.forte.simbot.JST
 import love.forte.simbot.JSTP
 import love.forte.simbot.ability.CompletionAware
 import love.forte.simbot.ability.LifecycleAware
-import love.forte.simbot.collection.Collectable
+import love.forte.simbot.common.collectable.Collectable
+import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.IDContainer
 import love.forte.simbot.component.Component
 import love.forte.simbot.definition.Channel
 import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.definition.Contact
 import love.forte.simbot.definition.Guild
-import love.forte.simbot.id.ID
-import love.forte.simbot.id.IDContainer
 
 /**
  * 一个 `Bot`。

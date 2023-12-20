@@ -1,7 +1,7 @@
 package love.forte.simbot
 
 import kotlinx.coroutines.Job
-import love.forte.simbot.utils.linkTo
+import love.forte.simbot.common.coroutines.linkTo
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

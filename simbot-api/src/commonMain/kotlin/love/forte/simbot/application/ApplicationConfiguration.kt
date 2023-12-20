@@ -1,7 +1,7 @@
 package love.forte.simbot.application
 
 import kotlinx.coroutines.Job
-import love.forte.simbot.utils.linkTo
+import love.forte.simbot.common.coroutines.linkTo
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 

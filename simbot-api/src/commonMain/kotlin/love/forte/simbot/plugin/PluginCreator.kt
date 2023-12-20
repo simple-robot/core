@@ -1,8 +1,8 @@
 package love.forte.simbot.plugin
 
 import love.forte.simbot.annotations.ExperimentalAPI
-import love.forte.simbot.function.ConfigurerFunction
-import love.forte.simbot.function.invokeBy
+import love.forte.simbot.common.function.ConfigurerFunction
+import love.forte.simbot.common.function.invokeBy
 
 
 // TODO

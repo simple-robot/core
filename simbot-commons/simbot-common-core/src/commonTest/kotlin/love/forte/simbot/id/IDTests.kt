@@ -1,12 +1,13 @@
 package love.forte.simbot.id
 
 import kotlinx.serialization.json.Json
-import love.forte.simbot.id.IntID.Companion.ID
-import love.forte.simbot.id.LongID.Companion.ID
-import love.forte.simbot.id.StringID.Companion.ID
-import love.forte.simbot.id.UIntID.Companion.ID
-import love.forte.simbot.id.ULongID.Companion.ID
-import love.forte.simbot.id.UUID.Companion.UUID
+import love.forte.simbot.common.id.*
+import love.forte.simbot.common.id.IntID.Companion.ID
+import love.forte.simbot.common.id.LongID.Companion.ID
+import love.forte.simbot.common.id.StringID.Companion.ID
+import love.forte.simbot.common.id.UIntID.Companion.ID
+import love.forte.simbot.common.id.ULongID.Companion.ID
+import love.forte.simbot.common.id.UUID.Companion.UUID
 import kotlin.random.Random
 import kotlin.random.nextUInt
 import kotlin.random.nextULong

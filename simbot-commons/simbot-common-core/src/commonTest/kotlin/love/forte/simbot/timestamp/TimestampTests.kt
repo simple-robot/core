@@ -1,7 +1,9 @@
 package love.forte.simbot.timestamp
 
 import love.forte.simbot.annotations.ExperimentalAPI
-import love.forte.simbot.utils.TimeUnit
+import love.forte.simbot.common.time.MillisecondsTimestamp
+import love.forte.simbot.common.time.TimeUnit
+import love.forte.simbot.common.time.Timestamp
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

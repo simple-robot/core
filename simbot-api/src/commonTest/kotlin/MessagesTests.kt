@@ -1,8 +1,7 @@
-import io.ktor.utils.io.core.*
 import kotlinx.serialization.json.Json
-import love.forte.simbot.id.IntID.Companion.ID
-import love.forte.simbot.id.StringID.Companion.ID
-import love.forte.simbot.id.UUID
+import love.forte.simbot.common.id.IntID.Companion.ID
+import love.forte.simbot.common.id.StringID.Companion.ID
+import love.forte.simbot.common.id.UUID
 import love.forte.simbot.message.*
 import love.forte.simbot.message.OfflineImage.Companion.toOfflineImage
 import love.forte.simbot.resource.toResource
@@ -24,8 +23,8 @@ class MessagesTests {
             add("Hello".toText())
             add(AtAll)
             add(At(1.ID))
-            add(UUID.random().toString().toByteArray().toResource().toOfflineImage())
-            add(UUID.random().toString().toByteArray().toResource().toOfflineResourceImage())
+            add(UUID.random().toString().encodeToByteArray().toResource().toOfflineImage())
+            add(UUID.random().toString().encodeToByteArray().toResource().toOfflineResourceImage())
             add(Face("FACE".ID))
             add(Emoji(UUID.random()))
             add(RemoteIDImage(UUID.random()))

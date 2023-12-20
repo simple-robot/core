@@ -4,7 +4,7 @@ import love.forte.simbot.ability.DeleteOption
 import love.forte.simbot.ability.DeleteSupport
 import love.forte.simbot.ability.SendSupport
 import love.forte.simbot.ability.StandardDeleteOption
-import love.forte.simbot.id.ID
+import love.forte.simbot.common.id.ID
 import kotlin.jvm.JvmSynthetic
 
 

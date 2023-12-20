@@ -83,14 +83,13 @@ kotlin {
                 api(project(":simbot-commons:simbot-common-annotations"))
                 api(project(":simbot-commons:simbot-common-suspend-runner"))
                 api(project(":simbot-commons:simbot-common-core"))
+                api(project(":simbot-commons:simbot-common-collection"))
                 api(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
             }
         }
         commonTest {
             dependencies {
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(kotlin("test"))
@@ -118,20 +117,39 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.reactor)
                 implementation(libs.kotlinx.coroutines.rx2)
                 implementation(libs.kotlinx.coroutines.rx3)
+                implementation(libs.ktor.client.core)
 
                 implementation(kotlin("test-junit5"))
                 implementation(libs.ktor.client.cio)
             }
         }
 
-        nativeMain
-        nativeTest
+        jsTest.dependencies {
+            implementation(libs.ktor.client.js)
+            implementation(libs.ktor.client.core)
+        }
 
-        linuxMain
-        linuxTest
+        nativeTest.dependencies {
+            // implementation(libs.ktor.client.core)
+            // implementation(libs.ktor.client.cio)
+        }
 
-        appleMain
-        appleTest
+        linuxTest.dependencies {
+            // implementation(libs.ktor.client.core)
+            // implementation(libs.ktor.client.cio)
+        }
+
+        appleTest.dependencies {
+            // implementation(libs.ktor.client.core)
+            // implementation(libs.ktor.client.cio)
+        }
+
+        mingwTest.dependencies {
+            // implementation(libs.ktor.client.core)
+            // implementation(libs.ktor.client.winhttp)
+        }
+
+
     }
 }
 

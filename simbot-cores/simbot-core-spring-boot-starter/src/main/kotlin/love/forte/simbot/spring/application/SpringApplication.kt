@@ -1,12 +1,12 @@
 package love.forte.simbot.spring.application
 
 import love.forte.simbot.application.*
+import love.forte.simbot.common.function.ConfigurerFunction
+import love.forte.simbot.common.function.invokeBy
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
 import love.forte.simbot.event.EventDispatcherConfiguration
-import love.forte.simbot.function.ConfigurerFunction
-import love.forte.simbot.function.invokeBy
 import love.forte.simbot.plugin.Plugin
 import love.forte.simbot.plugin.PluginConfigureContext
 import love.forte.simbot.plugin.PluginFactoriesConfigurator

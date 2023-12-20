@@ -1,4 +1,4 @@
-import love.forte.simbot.id.UUID
+import love.forte.simbot.common.id.UUID
 import kotlin.test.Test
 
 /**

@@ -12,6 +12,8 @@ plugins {
 }
 
 include(":simbot-commons:simbot-common-annotations")
+include(":simbot-commons:simbot-common-collection")
+include(":simbot-commons:simbot-common-atomic")
 include(":simbot-commons:simbot-common-core")
 include(":simbot-commons:simbot-common-suspend-runner")
 include(":simbot-commons:simbot-common-stage-loop")

@@ -3,8 +3,8 @@ package love.forte.simbot.definition
 import love.forte.simbot.JST
 import love.forte.simbot.JSTP
 import love.forte.simbot.ability.SendSupport
-import love.forte.simbot.collection.Collectable
-import love.forte.simbot.id.ID
+import love.forte.simbot.common.collectable.Collectable
+import love.forte.simbot.common.id.ID
 
 
 /**

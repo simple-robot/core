@@ -1,9 +1,9 @@
 package love.forte.simbot.event
 
 import love.forte.simbot.bot.Bot
-import love.forte.simbot.id.ID
-import love.forte.simbot.id.IDContainer
-import love.forte.simbot.timestamp.Timestamp
+import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.IDContainer
+import love.forte.simbot.common.time.Timestamp
 
 /**
  * 一个 **事件**。

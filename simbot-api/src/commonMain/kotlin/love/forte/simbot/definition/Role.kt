@@ -1,6 +1,6 @@
 package love.forte.simbot.definition
 
-import love.forte.simbot.id.ID
+import love.forte.simbot.common.id.ID
 
 
 /**

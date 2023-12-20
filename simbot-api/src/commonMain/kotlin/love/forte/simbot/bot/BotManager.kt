@@ -1,7 +1,7 @@
 package love.forte.simbot.bot
 
 import love.forte.simbot.ability.LifecycleAware
-import love.forte.simbot.id.ID
+import love.forte.simbot.common.id.ID
 
 /**
  *

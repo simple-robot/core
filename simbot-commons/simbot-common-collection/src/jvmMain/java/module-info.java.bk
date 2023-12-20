@@ -1,0 +1,3 @@
+module simbot.common.collection {
+    requires kotlin.stdlib;
+}

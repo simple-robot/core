@@ -10,10 +10,10 @@ import love.forte.simbot.ability.CompletionAware
 import love.forte.simbot.ability.LifecycleAware
 import love.forte.simbot.annotations.InternalAPI
 import love.forte.simbot.bot.BotManager
+import love.forte.simbot.common.collection.toImmutable
 import love.forte.simbot.component.Component
 import love.forte.simbot.event.EventDispatcher
 import love.forte.simbot.plugin.Plugin
-import love.forte.simbot.utils.toImmutable
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName

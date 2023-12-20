@@ -1,8 +1,8 @@
 package love.forte.simbot.quantcat.annotations
 
+import love.forte.simbot.common.PriorityConstant
 import love.forte.simbot.quantcat.MatchType
 import love.forte.simbot.quantcat.annotations.Filter.Targets
-import love.forte.simbot.utils.PriorityConstant
 
 /**
  * 与 [@Listener][Listener] 配合使用，标记为对当前事件处理器的基础属性过滤器。

@@ -7,12 +7,12 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import love.forte.simbot.async.Async
-import love.forte.simbot.async.toAsync
+import love.forte.simbot.common.async.Async
+import love.forte.simbot.common.async.toAsync
+import love.forte.simbot.common.function.ConfigurerFunction
+import love.forte.simbot.common.function.invokeWith
+import love.forte.simbot.common.function.toConfigurerFunction
 import love.forte.simbot.event.EventDispatcherConfiguration
-import love.forte.simbot.function.ConfigurerFunction
-import love.forte.simbot.function.invokeWith
-import love.forte.simbot.function.toConfigurerFunction
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
