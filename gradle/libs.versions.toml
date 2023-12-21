@@ -73,6 +73,8 @@ openjdk-jmh-core = { group = "org.openjdk.jmh", name = "jmh-core", version.ref =
 openjdk-jmh-generator-annprocess = { group = "org.openjdk.jmh", name = "jmh-generator-annprocess", version.ref = "openjdk-jmh" }
 
 # ktor
+ktor-http = { group = "io.ktor", name = "ktor-http", version.ref = "ktor" }
+
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
 
