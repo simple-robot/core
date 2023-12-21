@@ -213,6 +213,8 @@ private class AtomicBooleanImpl(private val atomic: java.util.concurrent.atomic.
 
     override fun compareAndExchange(expect: Boolean, value: Boolean): Boolean =
         atomic.compareAndExchange(expect, value)
+
+    override fun toString(): String = atomic.toString()
 }
 
 /**

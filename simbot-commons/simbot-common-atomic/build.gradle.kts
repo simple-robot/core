@@ -38,7 +38,10 @@ kotlin {
 
     js(IR) {
         browser()
-        nodejs()
+        nodejs {
+            testTask {
+            }
+        }
     }
 
     // tier1
@@ -89,6 +92,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
 

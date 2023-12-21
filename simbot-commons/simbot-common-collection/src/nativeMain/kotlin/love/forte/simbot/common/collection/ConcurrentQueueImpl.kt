@@ -1,18 +1,9 @@
-package love.forte.simbot.core.event
+package love.forte.simbot.common.collection
 
 import kotlin.concurrent.AtomicReference
 
-/**
- * 构建一个内部基于 [AtomicReference] 的 [PriorityConcurrentQueue] 实现。
- *
- * 此实现内会在每次新增或删除时使用新列表原子（`atomic`）地覆盖原列表，
- * 不会影响到已经被取用的 [iterator][PriorityConcurrentQueue.iterator]。
- *
- */
-public actual fun <T> createPriorityConcurrentQueue(): PriorityConcurrentQueue<T> =
-    AtomicCopyOnWritePriorityConcurrentQueue()
 
-private class AtomicCopyOnWritePriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> {
+internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
     private data class ListWithPriority<T>(
         val priority: Int,
         val list: AtomicReference<List<T>>
@@ -206,15 +197,4 @@ private class AtomicCopyOnWritePriorityConcurrentQueue<T> : PriorityConcurrentQu
     override fun iterator(): Iterator<T> {
         return lists.value.asSequence().flatMap { it.list.value }.iterator()
     }
-
-
-}
-
-
-private inline fun <T> AtomicReference<T>.compareAndSet(block: (T) -> T) {
-    do {
-        val old = value
-        val new = block(old)
-        val set = compareAndSet(old, new)
-    } while (set)
 }

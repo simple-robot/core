@@ -1,4 +1,39 @@
-package love.forte.simbot.core.event
+package love.forte.simbot.common.collection
+
+/**
+ * 可以并发安全地操作元素地并发队列类型。
+ *
+ * @author ForteScarlet
+ */
+public interface ConcurrentQueue<T> : Iterable<T> {
+
+    /**
+     * 添加指定元素
+     */
+    public fun add(value: T)
+
+    /**
+     * 移除指定元素
+     */
+    public fun remove(value: T)
+
+    // pop? take?
+
+    /**
+     * 根据条件从列表中删除元素。
+     *
+     * @param predicate 用于确定是否应删除元素的条件。只有满足条件的元素才会被删除。
+     */
+    public fun removeIf(predicate: (T) -> Boolean)
+
+    /**
+     * 返回用于遍历此对象元素的迭代器。
+     *
+     * @return 允许遍历此对象元素的迭代器对象。
+     */
+    override fun iterator(): Iterator<T>
+
+}
 
 /**
  * 表示一个基于优先级的并发队列，可以根据元素的优先级添加和删除元素。
@@ -52,13 +87,3 @@ public interface PriorityConcurrentQueue<T> : Iterable<T> {
      */
     override fun iterator(): Iterator<T>
 }
-
-/**
- * 创建一个优先级并发队列。
- * 这是一个预期的函数，可以根据实际平台的需求提供不同的实现。
- * 优先级并发队列允许在多个线程中同时添加、读取和删除元素，
- * 并且元素的出队顺序会根据它们的优先级来确定。
- *
- * @return 返回一个新创建的优先级并发队列。
- */
-public expect fun <T> createPriorityConcurrentQueue(): PriorityConcurrentQueue<T>

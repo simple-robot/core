@@ -54,16 +54,6 @@ private class AtomicLongImpl(override var value: Long) : AtomicLong {
     }
 
     override fun toString(): String = value.toString()
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicLongImpl) return false
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = value.hashCode()
 }
 
 /**
@@ -120,16 +110,6 @@ private class AtomicIntImpl(override var value: Int) : AtomicInt {
     }
 
     override fun toString(): String = value.toString()
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicIntImpl) return false
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = value.hashCode()
 }
 
 /**
@@ -186,16 +166,6 @@ private class AtomicUIntImpl(override var value: UInt) : AtomicUInt {
     }
 
     override fun toString(): String = value.toString()
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicUIntImpl) return false
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = value.hashCode()
 }
 
 /**
@@ -252,16 +222,6 @@ private class AtomicULongImpl(override var value: ULong) : AtomicULong {
     }
 
     override fun toString(): String = value.toString()
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicULongImpl) return false
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = value.hashCode()
 }
 
 /**
@@ -296,16 +256,6 @@ private class AtomicBooleanImpl(override var value: Boolean) : AtomicBoolean {
     }
 
     override fun toString(): String = value.toString()
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicBooleanImpl) return false
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = value.hashCode()
 }
 
 /**
@@ -340,14 +290,4 @@ private class AtomicRefImpl<T>(override var value: T) : AtomicRef<T> {
     }
 
     override fun toString(): String = value.toString()
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicRefImpl<*>) return false
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = value?.hashCode() ?: 0
 }

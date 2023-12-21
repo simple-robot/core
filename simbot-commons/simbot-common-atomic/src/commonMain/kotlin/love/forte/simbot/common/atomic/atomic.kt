@@ -259,3 +259,9 @@ public inline fun <T> AtomicRef<T>.update(block: (T) -> T): T {
         }
     }
 }
+
+
+public operator fun AtomicInt.plusAssign(delta: Int) { incrementAndGet(delta) }
+public operator fun AtomicUInt.plusAssign(delta: UInt) { incrementAndGet(delta) }
+public operator fun AtomicLong.plusAssign(delta: Long) { incrementAndGet(delta) }
+public operator fun AtomicULong.plusAssign(delta: ULong) { incrementAndGet(delta) }

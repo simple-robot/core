@@ -1,22 +1,14 @@
-package love.forte.simbot.core.event
+package love.forte.simbot.common.collection
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentSkipListMap
 
+
 /**
- * 创建优先级并发队列的函数。
  *
- * 调用此函数会返回一个优先级并发队列的实例。
- * 实例的具体实现基于 [ConcurrentSkipListMap] 和 [ConcurrentLinkedQueue]。
- *
- * @param T 队列元素的类型。
- * @return 返回 SkipListPriorityConcurrentQueue 的实例。
+ * @author ForteScarlet
  */
-public actual fun <T> createPriorityConcurrentQueue(): PriorityConcurrentQueue<T> =
-    SkipListPriorityConcurrentQueue()
-
-
-private class SkipListPriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> {
+internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
     private val queueMap = ConcurrentSkipListMap<Int, ConcurrentLinkedQueue<T>>()
 
     override fun add(priority: Int, value: T) {
@@ -100,7 +92,8 @@ private class SkipListPriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> {
 
             return currentIter!!.next()
         }
-
     }
+
+    override fun toString(): String = queueMap.toString()
 
 }

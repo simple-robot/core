@@ -31,19 +31,6 @@ private class AtomicLongImpl(value: Long) : AtomicLong {
     override fun compareAndExchange(expect: Long, value: Long): Long = atomic.compareAndExchange(expect, value)
 
     override fun toString(): String = atomic.toString()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicLongImpl) return false
-
-        if (atomic != other.atomic) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = atomic.hashCode()
-
-
 }
 
 /**
@@ -76,17 +63,6 @@ private class AtomicIntImpl(value: Int) : AtomicInt {
     override fun compareAndExchange(expect: Int, value: Int): Int = atomic.compareAndExchange(expect, value)
 
     override fun toString(): String = atomic.toString()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicIntImpl) return false
-
-        if (atomic != other.atomic) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = atomic.hashCode()
 }
 
 /**
@@ -123,18 +99,7 @@ private class AtomicUIntImpl(value: UInt) : AtomicUInt {
     override fun compareAndExchange(expect: UInt, value: UInt): UInt =
         atomic.compareAndExchange(expect.toInt(), value.toInt()).toUInt()
 
-    override fun toString(): String = value.toString()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicUIntImpl) return false
-
-        if (atomic != other.atomic) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = atomic.hashCode()
+    override fun toString(): String = atomic.value.toString()
 }
 
 /**
@@ -171,17 +136,7 @@ private class AtomicULongImpl(value: ULong) : AtomicULong {
     override fun compareAndExchange(expect: ULong, value: ULong): ULong =
         atomic.compareAndExchange(expect.toLong(), value.toLong()).toULong()
 
-    override fun toString(): String = value.toString()
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicULongImpl) return false
-
-        if (atomic != other.atomic) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = atomic.hashCode()
+    override fun toString(): String = atomic.value.toString()
 
     companion object {
         private const val ONE: ULong = 1u
@@ -209,6 +164,8 @@ private class AtomicBooleanImpl(value: Boolean) : AtomicBoolean {
     override fun compareAndExchange(expect: Boolean, value: Boolean): Boolean =
         atomic.compareAndExchange(expect.toBInt(), value.toBInt()).toBool()
 
+    override fun toString(): String = atomic.value.toString()
+
     companion object {
         const val FALSE = 0
         const val TRUE = 1
@@ -232,17 +189,5 @@ private class AtomicRefImpl<T>(value: T) : AtomicRef<T> {
 
     override fun compareAndExchange(expect: T, value: T): T = atomic.compareAndExchange(expect, value)
 
-    override fun toString(): String = atomic.toString()
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is AtomicRefImpl<*>) return false
-
-        if (atomic != other.atomic) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return atomic.hashCode()
-    }
+    override fun toString(): String = atomic.value.toString()
 }

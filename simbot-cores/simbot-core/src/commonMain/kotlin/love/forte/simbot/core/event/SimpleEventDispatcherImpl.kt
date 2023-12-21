@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import love.forte.simbot.common.PriorityConstant
 import love.forte.simbot.common.attribute.MutableAttributeMap
 import love.forte.simbot.common.attribute.mutableAttributeMapOf
+import love.forte.simbot.common.collection.PriorityConcurrentQueue
 import love.forte.simbot.common.collection.concurrentMutableMap
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeWith
@@ -119,7 +120,10 @@ private class SimpleEventInterceptorsInvoker(private val interceptors: Iterable<
             ContextImpl(eventListenerContext, iterator, actualTarget)
     }
 
-    suspend fun invoke(eventContext: EventListenerContext, actualTarget: suspend (EventListenerContext) -> EventResult): EventResult {
+    suspend fun invoke(
+        eventContext: EventListenerContext,
+        actualTarget: suspend (EventListenerContext) -> EventResult
+    ): EventResult {
         val context = ContextImpl(eventContext, interceptors.iterator(), actualTarget)
         return context.invoke()
     }
@@ -185,7 +189,8 @@ internal class SimpleEventDispatcherImpl(
 
     //endregion
 
-    private val listenersQueue = createPriorityConcurrentQueue<SimpleEventListenerInvoker>()
+    private val listenersQueue =
+        love.forte.simbot.common.collection.createPriorityConcurrentQueue<SimpleEventListenerInvoker>()
 
     override val listeners: Sequence<EventListener>
         get() = listenersQueue.asSequence().map { it.listener }
@@ -324,7 +329,6 @@ private class SimpleEventListenerInvoker(
     }
 
 }
-
 
 internal expect fun <T : Any> createQueueRegistrationHandle(
     priority: Int,

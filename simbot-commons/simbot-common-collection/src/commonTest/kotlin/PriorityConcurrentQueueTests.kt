@@ -1,11 +1,9 @@
-package love.forte.simbot.core.application
-
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
-import love.forte.simbot.core.event.createPriorityConcurrentQueue
+import love.forte.simbot.common.collection.createPriorityConcurrentQueue
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals

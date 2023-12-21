@@ -1,12 +1,7 @@
-package love.forte.simbot.core.event
+package love.forte.simbot.common.collection
 
-/**
- * 构建一个基于普通的 [MutableList] 实现的 [PriorityConcurrentQueue]。
- */
-public actual fun <T> createPriorityConcurrentQueue(): PriorityConcurrentQueue<T> =
-    SimpleListPriorityConcurrentQueue()
 
-private class SimpleListPriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> {
+internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
     private val lists = mutableMapOf<Int, MutableList<T>>()
 
     override fun add(priority: Int, value: T) {
@@ -54,4 +49,6 @@ private class SimpleListPriorityConcurrentQueue<T> : PriorityConcurrentQueue<T> 
     override fun iterator(): Iterator<T> {
         return lists.values.asSequence().flatMap { it }.iterator()
     }
+
+    override fun toString(): String = lists.toString()
 }

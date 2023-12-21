@@ -1,5 +1,6 @@
 package love.forte.simbot.core.event
 
+import love.forte.simbot.common.collection.PriorityConcurrentQueue
 import love.forte.simbot.event.EventListenerRegistrationHandle
 
 internal actual fun <T : Any> createQueueRegistrationHandle(
