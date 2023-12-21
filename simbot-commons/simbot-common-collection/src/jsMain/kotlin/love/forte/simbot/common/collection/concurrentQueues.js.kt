@@ -1,6 +1,27 @@
 package love.forte.simbot.common.collection
 
 
+internal class ConcurrentQueueImpl<T> : ConcurrentQueue<T> {
+    private val list = mutableListOf<T>()
+
+    override fun add(value: T) {
+        list.add(value)
+    }
+
+    override fun remove(value: T) {
+        list.remove(value)
+    }
+
+    override fun removeIf(predicate: (T) -> Boolean) {
+        list.removeAll(predicate)
+    }
+
+    override fun iterator(): Iterator<T> = list.iterator()
+
+    override fun toString(): String = list.toString()
+}
+
+
 internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
     private val lists = mutableMapOf<Int, MutableList<T>>()
 
@@ -44,7 +65,8 @@ internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
     }
 
     private fun <T> MutableList<T>.removedAndEmpty(target: T): Boolean = remove(target) && isEmpty()
-    private fun <T> MutableList<T>.removedAllAndEmpty(predicate: (T) -> Boolean): Boolean = removeAll(predicate) && isEmpty()
+    private fun <T> MutableList<T>.removedAllAndEmpty(predicate: (T) -> Boolean): Boolean =
+        removeAll(predicate) && isEmpty()
 
     override fun iterator(): Iterator<T> {
         return lists.values.asSequence().flatMap { it }.iterator()

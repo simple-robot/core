@@ -2,6 +2,40 @@ package love.forte.simbot.common.collection
 
 import kotlin.concurrent.AtomicReference
 
+internal class ConcurrentQueueImpl<T> : ConcurrentQueue<T> {
+    private val listRef: AtomicReference<List<T>> = AtomicReference(emptyList())
+
+    override fun add(value: T) {
+        listRef.update { old ->
+            when (old.size) {
+                0 -> listOf(value)
+                else -> old + value
+            }
+        }
+    }
+
+    override fun remove(value: T) {
+        listRef.update { old ->
+            when (old.size) {
+                // nothing to remove
+                0 -> return
+                // only one element
+                1 -> if (old.first() == value) emptyList() else old
+                else -> old - value
+            }
+        }
+    }
+
+    override fun removeIf(predicate: (T) -> Boolean) {
+        listRef.update { old ->
+            old.filterNot(predicate)
+        }
+    }
+
+    override fun iterator(): Iterator<T> = listRef.value.iterator()
+
+    override fun toString(): String = listRef.value.toString()
+}
 
 internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
     private data class ListWithPriority<T>(
@@ -22,7 +56,7 @@ internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
                 val foundList = found.list
                 val expected = foundList.value
                 val newValue = expected + value
-                foundList.compareAndSet(expected, newValue);
+                foundList.compareAndSet(expected, newValue)
             } else {
                 val listValue = lists.value
                 val addedNewValue = lists.compareAndSet(listValue, buildList {
@@ -63,7 +97,7 @@ internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
     }
 
     override fun remove(target: T) {
-        head@while (true) {
+        head@ while (true) {
             for (listWithPriority in lists.value) {
                 while (true) {
                     val list = listWithPriority.list.value
@@ -98,7 +132,7 @@ internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
     }
 
     override fun removeIf(predicate: (T) -> Boolean) {
-        head@while (true) {
+        head@ while (true) {
             for (listWithPriority in lists.value) {
                 while (true) {
                     val list = listWithPriority.list.value
@@ -196,5 +230,16 @@ internal class PriorityConcurrentQueueImpl<T> : PriorityConcurrentQueue<T> {
 
     override fun iterator(): Iterator<T> {
         return lists.value.asSequence().flatMap { it.list.value }.iterator()
+    }
+}
+
+
+private inline fun <T> AtomicReference<T>.update(block: (T) -> T): T {
+    while (true) {
+        val old = value
+        val newValue = block(old)
+        if (compareAndSet(old, newValue)) {
+            return old
+        }
     }
 }

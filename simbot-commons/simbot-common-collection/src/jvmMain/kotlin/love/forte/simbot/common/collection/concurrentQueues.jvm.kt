@@ -3,6 +3,25 @@ package love.forte.simbot.common.collection
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentSkipListMap
 
+internal class ConcurrentQueueImpl<T> : ConcurrentQueue<T> {
+    private val queue = ConcurrentLinkedQueue<T>()
+
+    override fun add(value: T) {
+        queue.add(value)
+    }
+
+    override fun remove(value: T) {
+        queue.remove(value)
+    }
+
+    override fun removeIf(predicate: (T) -> Boolean) {
+        queue.removeIf(predicate)
+    }
+
+    override fun iterator(): Iterator<T> = queue.iterator()
+
+    override fun toString(): String = queue.toString()
+}
 
 /**
  *

@@ -30,3 +30,12 @@ public actual fun <T> Collection<T>.toImmutable(): Collection<T> {
  * @return 返回一个新创建的优先级并发队列。
  */
 public actual fun <T> createPriorityConcurrentQueue(): PriorityConcurrentQueue<T> = PriorityConcurrentQueueImpl()
+
+/**
+ * 创建一个普通的并发队列 [ConcurrentQueue] 。
+ *
+ * 并发队列允许在多个线程中同时添加、读取和删除元素。
+ *
+ * @return 返回一个新创建的并发队列。
+ */
+public actual fun <T> createConcurrentQueue(): ConcurrentQueue<T> = ConcurrentQueueImpl()
