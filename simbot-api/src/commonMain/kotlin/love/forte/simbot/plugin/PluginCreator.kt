@@ -9,6 +9,7 @@ import love.forte.simbot.common.function.invokeBy
 
 public interface SimplePlugin : Plugin {
     public val key: Key
+
     public interface Key : PluginFactory.Key {
         public val name: String
     }

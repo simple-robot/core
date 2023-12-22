@@ -8,7 +8,7 @@ import kotlinx.coroutines.Job
 import love.forte.simbot.JST
 import love.forte.simbot.ability.CompletionAware
 import love.forte.simbot.ability.LifecycleAware
-import love.forte.simbot.annotations.InternalAPI
+import love.forte.simbot.bot.Bot
 import love.forte.simbot.bot.BotManager
 import love.forte.simbot.common.collection.toImmutable
 import love.forte.simbot.component.Component
@@ -82,23 +82,16 @@ public interface Application : CoroutineScope, LifecycleAware, CompletionAware {
     public suspend fun join()
 }
 
-/**
- * 提供给 [Components]、[Plugins]、[BotManagers] 实现的平台额外能力的接口。
- *
- * [PlatformCollection] 会根据不同平台提供更多可用的默认方法，例如在 JVM 平台提供使用 `Class` 过滤或寻找目标结果的方法。
- * [PlatformCollection] 中不应出现任何抽象方法或属性，也不应被外部使用。
- *
- */
-@InternalAPI
-public expect interface PlatformCollection<out T> : Collection<T>
-
-
 //region Components
 /**
  * 用于表示一组 [Component] 。
  */
-@OptIn(InternalAPI::class)
-public interface Components : PlatformCollection<Component>
+public interface Components : Collection<Component> {
+    /**
+     * 根据 [id] 寻找第一个匹配的 [Component]。
+     */
+    public fun findById(id: String): Component? = find { it.id == id }
+}
 
 /**
  * 根据类型寻找某个 [Component]。
@@ -146,8 +139,7 @@ private class CollectionComponents(private val collections: Collection<Component
 /**
  * 用于表示一组 [Plugin]。
  */
-@OptIn(InternalAPI::class)
-public interface Plugins : Collection<Plugin>, PlatformCollection<Plugin>
+public interface Plugins : Collection<Plugin>
 
 /**
  * 根据类型寻找某个 [Plugin]。
@@ -193,8 +185,15 @@ private class CollectionPlugins(private val collections: Collection<Plugin>) : P
  * 用于表示一组 [BotManager]。
  *
  */
-@OptIn(InternalAPI::class)
-public interface BotManagers : Collection<BotManager>, PlatformCollection<BotManager>
+public interface BotManagers : Collection<BotManager> {
+    /**
+     * 以序列的形式获取当前 [BotManager] 中所有的 [Bot]。
+     */
+    public fun allBots(): Sequence<Bot> = asSequence().flatMap { it.all() }
+
+
+
+}
 
 /**
  * 根据类型寻找某个 [BotManager]。

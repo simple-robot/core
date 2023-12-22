@@ -22,7 +22,6 @@ public open class MergeableFactoriesConfigurator<CONTEXT : Any, V : Any, K : Mer
         public operator fun CONF.invoke(context: CONTEXT)
     }
 
-
     /**
      * 向当前 [MergeableFactoriesConfigurator] 中添加一个 [factory] 对应的配置信息。
      * 添加的配置逻辑 [configurator] 会与 [factory] 对应的现有逻辑（如果有的话）合并。

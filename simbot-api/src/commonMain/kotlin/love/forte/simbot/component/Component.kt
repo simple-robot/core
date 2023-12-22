@@ -3,6 +3,7 @@ package love.forte.simbot.component
 import kotlinx.serialization.modules.SerializersModule
 import love.forte.simbot.application.ApplicationConfiguration
 import love.forte.simbot.application.ApplicationEventRegistrar
+import love.forte.simbot.bot.SerializableBotConfiguration
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.MergeableFactoriesConfigurator
 import love.forte.simbot.common.function.MergeableFactory
@@ -30,6 +31,16 @@ public interface Component {
      * 通常为 message 类型的序列化或文件配置类的序列化信息。
      */
     public val serializersModule: SerializersModule
+
+    public companion object {
+        /**
+         * 建议使用的多组件多态序列化的 `classDiscriminator`。
+         * 主要使用在配合 [SerializableBotConfiguration] 进行反序列化的情况下。
+         *
+         */
+        public const val CLASS_DISCRIMINATOR: String = "component"
+
+    }
 }
 
 /**

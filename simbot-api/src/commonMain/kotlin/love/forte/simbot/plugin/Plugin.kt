@@ -21,13 +21,14 @@ import love.forte.simbot.event.EventDispatcher
  * 插件同样配置于事件处理器之后，因此 [Plugin] 最主要的职责之一便是与事件打交道——
  * 比如实现通过某种方式产生事件、并推送给事件处理器。
  *
- * [Plugin] 无所谓形式，可以是一个 [BotManager][love.forte.simbot.bot.BotFactory],
+ * [Plugin] 无所谓形式，可以是一个 [BotManager][love.forte.simbot.bot.BotPlugin],
  * 或是一个定时任务、一个http服务, 或者其他任何什么。
+ *
+ * [BotPlugin][love.forte.simbot.bot.BotPlugin] 是 [Plugin] 的一个特殊类型，详情可参考其说明。
  *
  * @author ForteScarlet
  */
 public interface Plugin
-
 
 /**
  * [Plugin] 的工厂函数，用于配置并预构建 [Plugin] 实例。

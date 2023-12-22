@@ -5,7 +5,6 @@ package love.forte.simbot.application
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.future.asCompletableFuture
-import love.forte.simbot.annotations.InternalAPI
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeWith
 import love.forte.simbot.common.function.toConfigurerFunction
@@ -52,30 +51,3 @@ public fun <A : Application, C : AbstractApplicationBuilder, L : ApplicationLaun
  */
 public class ApplicationLaunchBlockingFailureException internal constructor(cause: Throwable?) : RuntimeException(cause)
 
-// TODO
-
-/**
- * 提供给 [Components]、[Plugins]、[BotManagers] 实现的平台额外能力的接口。
- *
- * [PlatformCollection] 在 JVM 平台提供更多扩展默认方法，例如使用 `Class` 过滤或寻找目标结果的方法。
- *
- */
-@InternalAPI
-public actual interface PlatformCollection<out T> : Collection<T> {
-    /**
-     * 寻找第一个类型为 [type] 的目标。
-     * 如果没有则得到 `null`。
-     */
-    public fun <R : @UnsafeVariance T> find(type: Class<R>): R? =
-        this.find { type.isInstance(it) }?.let { type.cast(it) }
-
-
-    /**
-     * 寻找第一个类型为 [type] 的目标。
-     * 如果没有则抛出 [NoSuchElementException]。
-     *
-     * @throws NoSuchElementException 如果没找到目标结果
-     */
-    public fun <R : @UnsafeVariance T> get(type: Class<R>): R =
-        this.find { type.isInstance(it) }?.let { type.cast(it) } ?: throw NoSuchElementException(type.toString())
-}

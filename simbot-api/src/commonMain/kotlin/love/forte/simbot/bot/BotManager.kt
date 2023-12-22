@@ -13,11 +13,12 @@ import love.forte.simbot.common.id.ID
  * 当 [BotManager] 被执行了 [BotManager.cancel]，除了影响 [BotManager] 自身的生命周期以外，
  * 也会同样影响到所有由它产生的 [Bot]。
  *
+ * [BotManager] 实现 [AutoConfigurableBotPlugin] 以允许其在 `quantcat` 相关模块中有更好的表现。
  *
  * @author ForteScarlet
- * @see BotFactory
+ * @see BotPlugin
  */
-public interface BotManager : BotFactory, LifecycleAware {
+public interface BotManager : AutoConfigurableBotPlugin, LifecycleAware {
 
     /**
      * 得到所有的 [Bot]，以序列的形式。

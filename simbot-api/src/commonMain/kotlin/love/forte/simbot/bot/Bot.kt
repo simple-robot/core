@@ -18,9 +18,15 @@ import love.forte.simbot.definition.Guild
 /**
  * 一个 `Bot`。
  *
+ * ### 行为关系
+ *
+ * [Bot] 实现 [BotRelations] 并提供了部分基础的行为关系对象，
+ * 它们可以提供针对 [Guild]、[ChatGroup]、[Contact] 等常见行为对象的操作。
+ * [Bot] 的实现者也许会根据不同的平台扩展这些行为类型或提供更多的行为类型。
+ *
  * @author ForteScarlet
  */
-public interface Bot : IDContainer, LifecycleAware, CompletionAware, CoroutineScope, BotRelation {
+public interface Bot : IDContainer, LifecycleAware, CompletionAware, CoroutineScope, BotRelations {
     /**
      * 当前bot的标识。
      *
@@ -58,36 +64,6 @@ public interface Bot : IDContainer, LifecycleAware, CompletionAware, CoroutineSc
      *
      */
     public infix fun isMe(id: ID): Boolean
-
-    /**
-     * 是否支持 [GuildRelation] 中提供的任意 API 能力。
-     */
-    public val isAnyGuildRelationSupported: Boolean
-
-    /**
-     * 是否支持 [GuildRelation] 中提供的所有 API 能力。
-     */
-    public val isAllGuildRelationSupported: Boolean
-
-    /**
-     * 是否支持 [GroupRelation] 中提供的任意 API 能力。
-     */
-    public val isAnyGroupRelationSupported: Boolean
-
-    /**
-     * 是否支持 [GroupRelation] 中提供的所有 API 能力。
-     */
-    public val isAllGroupRelationSupported: Boolean
-
-    /**
-     * 是否支持 [ContactRelation] 中提供的任意 API 能力。
-     */
-    public val isAnyContactRelationSupported: Boolean
-
-    /**
-     * 是否支持 [ContactRelation] 中提供的所有 API 能力。
-     */
-    public val isAllContactRelationSupported: Boolean
 
     /**
      * 启动当前 [Bot]。
@@ -137,9 +113,10 @@ public interface Bot : IDContainer, LifecycleAware, CompletionAware, CoroutineSc
 }
 
 /**
- * [Bot] 与部分行为对象的关系接口，继承 [GuildRelation]、[GroupRelation]、[ContactRelation] 并由 [Bot] 实现。
+ * [Bot] 与部分常见行为对象的关系接口，
+ * 提供获取 [GuildRelation]、[GroupRelation]、[ContactRelation] 的 API 并由 [Bot] 实现。
  *
- * [BotRelation] 不提供与 [Channel] 直接相关的 API 或接口，对其的操作可以通过 [Guild] 间接完成，
+ * [BotRelations] 不提供与 [Channel] 直接相关的 API 或接口，对其的操作可以通过 [Guild] 间接完成，
  * 或在实现者支持直接操作 [Channel] 时提供额外的 API。
  *
  * @see Bot
@@ -147,8 +124,31 @@ public interface Bot : IDContainer, LifecycleAware, CompletionAware, CoroutineSc
  * @see GroupRelation
  * @see ContactRelation
  */
-public interface BotRelation : GuildRelation, GroupRelation, ContactRelation
+public interface BotRelations {
+    /**
+     * 此 [Bot] 与频道服务器的关系。
+     * 可用于寻找指定的频道服务器或查询频道服务器的集合。
+     *
+     * 如果得到 `null` 则说明当前 [Bot] 不支持频道相关操作。
+     */
+    public val guildRelation: GuildRelation?
 
+    /**
+     * 此 [Bot] 与聊天群的关系。
+     * 可用于寻找指定的聊天群或查询聊天群的集合。
+     *
+     * 如果得到 `null` 则说明当前 [Bot] 不支持群聊相关操作。
+     */
+    public val groupRelation: GroupRelation?
+
+    /**
+     * 此 [Bot] 与联系人的关系。
+     * 可用于寻找指定的联系人或查询联系人/会话的集合。
+     *
+     * 如果得到 `null` 则说明当前 [Bot] 不支持联系人相关操作。
+     */
+    public val contactRelation: ContactRelation?
+}
 
 /**
  * 与频道服务器的关系。可用于寻找指定的频道服务器或查询频道服务器的集合。
