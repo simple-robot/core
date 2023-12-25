@@ -31,4 +31,26 @@ class JobLinkTests {
         assertTrue(parentJob.isActive)
     }
 
+    @Test
+    fun childJobLinkToParentAndParentCompleteTest() {
+        val parentJob = Job()
+        val childJob = Job().apply { linkTo(parentJob) }
+        parentJob.complete()
+        assertFalse(childJob.isActive)
+    }
+    @Test
+    fun childJobLinkToParentAndParentCompleteButChildUnlinkedTest() {
+        val parentJob = Job()
+        val childJob = Job().apply { linkTo(parentJob).apply { dispose() } }
+        parentJob.complete()
+        assertTrue(childJob.isActive)
+    }
+
+    @Test
+    fun childJobLinkToParentAndChildCompleteTest() {
+        val parentJob = Job()
+        val childJob = Job().apply { linkTo(parentJob) }
+        childJob.complete()
+        assertTrue(parentJob.isActive)
+    }
 }

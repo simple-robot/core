@@ -1,0 +1,90 @@
+package love.forte.simbot.bot.configuration
+
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
+import java.lang.invoke.MethodHandles
+import java.lang.invoke.MethodType
+import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicInteger
+
+/**
+ * 获取 [Dispatchers.IO] 调度器。
+ */
+internal actual fun ioDispatcher(): CoroutineDispatcher? = Dispatchers.IO
+
+/**
+ * 获取自定义调度器。不支持的情况下返回 `null`。
+ */
+internal actual fun customDispatcher(
+    coreThreads: Int?,
+    maxThreads: Int?,
+    keepAliveMillis: Long?,
+    name: String?,
+): CoroutineDispatcher? {
+    val core = coreThreads ?: return null
+    require(core >= 1) { "'coreThreads' must >= 1, but $core" }
+
+    val max = maxThreads ?: core
+    require(max >= core) { "'maxThreads' must >= 'coreThreads', but max: $max, core: $core" }
+
+    // Create ThreadGroup
+    fun tg() = ThreadGroup(name?.let { "-group" } ?: "CustomDP-STPE-group")
+
+    if (core == max && (keepAliveMillis == null || keepAliveMillis == 0L)) {
+        val counter = AtomicInteger(1)
+        val group = tg()
+
+        val executor = ScheduledThreadPoolExecutor(core) { r ->
+            Thread(
+                group,
+                r,
+                name?.let { "$it-${counter.getAndIncrement()}" } ?: "CustomDP-STPE-${counter.getAndIncrement()}").also {
+                it.isDaemon = true
+            }
+        }
+
+        return executor.asCoroutineDispatcher()
+    }
+
+    val aliveMillis: Long = keepAliveMillis ?: (60L * 1000L)
+    require(aliveMillis >= 0L) { "'keepAliveMillis' must >= 0, but $aliveMillis" }
+
+    val counter = AtomicInteger(1)
+    val group = tg()
+
+    val executor = ThreadPoolExecutor(
+        core,
+        max,
+        aliveMillis,
+        TimeUnit.MILLISECONDS,
+        LinkedBlockingDeque()
+    ) { r ->
+        Thread(
+            group,
+            r,
+            name?.let { "$it-${counter.getAndIncrement()}" } ?: "CustomDP-TPE-${counter.getAndIncrement()}").also {
+            it.isDaemon = true
+        }
+    }
+
+    return executor.asCoroutineDispatcher()
+}
+
+private val VirtualCreator: (() -> Executor)? by lazy {
+    runCatching {
+        val handle = MethodHandles.publicLookup().findStatic(
+            Executors::class.java,
+            "newVirtualThreadPerTaskExecutor",
+            MethodType.methodType(ExecutorService::class.java)
+        )
+
+        return@runCatching { handle.invoke() as Executor }
+    }.getOrElse { null }
+}
+
+/**
+ * 当平台为 Java21+ 的 JVM平台时得到虚拟线程调度器，否则得到 `null`。
+ */
+internal actual fun virtualDispatcher(): CoroutineDispatcher? =
+    VirtualCreator?.invoke()?.asCoroutineDispatcher()

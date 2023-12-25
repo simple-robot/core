@@ -496,7 +496,12 @@ public class UUID private constructor(
 }
 
 /**
- * 通过一个数字作为ID值的 [ID] 实现。主要有4个子类型，按照最大可表示的数值按顺序为：
+ * 通过一个数字作为ID值的 [ID] 实现。主要有2个子抽象类型：
+ *
+ * - [SignedNumericID] 有符号数字
+ * - [UnsignedNumericID] 无符号数字
+ *
+ * 并由此扩展为4个具体的 ID 类型，按照最大可表示的数值按顺序为：
  *
  * - [IntID] 32位有符号整型
  * - [UIntID] 32位无符号整型
@@ -507,6 +512,8 @@ public class UUID private constructor(
  * 那么建议使用其他类型来表示，例如字符串ID [StringID] 或 UUID ([UUID]，也可以算是一个128位数字的ID)
  *
  *
+ * @see SignedNumericID
+ * @see UnsignedNumericID
  * @see IntID
  * @see UIntID
  * @see LongID
@@ -562,12 +569,45 @@ public sealed class NumericalID : ID() {
 }
 
 /**
+ * 通过一个**有符号**数字作为ID值的 [NumericalID] 实现。
+ *
+ * - [IntID] 32位有符号整型
+ * - [LongID] 64位有符号整型
+ *
+ * 如果想要作为ID的数字已经超过64位有符号 ([LongID]) 锁能表示的最大数字，
+ * 那么建议使用其他类型来表示，例如 [ULongID] 或 [StringID]
+ *
+ *
+ * @see IntID
+ * @see LongID
+ */
+public sealed class SignedNumericID : NumericalID()
+
+/**
+ * 通过一个**无符号**数字作为ID值的 [NumericalID] 实现。
+ *
+ * - [UIntID] 32位无符号整型
+ * - [ULongID] 64位无符号整型
+ *
+ * 如果想要作为ID的数字已经超过64位无符号 ([ULongID]) 锁能表示的最大数字，
+ * 那么建议使用其他类型来表示，例如 [StringID]
+ *
+ * 在 Java 中对无符号数字的操作需要有些注意的地方。
+ * 具体描述请参考 [ID] 的文档注释中的相关说明。
+ *
+ * @see UIntID
+ * @see ULongID
+ */
+public sealed class UnsignedNumericID : NumericalID()
+
+
+/**
  * 一个通过 [32位整型 (Int)][Int] 作为ID值的 [NumericalID] 实现。
  *
  * @property value 源值
  */
 @Serializable(with = IntID.Serializer::class)
-public class IntID private constructor(public val value: Int) : NumericalID() {
+public class IntID private constructor(public val value: Int) : SignedNumericID() {
     override fun toDouble(): Double = value.toDouble()
     override fun toFloat(): Float = value.toFloat()
     override fun toLong(): Long = value.toLong()
@@ -628,7 +668,7 @@ public class IntID private constructor(public val value: Int) : NumericalID() {
  * 比如 `java.lang.Integer.toUnsignedString`。
  */
 @Serializable(with = UIntID.Serializer::class)
-public class UIntID private constructor(@get:JvmName("getValue") public val value: UInt) : NumericalID() {
+public class UIntID private constructor(@get:JvmName("getValue") public val value: UInt) : UnsignedNumericID() {
     override fun toDouble(): Double = value.toDouble()
     override fun toFloat(): Float = value.toFloat()
     override fun toLong(): Long = value.toLong()
@@ -683,7 +723,7 @@ public class UIntID private constructor(@get:JvmName("getValue") public val valu
  *  @property value 源值。
  */
 @Serializable(with = LongID.Serializer::class)
-public class LongID private constructor(public val value: Long) : NumericalID() {
+public class LongID private constructor(public val value: Long) : SignedNumericID() {
     override fun toDouble(): Double = value.toDouble()
     override fun toFloat(): Float = value.toFloat()
     override fun toLong(): Long = value
@@ -742,7 +782,7 @@ public class LongID private constructor(public val value: Long) : NumericalID() 
  * 比如 `java.lang.Long.toUnsignedString`。
  */
 @Serializable(with = ULongID.Serializer::class)
-public class ULongID private constructor(@get:JvmName("getValue") public val value: ULong) : NumericalID() {
+public class ULongID private constructor(@get:JvmName("getValue") public val value: ULong) : UnsignedNumericID() {
     override fun toDouble(): Double = value.toDouble()
     override fun toFloat(): Float = value.toFloat()
     override fun toLong(): Long = value.toLong()

@@ -15,6 +15,8 @@ package love.forte.simbot.common.coroutines
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.DisposableHandle
 import kotlinx.coroutines.Job
+import kotlin.jvm.JvmName
+import kotlin.jvm.JvmOverloads
 
 /**
  * 将 [Job] "链接"到一个虚拟的 [parent] Job 上。
@@ -24,12 +26,32 @@ import kotlinx.coroutines.Job
  *
  * [parent] 不会被作为真正的父Job，[Job] 可以"链接"多个虚拟的父Job。
  *
+ * @param cancelChecker 关闭当前Job前的检查。只有当 [cancelChecker] 返回 `true` 才会真正的执行 [thisJob.cancel][Job.cancel]。
+ * 默认情况下 [cancelChecker] 会使用 [{ !thisJob.isCompleted }][Job.isCompleted]
+ *
  */
-public fun Job.linkTo(parent: Job): DisposableHandle {
+@JvmName("linkTo")
+@JvmOverloads
+public inline fun Job.linkTo(
+    parent: Job,
+    crossinline cancelChecker: (cause: Throwable?) -> Boolean = { !this.isCompleted },
+): DisposableHandle {
     val thisJob = this
     return parent.invokeOnCompletion { cause ->
-        if (!thisJob.isCompleted) {
-            thisJob.cancel(CancellationException("Linked virtual parent Job $parent is completed.", cause))
+        if (cancelChecker(cause)) {
+            thisJob.cancel(
+                LinkedParentJobCancellationException(
+                    "Linked virtual parent Job $parent is completed.",
+                    cause
+                )
+            )
         }
     }
 }
+
+
+/**
+ * @see linkTo
+ */
+public class LinkedParentJobCancellationException(override val message: String?, override val cause: Throwable?) :
+    CancellationException(message)
