@@ -1,13 +1,19 @@
+import love.forte.gradle.common.core.project.setup
 import love.forte.plugin.suspendtrans.gradle.withKotlinTargets
 
 plugins {
 //    `java-library`
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-//    `simbot-multiplatform-maven-publish`
     id("simbot.dokka-module-configuration")
 //    id("io.gitlab.arturbosch.detekt")
+    id("simbot.suspend-transform-configure")
+    alias(libs.plugins.ksp)
 }
+
+setup(P.Simbot)
+
+apply(plugin = "simbot-multiplatform-maven-publish")
 
 repositories {
     mavenCentral()
@@ -86,6 +92,8 @@ kotlin {
                 api(project(":simbot-commons:simbot-common-collection"))
                 api(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
+                // suspend reversal annotations
+                compileOnly(libs.suspend.reversal.annotations)
             }
         }
         commonTest {
@@ -124,6 +132,10 @@ kotlin {
             }
         }
 
+        jsMain.dependencies {
+            implementation(libs.suspend.reversal.annotations)
+        }
+
         jsTest.dependencies {
             implementation(libs.ktor.client.js)
             implementation(libs.ktor.client.core)
@@ -151,6 +163,10 @@ kotlin {
 
 
     }
+}
+
+dependencies {
+    add("kspJvm", libs.suspend.reversal.processor)
 }
 
 tasks.withType<JavaCompile> {

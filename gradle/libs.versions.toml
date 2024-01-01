@@ -9,6 +9,8 @@ openjdk-jmh = "1.36"
 ktor = "2.3.7"
 
 slf4j = "2.0.7"
+suspendReversal = "0.1.0"
+ksp = "1.9.21-1.0.16"
 
 [libraries]
 # jetbrains-annotation
@@ -85,3 +87,10 @@ ktor-client-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "kt
 # Lincheck
 # https://kotlinlang.org/docs/lincheck-guide.html#associate-compiler-tasks
 kotlinx-lincheck = "org.jetbrains.kotlinx:lincheck:2.19"
+
+# https://github.com/ForteScarlet/kotlin-suspend-interface-reversal
+suspend-reversal-annotations = { module = "love.forte.suspend-interface-reversal:annotations", version.ref = "suspendReversal" }
+suspend-reversal-processor = { module = "love.forte.suspend-interface-reversal:processor", version.ref = "suspendReversal" }
+
+[plugins]
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

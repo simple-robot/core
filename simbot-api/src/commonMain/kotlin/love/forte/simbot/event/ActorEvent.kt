@@ -8,6 +8,8 @@ import love.forte.simbot.definition.*
  *
  * @author ForteScarlet
  */
+// @SuspendReversal
+// @JST // TODO
 public interface ActorEvent : BotEvent {
     /**
      * 被作为事件中心的 [Actor]。

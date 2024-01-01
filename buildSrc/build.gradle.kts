@@ -12,7 +12,7 @@ repositories {
 val kotlinVersion = "1.9.21"
 val dokkaPluginVersion = "1.9.10"
 val suspendTransformVersion = "0.5.1"
-val gradleCommon = "0.1.1"
+val gradleCommon = "0.2.0"
 val ktor = "2.3.5"
 
 dependencies {
