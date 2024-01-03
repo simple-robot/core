@@ -22,27 +22,29 @@ repositories {
 }
 
 tasks.withType<JavaCompile> {
-    sourceCompatibility = JVMConstants.KT_JVM_TARGET
-    targetCompatibility = JVMConstants.KT_JVM_TARGET
+    modularity.inferModulePath.set(true)
     options.encoding = "UTF-8"
+    options.compilerArgumentProviders.add(CommandLineArgumentProvider {
+        // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
+        listOf("--patch-module", "simbot.common.apidefinition=${sourceSets["main"].output.asPath}")
+    })
 }
 
 kotlin {
     explicitApi()
+    applyDefaultHierarchyTemplate()
 
     jvm {
+        jvmToolchain(JVMConstants.KT_JVM_TARGET_VALUE)
         withJava()
         compilations.all {
             kotlinOptions {
-                jvmTarget = JVMConstants.KT_JVM_TARGET
                 javaParameters = true
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xjvm-default=all",
                 )
             }
         }
-
-        withJava()
         testRuns["test"].executionTask.configure {
             useJUnitPlatform()
         }
