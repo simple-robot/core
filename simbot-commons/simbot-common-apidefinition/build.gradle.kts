@@ -31,6 +31,7 @@ kotlin {
     explicitApi()
 
     jvm {
+        withJava()
         compilations.all {
             kotlinOptions {
                 jvmTarget = JVMConstants.KT_JVM_TARGET

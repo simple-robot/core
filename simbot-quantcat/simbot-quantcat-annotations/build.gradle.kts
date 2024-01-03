@@ -75,6 +75,8 @@ kotlin {
     mingwX64()
     watchosDeviceArm64()
 
+    // wasm
+
     withKotlinTargets { target ->
         targets.findByName(target.name)?.compilations?.all {
             // 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. You can use -Xexpect-actual-classes flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573

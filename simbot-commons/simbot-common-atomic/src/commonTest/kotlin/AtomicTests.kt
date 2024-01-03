@@ -302,7 +302,7 @@ class AtomicTests {
             assertTrue(compareAndExchange(expect = false, value = true))
             assertTrue(compareAndExchange(expect = true, value = false))
             assertFalse(compareAndExchange(expect = true, value = false))
-            assertEquals(value.toString(), toString())
+            assertEquals(value.toString(), this.toString())
         }
     }
 

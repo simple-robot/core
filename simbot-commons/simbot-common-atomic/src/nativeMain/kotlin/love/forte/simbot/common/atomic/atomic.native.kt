@@ -99,7 +99,7 @@ private class AtomicUIntImpl(value: UInt) : AtomicUInt {
     override fun compareAndExchange(expect: UInt, value: UInt): UInt =
         atomic.compareAndExchange(expect.toInt(), value.toInt()).toUInt()
 
-    override fun toString(): String = atomic.value.toString()
+    override fun toString(): String = atomic.value.toUInt().toString()
 }
 
 /**
@@ -136,7 +136,7 @@ private class AtomicULongImpl(value: ULong) : AtomicULong {
     override fun compareAndExchange(expect: ULong, value: ULong): ULong =
         atomic.compareAndExchange(expect.toLong(), value.toLong()).toULong()
 
-    override fun toString(): String = atomic.value.toString()
+    override fun toString(): String = atomic.value.toULong().toString()
 
     companion object {
         private const val ONE: ULong = 1u
@@ -164,7 +164,7 @@ private class AtomicBooleanImpl(value: Boolean) : AtomicBoolean {
     override fun compareAndExchange(expect: Boolean, value: Boolean): Boolean =
         atomic.compareAndExchange(expect.toBInt(), value.toBInt()).toBool()
 
-    override fun toString(): String = atomic.value.toString()
+    override fun toString(): String = atomic.value.toBool().toString()
 
     companion object {
         const val FALSE = 0

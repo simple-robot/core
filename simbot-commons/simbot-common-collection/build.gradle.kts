@@ -112,4 +112,5 @@ tasks.withType<JavaCompile> {
     sourceCompatibility = JVMConstants.KT_JVM_TARGET
     targetCompatibility = JVMConstants.KT_JVM_TARGET
     options.encoding = "UTF-8"
+    modularity.inferModulePath.set(true)
 }
