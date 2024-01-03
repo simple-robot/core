@@ -1,5 +1,7 @@
 package love.forte.simbot.event
 
+import love.forte.simbot.JST
+import love.forte.simbot.JSTP
 import love.forte.simbot.bot.Bot
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.definition.ChatGroup
@@ -47,6 +49,7 @@ public interface RequestEvent : BotEvent {
      *
      * @throws Exception 任何可能产生的错误。
      */
+    @JST
     public suspend fun reject()
 
     /**
@@ -54,6 +57,7 @@ public interface RequestEvent : BotEvent {
      *
      * @throws Exception 任何可能产生的错误。
      */
+    @JST
     public suspend fun accept()
 }
 
@@ -83,6 +87,7 @@ public interface OrganizationJoinRequestEvent : OrganizationEvent {
      * 尝试获取申请者的一些基础信息。
      * 如果无法获取或不支持，则可能得到 `null`。
      */
+    @JSTP
     public suspend fun requester(): Requester?
 }
 
@@ -105,6 +110,7 @@ public interface Requester {
  * @author ForteScarlet
  *
  */
+@JSTP
 public interface ChatGroupJoinRequestEvent : OrganizationJoinRequestEvent, ChatGroupEvent {
     /**
      * 被申请加入的 [ChatGroup]。
@@ -118,6 +124,7 @@ public interface ChatGroupJoinRequestEvent : OrganizationJoinRequestEvent, ChatG
  * @author ForteScarlet
  *
  */
+@JSTP
 public interface GuildJoinRequestEvent : OrganizationJoinRequestEvent, GuildEvent {
     /**
      * 被申请加入的 [Guild]。

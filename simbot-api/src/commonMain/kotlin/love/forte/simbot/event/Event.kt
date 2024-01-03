@@ -1,5 +1,6 @@
 package love.forte.simbot.event
 
+import love.forte.simbot.JSTP
 import love.forte.simbot.bot.Bot
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.IDContainer
@@ -43,6 +44,7 @@ public interface BotEvent : Event {
  *
  * @author ForteScarlet
  */
+@JSTP
 public interface ChangeEvent : Event {
     /**
      * 发生了变化的主体。

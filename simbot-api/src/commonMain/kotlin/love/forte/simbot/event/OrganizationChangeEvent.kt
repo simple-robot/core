@@ -1,5 +1,6 @@
 package love.forte.simbot.event
 
+import love.forte.simbot.JSTP
 import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.definition.Guild
 import love.forte.simbot.definition.Member
@@ -7,9 +8,8 @@ import love.forte.simbot.definition.Organization
 
 /**
  * 某 [Organization] 产生了某种变化的事件，例如发生了 [成员变动][MemberIncreaseOrDecreaseEvent]。
- *
- * @see MemberIncreaseOrDecreaseEvent
  */
+@JSTP
 public interface OrganizationChangeEvent : ChangeEvent, OrganizationEvent {
     /**
      * 已经发生了变化的 [Organization]。
@@ -25,6 +25,7 @@ public interface OrganizationChangeEvent : ChangeEvent, OrganizationEvent {
  *
  * @author ForteScarlet
  */
+@JSTP
 public interface MemberIncreaseOrDecreaseEvent : OrganizationChangeEvent {
     /**
      * 增加或减少成员的 [Organization]。
@@ -49,6 +50,7 @@ public interface MemberIncreaseOrDecreaseEvent : OrganizationChangeEvent {
  *
  * @author ForteScarlet
  */
+@JSTP
 public interface MemberIncreaseEvent : MemberIncreaseOrDecreaseEvent {
     /**
      * 增加成员的 [Organization]。
@@ -70,6 +72,7 @@ public interface MemberIncreaseEvent : MemberIncreaseOrDecreaseEvent {
  *
  * @author ForteScarlet
  */
+@JSTP
 public interface MemberDecreaseEvent : MemberIncreaseOrDecreaseEvent {
     /**
      * 减少成员的 [Organization]。
@@ -89,7 +92,11 @@ public interface MemberDecreaseEvent : MemberIncreaseOrDecreaseEvent {
 
 /**
  * 某 [ChatGroup] 成员变动事件。
+ *
+ * @see ChatGroupMemberIncreaseEvent
+ * @see ChatGroupMemberDecreaseEvent
  */
+@JSTP
 public interface ChatGroupMemberIncreaseOrDecreaseEvent : MemberIncreaseOrDecreaseEvent, ChatGroupEvent {
     /**
      * 发送成员变动的 [ChatGroup]。
@@ -101,17 +108,27 @@ public interface ChatGroupMemberIncreaseOrDecreaseEvent : MemberIncreaseOrDecrea
  * 某 [ChatGroup] 成员增加事件。
  * @author ForteScarlet
  */
-public interface ChatGroupMemberIncreaseEvent : MemberIncreaseEvent, ChatGroupMemberIncreaseOrDecreaseEvent
+@JSTP
+public interface ChatGroupMemberIncreaseEvent : MemberIncreaseEvent, ChatGroupMemberIncreaseOrDecreaseEvent {
+    override suspend fun content(): ChatGroup
+}
 
 /**
  * 某 [ChatGroup] 成员减少事件。
  * @author ForteScarlet
  */
-public interface ChatGroupMemberDecreaseEvent : MemberDecreaseEvent, ChatGroupMemberIncreaseOrDecreaseEvent
+@JSTP
+public interface ChatGroupMemberDecreaseEvent : MemberDecreaseEvent, ChatGroupMemberIncreaseOrDecreaseEvent {
+    override suspend fun content(): ChatGroup
+}
 
 /**
  * 某 [Guild] 成员变动事件。
+ *
+ * @see GuildMemberIncreaseEvent
+ * @see GuildMemberDecreaseEvent
  */
+@JSTP
 public interface GuildMemberIncreaseOrDecreaseEvent : MemberIncreaseOrDecreaseEvent, GuildEvent {
     /**
      * 发送成员变动的 [Guild]。
@@ -123,10 +140,16 @@ public interface GuildMemberIncreaseOrDecreaseEvent : MemberIncreaseOrDecreaseEv
  * 某 [Guild] 成员增加事件。
  * @author ForteScarlet
  */
-public interface GuildMemberIncreaseEvent : MemberIncreaseEvent, GuildMemberIncreaseOrDecreaseEvent
+@JSTP
+public interface GuildMemberIncreaseEvent : MemberIncreaseEvent, GuildMemberIncreaseOrDecreaseEvent {
+    override suspend fun content(): Guild
+}
 
 /**
  * 某 [Guild] 成员减少事件。
  * @author ForteScarlet
  */
-public interface GuildMemberDecreaseEvent : MemberDecreaseEvent, GuildMemberIncreaseOrDecreaseEvent
+@JSTP
+public interface GuildMemberDecreaseEvent : MemberDecreaseEvent, GuildMemberIncreaseOrDecreaseEvent {
+    override suspend fun content(): Guild
+}

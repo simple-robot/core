@@ -1,5 +1,6 @@
 package love.forte.simbot.event
 
+import love.forte.simbot.JSTP
 import love.forte.simbot.definition.Member
 
 
@@ -8,6 +9,7 @@ import love.forte.simbot.definition.Member
  *
  * @author ForteScarlet
  */
+@JSTP
 public interface MemberChangeEvent : ChangeEvent, MemberEvent {
     /**
      * 发送了变化的 [Member]。

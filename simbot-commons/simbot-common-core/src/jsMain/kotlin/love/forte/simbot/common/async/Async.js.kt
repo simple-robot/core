@@ -135,6 +135,7 @@ public actual class Async<out T> @PublishedApi internal actual constructor(publi
      * @return 表示同一异步操作的 [Promise] 对象
      * @see Deferred.asPromise
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     public fun asPromise(): Promise<T> = deferred.asPromise()
 
 }

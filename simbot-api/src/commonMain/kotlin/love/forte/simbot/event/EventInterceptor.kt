@@ -1,6 +1,7 @@
 package love.forte.simbot.event
 
 import love.forte.simbot.common.PriorityConstant
+import love.forte.suspendreversal.annotations.SuspendReversal
 import kotlin.jvm.JvmSynthetic
 
 
@@ -13,6 +14,7 @@ import kotlin.jvm.JvmSynthetic
  *
  * @author ForteScarlet
  */
+@SuspendReversal
 public fun interface EventInterceptor {
 
     /**

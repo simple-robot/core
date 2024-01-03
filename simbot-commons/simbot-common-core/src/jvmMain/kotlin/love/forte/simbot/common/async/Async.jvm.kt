@@ -136,6 +136,7 @@ public actual class Async<out T> @PublishedApi internal actual constructor(publi
      * @return 表示同一异步操作的 [CompletableFuture] 对象
      * @see Deferred.asCompletableFuture
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     public fun asFuture(): CompletableFuture<out T> = deferred.asCompletableFuture()
 
 }
