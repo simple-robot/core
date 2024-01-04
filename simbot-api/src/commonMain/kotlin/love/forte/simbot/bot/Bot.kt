@@ -2,8 +2,6 @@ package love.forte.simbot.bot
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
-import love.forte.simbot.JST
-import love.forte.simbot.JSTP
 import love.forte.simbot.ability.CompletionAware
 import love.forte.simbot.ability.LifecycleAware
 import love.forte.simbot.common.collectable.Collectable
@@ -14,6 +12,8 @@ import love.forte.simbot.definition.Channel
 import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.definition.Contact
 import love.forte.simbot.definition.Guild
+import love.forte.simbot.suspendrunner.JST
+import love.forte.simbot.suspendrunner.JSTP
 
 /**
  * 一个 `Bot`。

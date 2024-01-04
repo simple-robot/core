@@ -19,23 +19,13 @@ repositories {
     mavenCentral()
 }
 
+configJavaCompileWithModule("simbot.api")
+
 kotlin {
     explicitApi()
     applyDefaultHierarchyTemplate()
 
-    jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JVMConstants.KT_JVM_TARGET
-                javaParameters = true
-                freeCompilerArgs += "-Xjvm-default=all"
-            }
-        }
-        withJava()
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
+    configKotlinJvm(JVMConstants.KT_JVM_TARGET_VALUE)
 
     js(IR) {
         browser()
@@ -167,17 +157,4 @@ kotlin {
 
 dependencies {
     add("kspJvm", libs.suspend.reversal.processor)
-}
-
-tasks.withType<JavaCompile> {
-    sourceCompatibility = JVMConstants.KT_JVM_TARGET
-    targetCompatibility = JVMConstants.KT_JVM_TARGET
-    options.encoding = "UTF-8"
-    // see https://kotlinlang.org/docs/gradle-configure-project.html#other-details
-    modularity.inferModulePath.set(true)
-    options.compilerArgumentProviders.add(CommandLineArgumentProvider {
-        // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
-        listOf("--patch-module", "simbot.api=${sourceSets["main"].output.asPath}")
-        // listOf("--patch-module", "simbot.api=${sourceSets["commonMain"].output.asPath}")
-    })
 }

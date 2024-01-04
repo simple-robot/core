@@ -1,6 +1,6 @@
 package love.forte.simbot.ability
 
-import love.forte.simbot.JST
+import love.forte.simbot.suspendrunner.JST
 import kotlin.jvm.JvmInline
 import kotlin.jvm.JvmSynthetic
 

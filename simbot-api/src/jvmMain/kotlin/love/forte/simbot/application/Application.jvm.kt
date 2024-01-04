@@ -9,7 +9,7 @@ import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeWith
 import love.forte.simbot.common.function.toConfigurerFunction
 import love.forte.simbot.event.EventDispatcherConfiguration
-import love.forte.simbot.utils.runInNoScopeBlocking
+import love.forte.simbot.suspendrunner.runInNoScopeBlocking
 import java.util.concurrent.CompletableFuture
 
 /**

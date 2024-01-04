@@ -1,10 +1,10 @@
 package love.forte.simbot.event
 
-import love.forte.simbot.JSTP
 import love.forte.simbot.bot.Bot
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.IDContainer
 import love.forte.simbot.common.time.Timestamp
+import love.forte.simbot.suspendrunner.JSTP
 
 /**
  * 一个 **事件**。

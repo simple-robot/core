@@ -1,4 +1,4 @@
-package love.forte.simbot.utils
+package love.forte.simbot.suspendrunner
 
 import kotlinx.coroutines.CoroutineScope
 import love.forte.simbot.annotations.InternalAPI

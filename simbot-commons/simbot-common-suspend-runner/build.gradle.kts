@@ -21,25 +21,13 @@ repositories {
     mavenCentral()
 }
 
+configJavaCompileWithModule("simbot.common.suspendrunner")
+
 kotlin {
     explicitApi()
-
     applyDefaultHierarchyTemplate()
 
-    jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JVMConstants.KT_JVM_TARGET
-                javaParameters = true
-                freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
-            }
-        }
-
-        withJava()
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
+    configKotlinJvm(JVMConstants.KT_JVM_TARGET_VALUE)
 
     js(IR) {
         browser()
@@ -92,22 +80,5 @@ kotlin {
                 implementation(kotlin("test-junit5"))
             }
         }
-
-        nativeMain
-        nativeTest
-
-        linuxMain
-        linuxTest
-
-        appleMain
-        appleTest
     }
-
-}
-
-
-tasks.withType<JavaCompile> {
-    sourceCompatibility = JVMConstants.KT_JVM_TARGET
-    targetCompatibility = JVMConstants.KT_JVM_TARGET
-    options.encoding = "UTF-8"
 }

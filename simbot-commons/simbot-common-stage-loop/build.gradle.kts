@@ -21,33 +21,23 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<JavaCompile> {
-    sourceCompatibility = JVMConstants.KT_JVM_TARGET
-    targetCompatibility = JVMConstants.KT_JVM_TARGET
-    options.encoding = "UTF-8"
-}
+configJavaCompileWithModule("simbot.common.stageloop")
 
 kotlin {
     explicitApi()
+    applyDefaultHierarchyTemplate()
 
-    jvm {
+    configKotlinJvm(JVMConstants.KT_JVM_TARGET_VALUE) {
         compilations.all {
             kotlinOptions {
-                jvmTarget = JVMConstants.KT_JVM_TARGET
-                javaParameters = true
                 freeCompilerArgs = freeCompilerArgs + listOf(
-                    "-Xjvm-default=all",
                     // 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. You can use -Xexpect-actual-classes flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
                     "-Xexpect-actual-classes"
                 )
             }
         }
-
-        withJava()
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
     }
+
 
     js(IR) {
         browser()

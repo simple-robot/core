@@ -5,7 +5,6 @@ package love.forte.simbot.application
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import love.forte.simbot.JST
 import love.forte.simbot.ability.CompletionAware
 import love.forte.simbot.ability.LifecycleAware
 import love.forte.simbot.bot.Bot
@@ -14,6 +13,7 @@ import love.forte.simbot.common.collection.toImmutable
 import love.forte.simbot.component.Component
 import love.forte.simbot.event.EventDispatcher
 import love.forte.simbot.plugin.Plugin
+import love.forte.simbot.suspendrunner.JST
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName

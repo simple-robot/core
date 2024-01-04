@@ -21,34 +21,13 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<JavaCompile> {
-    modularity.inferModulePath.set(true)
-    options.encoding = "UTF-8"
-    options.compilerArgumentProviders.add(CommandLineArgumentProvider {
-        // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
-        listOf("--patch-module", "simbot.common.apidefinition=${sourceSets["main"].output.asPath}")
-    })
-}
+configJavaCompileWithModule("simbot.common.apidefinition")
 
 kotlin {
     explicitApi()
     applyDefaultHierarchyTemplate()
 
-    jvm {
-        jvmToolchain(JVMConstants.KT_JVM_TARGET_VALUE)
-        withJava()
-        compilations.all {
-            kotlinOptions {
-                javaParameters = true
-                freeCompilerArgs = freeCompilerArgs + listOf(
-                    "-Xjvm-default=all",
-                )
-            }
-        }
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
+    configKotlinJvm(JVMConstants.KT_JVM_TARGET_VALUE)
 
     js(IR) {
         browser()

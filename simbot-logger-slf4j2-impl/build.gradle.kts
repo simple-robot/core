@@ -17,23 +17,11 @@ plugins {
     id("com.github.gmazzo.buildconfig")
 }
 
-
-tasks.withType<JavaCompile> {
-    sourceCompatibility = JVMConstants.KT_JVM_TARGET
-    targetCompatibility = JVMConstants.KT_JVM_TARGET
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        javaParameters = true
-        jvmTarget = JVMConstants.KT_JVM_TARGET
-        freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
-    }
-}
+configJavaCompileWithModule("simbot.logger.slf4j2impl")
 
 kotlin {
     explicitApi()
+    configJavaToolchain(JVMConstants.KT_JVM_TARGET_VALUE)
 }
 
 dependencies {

@@ -11,7 +11,7 @@
  */
 
 @file:Suppress("KDocUnresolvedReference")
-package love.forte.simbot
+package love.forte.simbot.suspendrunner
 
 
 /**

@@ -4,7 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.future
 import love.forte.simbot.suspendrunner.InvokeStrategy
-import love.forte.simbot.utils.runInNoScopeBlocking
+import love.forte.simbot.suspendrunner.runInNoScopeBlocking
 import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.CoroutineContext
 

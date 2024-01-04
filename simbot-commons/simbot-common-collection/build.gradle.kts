@@ -13,28 +13,13 @@ repositories {
     mavenCentral()
 }
 
+configJavaCompileWithModule("simbot.common.collection")
+
 kotlin {
     explicitApi()
-
     applyDefaultHierarchyTemplate()
 
-    jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JVMConstants.KT_JVM_TARGET
-                javaParameters = true
-                this.moduleName
-
-                freeCompilerArgs = freeCompilerArgs + listOf(
-                    "-Xjvm-default=all",
-                )
-            }
-        }
-        withJava()
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
+    configKotlinJvm(JVMConstants.KT_JVM_TARGET_VALUE)
 
     js(IR) {
         browser()

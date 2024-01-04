@@ -1,12 +1,12 @@
 package love.forte.simbot.event
 
-import love.forte.simbot.JST
-import love.forte.simbot.JSTP
 import love.forte.simbot.bot.Bot
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.definition.Guild
 import love.forte.simbot.definition.Organization
+import love.forte.simbot.suspendrunner.JST
+import love.forte.simbot.suspendrunner.JSTP
 
 
 /**

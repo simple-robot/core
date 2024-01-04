@@ -1,7 +1,7 @@
 @file:JvmName("Collectables")
 @file:JvmMultifileClass
 
-package love.forte.simbot.common.collection
+package love.forte.simbot.common.collectable
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.toList
 import love.forte.simbot.common.async.Async
 import love.forte.simbot.common.async.toAsync
-import love.forte.simbot.common.collectable.*
+import love.forte.simbot.common.collection.asIterator
 import love.forte.simbot.common.function.Action
-import love.forte.simbot.utils.runInNoScopeBlocking
+import love.forte.simbot.suspendrunner.runInNoScopeBlocking
 import java.util.stream.Stream
 import kotlin.streams.asSequence
 import kotlin.streams.asStream

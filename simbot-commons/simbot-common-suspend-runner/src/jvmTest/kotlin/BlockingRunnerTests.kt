@@ -2,8 +2,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import love.forte.simbot.utils.runInNoScopeBlocking
+import love.forte.simbot.suspendrunner.runInNoScopeBlocking
 import kotlin.coroutines.resume
+import kotlin.random.Random
 
 
 fun main() {
@@ -33,7 +34,7 @@ fun main() {
                 launch {
                     println("T[4]" + Thread.currentThread())
                     delay(4000)
-                    c.resume(kotlin.random.Random.nextLong())
+                    c.resume(Random.nextLong())
                     println("T[5]" + Thread.currentThread())
                 }
             }

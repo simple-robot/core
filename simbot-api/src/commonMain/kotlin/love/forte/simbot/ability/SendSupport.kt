@@ -1,11 +1,11 @@
 package love.forte.simbot.ability
 
-import love.forte.simbot.JST
 import love.forte.simbot.definition.Actor
 import love.forte.simbot.definition.Contact
 import love.forte.simbot.message.Message
 import love.forte.simbot.message.MessageContent
 import love.forte.simbot.message.MessageReceipt
+import love.forte.simbot.suspendrunner.JST
 
 
 /**

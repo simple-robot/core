@@ -1,10 +1,10 @@
 package love.forte.simbot.event
 
-import love.forte.simbot.JSTP
 import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.definition.Guild
 import love.forte.simbot.definition.Member
 import love.forte.simbot.definition.Organization
+import love.forte.simbot.suspendrunner.JSTP
 
 /**
  * 某 [Organization] 产生了某种变化的事件，例如发生了 [成员变动][MemberIncreaseOrDecreaseEvent]。

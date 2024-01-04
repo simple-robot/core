@@ -1,7 +1,7 @@
 package love.forte.simbot.event
 
-import love.forte.simbot.JSTP
 import love.forte.simbot.definition.*
+import love.forte.simbot.suspendrunner.JSTP
 
 
 /**

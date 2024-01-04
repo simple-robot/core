@@ -13,7 +13,7 @@
 @file:JvmName("BlockingRunnerKt")
 @file:Suppress("FunctionName")
 
-package love.forte.simbot.utils
+package love.forte.simbot.suspendrunner
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
@@ -647,7 +647,7 @@ public fun <T> runInNoScopeBlockingWithoutTimeoutDebug(
     try {
         val strategy = runInNoScopeBlockingStrategy
         if (strategy is DefaultRunInNoScopeBlockingStrategy) {
-            return strategy.invokeWithoutTimeoutLog(context, block)
+            return DefaultRunInNoScopeBlockingStrategy.invokeWithoutTimeoutLog(context, block)
         }
 
         return strategy(context, block)

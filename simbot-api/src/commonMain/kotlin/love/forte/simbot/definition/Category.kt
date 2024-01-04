@@ -1,7 +1,7 @@
 package love.forte.simbot.definition
 
-import love.forte.simbot.JSTP
 import love.forte.simbot.common.id.ID
+import love.forte.simbot.suspendrunner.JSTP
 
 
 /**
