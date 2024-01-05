@@ -3,8 +3,8 @@ package love.forte.simbot.definition
 import love.forte.simbot.ability.SendSupport
 import love.forte.simbot.common.collectable.Collectable
 import love.forte.simbot.common.id.ID
-import love.forte.simbot.suspendrunner.JST
-import love.forte.simbot.suspendrunner.JSTP
+import love.forte.simbot.suspendrunner.ST
+import love.forte.simbot.suspendrunner.STP
 
 
 /**
@@ -36,7 +36,7 @@ public interface Organization : Actor {
      *
      * @throws Exception 可能产生任何异常
      */
-    @JST(blockingBaseName = "getMember", blockingSuffix = "", asyncBaseName = "getMember")
+    @ST(blockingBaseName = "getMember", blockingSuffix = "", asyncBaseName = "getMember")
     public suspend fun member(id: ID): Member?
 
     /**
@@ -49,7 +49,7 @@ public interface Organization : Actor {
      *
      * @throws Exception 可能产生任何异常
      */
-    @JSTP
+    @STP
     public suspend fun botAsMember(): Member
 
     /**

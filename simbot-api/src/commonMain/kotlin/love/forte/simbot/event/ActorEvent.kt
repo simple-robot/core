@@ -1,7 +1,7 @@
 package love.forte.simbot.event
 
 import love.forte.simbot.definition.*
-import love.forte.simbot.suspendrunner.JSTP
+import love.forte.simbot.suspendrunner.STP
 
 
 /**
@@ -10,7 +10,7 @@ import love.forte.simbot.suspendrunner.JSTP
  * @author ForteScarlet
  */
 // @SuspendReversal
-@JSTP
+@STP
 public interface ActorEvent : BotEvent {
     /**
      * 被作为事件中心的 [Actor]。
@@ -23,7 +23,7 @@ public interface ActorEvent : BotEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface ContactEvent : ActorEvent {
     /**
      * 被作为事件中心的 [Contact]。
@@ -36,7 +36,7 @@ public interface ContactEvent : ActorEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface OrganizationEvent : ActorEvent {
     /**
      * 被作为事件中心的 [Organization]。
@@ -49,7 +49,7 @@ public interface OrganizationEvent : ActorEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface ChatRoomEvent : ActorEvent {
     /**
      * 被作为事件中心的 [ChatRoom]。
@@ -63,7 +63,7 @@ public interface ChatRoomEvent : ActorEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface ChatGroupEvent : ChatRoomEvent, OrganizationEvent {
     /**
      * 被作为事件中心的 [ChatGroup]。
@@ -76,7 +76,7 @@ public interface ChatGroupEvent : ChatRoomEvent, OrganizationEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface GuildEvent : OrganizationEvent {
     /**
      * 被作为事件中心的 [Guild]。
@@ -89,7 +89,7 @@ public interface GuildEvent : OrganizationEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface ChannelEvent : ActorEvent {
 
     /**
@@ -109,7 +109,7 @@ public interface ChannelEvent : ActorEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface ChatChannelEvent : ChannelEvent, ChatRoomEvent {
     /**
      * 被作为事件中心的 [ChatChannel]。
@@ -122,7 +122,7 @@ public interface ChatChannelEvent : ChannelEvent, ChatRoomEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface MemberEvent : ActorEvent {
     /**
      * 事件中 [member][content] 所属的 [Organization]。
@@ -141,7 +141,7 @@ public interface MemberEvent : ActorEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface ChatGroupMemberEvent : MemberEvent {
     /**
      * 事件中 [member][content] 所属的 [ChatGroup]。
@@ -159,7 +159,7 @@ public interface ChatGroupMemberEvent : MemberEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface GuildMemberEvent : MemberEvent {
     /**
      * 事件中 [member][content] 所属的 [Guild]。

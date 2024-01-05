@@ -3,7 +3,7 @@ package love.forte.simbot.definition
 import love.forte.simbot.ability.SendSupport
 import love.forte.simbot.common.collectable.Collectable
 import love.forte.simbot.common.id.ID
-import love.forte.simbot.suspendrunner.JST
+import love.forte.simbot.suspendrunner.ST
 
 
 /**
@@ -69,7 +69,7 @@ public interface Guild : Organization {
      * 根据ID获取一个指定的频道。
      * 如果找不到则会得到 `null`。
      */
-    @JST(blockingBaseName = "getChannel", blockingSuffix = "", asyncBaseName = "getChannel")
+    @ST(blockingBaseName = "getChannel", blockingSuffix = "", asyncBaseName = "getChannel")
     public suspend fun channel(id: ID): Channel?
 
     /**
@@ -81,7 +81,7 @@ public interface Guild : Organization {
      * 根据ID获取一个指定的聊天频道。
      * 如果找不到则会得到 `null`。
      */
-    @JST(blockingBaseName = "getChatChannel", blockingSuffix = "", asyncBaseName = "getChatChannel")
+    @ST(blockingBaseName = "getChatChannel", blockingSuffix = "", asyncBaseName = "getChatChannel")
     public suspend fun chatChannel(id: ID): ChatChannel?
 
     /**

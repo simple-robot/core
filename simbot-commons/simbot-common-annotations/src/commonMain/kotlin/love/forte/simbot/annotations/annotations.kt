@@ -23,3 +23,25 @@ public annotation class ExperimentalAPI
 )
 @MustBeDocumented
 public annotation class InternalAPI
+
+/**
+ * 一个设计为仅供 Java 用户使用的API
+ */
+@Retention(AnnotationRetention.BINARY)
+@RequiresOptIn(
+    message = "一个设计为仅供 Java 用户使用的API",
+    level = RequiresOptIn.Level.WARNING
+)
+@MustBeDocumented
+public annotation class Api4J
+
+/**
+ * 一个设计为仅供 JS 用户使用的API
+ */
+@Retention(AnnotationRetention.BINARY)
+@RequiresOptIn(
+    message = "一个设计为仅供 JS 用户使用的API",
+    level = RequiresOptIn.Level.WARNING
+)
+@MustBeDocumented
+public annotation class Api4Js

@@ -40,11 +40,17 @@ suspendTransform {
         SuspendTransforms.jvmAsyncTransformer,
         
         // @JvmSuspendTrans
-        SuspendTransforms.jvmSuspendTransTransformerForBlocking,
-        SuspendTransforms.jvmSuspendTransTransformerForAsync,
-        
+        SuspendTransforms.suspendTransTransformerForJvmBlocking,
+        SuspendTransforms.suspendTransTransformerForJvmAsync,
+        SuspendTransforms.suspendTransTransformerForJvmReserve,
+
         // @JvmSuspendTransProperty
         SuspendTransforms.jvmSuspendTransPropTransformerForBlocking,
-        SuspendTransforms.jvmSuspendTransPropTransformerForAsync
+        SuspendTransforms.jvmSuspendTransPropTransformerForAsync,
+        SuspendTransforms.jvmSuspendTransPropTransformerForReserve,
     )
+
+    // addJsTransformers(
+    //     SuspendTransforms.suspendTransTransformerForJsPromise,
+    // )
 }

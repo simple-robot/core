@@ -4,7 +4,7 @@ import love.forte.simbot.bot.Bot
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.IDContainer
 import love.forte.simbot.common.time.Timestamp
-import love.forte.simbot.suspendrunner.JSTP
+import love.forte.simbot.suspendrunner.STP
 
 /**
  * 一个 **事件**。
@@ -44,7 +44,7 @@ public interface BotEvent : Event {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface ChangeEvent : Event {
     /**
      * 发生了变化的主体。

@@ -20,6 +20,8 @@ import kotlinx.coroutines.future.future
 import love.forte.simbot.annotations.ExperimentalAPI
 import love.forte.simbot.annotations.InternalAPI
 import love.forte.simbot.logger.LoggerFactory
+import love.forte.simbot.suspendrunner.reserve.SuspendReserve
+import love.forte.simbot.suspendrunner.reserve.suspendReserve
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 import java.util.*
@@ -694,18 +696,22 @@ public fun <T> runInAsync(block: suspend CoroutineScope.() -> T): CompletableFut
     runInAsync(scope = `$$DefaultScope`, context = EmptyCoroutineContext, block = block)
 
 /**
- * @see Reserve
+ * @see SuspendReserve
  */
 @InternalAPI
-public fun <T> asReserve(scope: CoroutineScope? = null, context: CoroutineContext? = null, block: suspend () -> T): Reserve<T> =
-    Reserve(scope = scope ?: `$$DefaultScope`, context = context ?: EmptyCoroutineContext, block = block)
+public fun <T> asReserve(
+    scope: CoroutineScope? = null,
+    context: CoroutineContext? = null,
+    block: suspend () -> T
+): SuspendReserve<T> =
+    suspendReserve(scope = scope ?: `$$DefaultScope`, context = context ?: EmptyCoroutineContext, block = block)
 
 /**
  * @see asReserve
  */
 @InternalAPI
 @Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
-public fun <T> `$$asReserve`(scope: CoroutineScope? = null, block: suspend () -> T): Reserve<T> =
+public fun <T> `$$asReserve`(scope: CoroutineScope? = null, block: suspend () -> T): SuspendReserve<T> =
     asReserve(scope = scope, context = EmptyCoroutineContext, block = block)
 
 

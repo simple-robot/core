@@ -1,7 +1,7 @@
 package love.forte.simbot.definition
 
 import love.forte.simbot.common.id.ID
-import love.forte.simbot.suspendrunner.JSTP
+import love.forte.simbot.suspendrunner.STP
 
 
 /**
@@ -22,6 +22,6 @@ public interface Category {
     /**
      * 获取分组的名称。如果分组不存在名称或无法获取则会得到 `null`。
      */
-    @JSTP
+    @STP
     public suspend fun name(): String?
 }

@@ -70,14 +70,22 @@ kotlin {
         }
         commonTest {
             dependencies {
-                implementation(libs.kotlinx.coroutines.core)
                 implementation(kotlin("test"))
             }
+        }
+
+        jvmMain.dependencies {
+            compileOnly(libs.kotlinx.coroutines.reactor)
+            compileOnly(libs.kotlinx.coroutines.rx2)
+            compileOnly(libs.kotlinx.coroutines.rx3)
         }
 
         jvmTest {
             dependencies {
                 implementation(kotlin("test-junit5"))
+                implementation(libs.kotlinx.coroutines.reactor)
+                implementation(libs.kotlinx.coroutines.rx2)
+                implementation(libs.kotlinx.coroutines.rx3)
             }
         }
     }

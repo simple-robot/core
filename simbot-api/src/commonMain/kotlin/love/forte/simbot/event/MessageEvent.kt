@@ -6,7 +6,7 @@ import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.IDContainer
 import love.forte.simbot.definition.*
 import love.forte.simbot.message.MessageContent
-import love.forte.simbot.suspendrunner.JSTP
+import love.forte.simbot.suspendrunner.STP
 
 /**
  * 一个 [Bot] 收到消息的事件。
@@ -30,7 +30,7 @@ public interface MessageEvent : BotEvent, ReplySupport {
  *
  * @see ActorAuthorAwareMessageEvent
  */
-@JSTP
+@STP
 public interface AuthorAwareMessageEvent : MessageEvent {
     /**
      * 此消息的发送者。发送者存在一个 ID 标识。
@@ -43,7 +43,7 @@ public interface AuthorAwareMessageEvent : MessageEvent {
  *
  * @see MemberAuthorAwareMessageEvent
  */
-@JSTP
+@STP
 public interface ActorAuthorAwareMessageEvent : AuthorAwareMessageEvent {
     /**
      * 此消息的发送 [Actor]。
@@ -57,7 +57,7 @@ public interface ActorAuthorAwareMessageEvent : AuthorAwareMessageEvent {
  * @see ChatGroupMessageEvent
  * @see ChatChannelMessageEvent
  */
-@JSTP
+@STP
 public interface MemberAuthorAwareMessageEvent : ActorAuthorAwareMessageEvent {
     /**
      * 此消息的发送 [Member]。
@@ -99,7 +99,7 @@ public interface MemberMessageEvent : MessageEvent, MemberEvent
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface ChatGroupMemberMessageEvent : MessageEvent, MemberEvent {
     /**
      * 事件中 [member][content] 所在的 [ChatGroup]。
@@ -112,7 +112,7 @@ public interface ChatGroupMemberMessageEvent : MessageEvent, MemberEvent {
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface GuildMemberMessageEvent : MessageEvent, MemberEvent {
     /**
      * 事件中 [member][content] 所在的 [Guild]。

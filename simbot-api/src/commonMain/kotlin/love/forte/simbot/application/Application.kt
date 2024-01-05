@@ -13,7 +13,7 @@ import love.forte.simbot.common.collection.toImmutable
 import love.forte.simbot.component.Component
 import love.forte.simbot.event.EventDispatcher
 import love.forte.simbot.plugin.Plugin
-import love.forte.simbot.suspendrunner.JST
+import love.forte.simbot.suspendrunner.ST
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -78,7 +78,7 @@ public interface Application : CoroutineScope, LifecycleAware, CompletionAware {
     /**
      * 挂起 [Application] 直到调用 [cancel] 且其内部完成了关闭 Job 的操作后。
      */
-    @JST(asyncBaseName = "asFuture", asyncSuffix = "")
+    @ST(asyncBaseName = "asFuture", asyncSuffix = "")
     public suspend fun join()
 }
 

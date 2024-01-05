@@ -11,35 +11,33 @@
  */
 
 @file:Suppress("KDocUnresolvedReference")
+
 package love.forte.simbot.suspendrunner
 
 
-/**
- * 用于代表一种类似同时标记
- * [@JvmBlocking][love.forte.plugin.suspendtrans.annotation.JvmBlocking] 和
- * [@JvmAsync][love.forte.plugin.suspendtrans.annotation.JvmAsync]
- * 的整合性注解。
- *
- */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-public annotation class JvmSuspendTrans(
+public annotation class SuspendTrans(
     val blockingBaseName: String = "",
     val blockingSuffix: String = "Blocking",
     val blockingAsProperty: Boolean = false,
-    
+
     val asyncBaseName: String = "",
     val asyncSuffix: String = "Async",
     val asyncAsProperty: Boolean = false,
+
+    val reserveBaseName: String = "",
+    val reserveSuffix: String = "Reserve",
+    val reserveAsProperty: Boolean = false,
 )
 
 /**
- * **J**vm **S**uspend **T**rans 的简写类型。
+ *  **S**uspend **T**rans 的简写类型。
  *
- * @see JvmSuspendTrans
+ * @see SuspendTrans
  */
 @Suppress("SpellCheckingInspection")
-public typealias JST = JvmSuspendTrans
+public typealias ST = SuspendTrans
 
 
 /**
@@ -48,25 +46,36 @@ public typealias JST = JvmSuspendTrans
  * [@JvmAsync][love.forte.plugin.suspendtrans.annotation.JvmAsync]
  * 的整合性注解。
  *
- * [JvmSuspendTransProperty] 默认转化为属性类型，且 blocking 的转化默认没有后缀。
+ * [SuspendTransProperty] 默认转化为属性类型，且 blocking 的转化默认没有后缀。
  *
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-public annotation class JvmSuspendTransProperty(
+public annotation class SuspendTransProperty(
+    // for Java
     val blockingBaseName: String = "",
     val blockingSuffix: String = "", // nothing
     val blockingAsProperty: Boolean = true,
-    
+
     val asyncBaseName: String = "",
     val asyncSuffix: String = "Async",
     val asyncAsProperty: Boolean = true,
+
+    val reserveBaseName: String = "",
+    val reserveSuffix: String = "Reserve",
+    val reserveAsProperty: Boolean = false,
+
+    // for JS
+    val jsPromiseBaseName: String = "",
+    val jsPromiseSuffix: String = "Async",
+    val jsPromiseAsProperty: Boolean = false,
 )
 
 /**
- * **J**vm **S**uspend **T**rans **P**roperty 的简写类型。
+ * **S**uspend **T**rans **P**roperty 的简写类型。
  *
- * @see JvmSuspendTransProperty
+ * @see SuspendTransProperty
  */
 @Suppress("SpellCheckingInspection")
-public typealias JSTP = JvmSuspendTransProperty
+public typealias STP = SuspendTransProperty
+

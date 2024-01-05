@@ -5,8 +5,8 @@ import love.forte.simbot.common.id.ID
 import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.definition.Guild
 import love.forte.simbot.definition.Organization
-import love.forte.simbot.suspendrunner.JST
-import love.forte.simbot.suspendrunner.JSTP
+import love.forte.simbot.suspendrunner.ST
+import love.forte.simbot.suspendrunner.STP
 
 
 /**
@@ -49,7 +49,7 @@ public interface RequestEvent : BotEvent {
      *
      * @throws Exception 任何可能产生的错误。
      */
-    @JST
+    @ST
     public suspend fun reject()
 
     /**
@@ -57,7 +57,7 @@ public interface RequestEvent : BotEvent {
      *
      * @throws Exception 任何可能产生的错误。
      */
-    @JST
+    @ST
     public suspend fun accept()
 }
 
@@ -87,7 +87,7 @@ public interface OrganizationJoinRequestEvent : OrganizationEvent {
      * 尝试获取申请者的一些基础信息。
      * 如果无法获取或不支持，则可能得到 `null`。
      */
-    @JSTP
+    @STP
     public suspend fun requester(): Requester?
 }
 
@@ -110,7 +110,7 @@ public interface Requester {
  * @author ForteScarlet
  *
  */
-@JSTP
+@STP
 public interface ChatGroupJoinRequestEvent : OrganizationJoinRequestEvent, ChatGroupEvent {
     /**
      * 被申请加入的 [ChatGroup]。
@@ -124,7 +124,7 @@ public interface ChatGroupJoinRequestEvent : OrganizationJoinRequestEvent, ChatG
  * @author ForteScarlet
  *
  */
-@JSTP
+@STP
 public interface GuildJoinRequestEvent : OrganizationJoinRequestEvent, GuildEvent {
     /**
      * 被申请加入的 [Guild]。

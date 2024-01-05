@@ -1,7 +1,7 @@
 package love.forte.simbot.event
 
 import love.forte.simbot.definition.Member
-import love.forte.simbot.suspendrunner.JSTP
+import love.forte.simbot.suspendrunner.STP
 
 
 /**
@@ -9,7 +9,7 @@ import love.forte.simbot.suspendrunner.JSTP
  *
  * @author ForteScarlet
  */
-@JSTP
+@STP
 public interface MemberChangeEvent : ChangeEvent, MemberEvent {
     /**
      * 发送了变化的 [Member]。

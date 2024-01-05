@@ -12,8 +12,8 @@ import love.forte.simbot.definition.Channel
 import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.definition.Contact
 import love.forte.simbot.definition.Guild
-import love.forte.simbot.suspendrunner.JST
-import love.forte.simbot.suspendrunner.JSTP
+import love.forte.simbot.suspendrunner.ST
+import love.forte.simbot.suspendrunner.STP
 
 /**
  * 一个 `Bot`。
@@ -73,7 +73,7 @@ public interface Bot : IDContainer, LifecycleAware, CompletionAware, CoroutineSc
      * 更建议以后者为标准实现。
      *
      */
-    @JST
+    @ST
     public suspend fun start()
 
     /**
@@ -89,7 +89,7 @@ public interface Bot : IDContainer, LifecycleAware, CompletionAware, CoroutineSc
     /**
      * 挂起 [Bot] 直到它完成其生命周期。
      */
-    @JST(asyncBaseName = "asFuture", asyncSuffix = "")
+    @ST(asyncBaseName = "asFuture", asyncSuffix = "")
     public suspend fun join()
 
     /**
@@ -160,7 +160,7 @@ public interface GuildRelation {
      *
      * 如果实现者不支持也可能始终得到 `null`。
      */
-    @JST(blockingBaseName = "getGuild", blockingSuffix = "", asyncBaseName = "getGuild")
+    @ST(blockingBaseName = "getGuild", blockingSuffix = "", asyncBaseName = "getGuild")
     public suspend fun guild(id: ID): Guild?
 
     /**
@@ -177,7 +177,7 @@ public interface GuildRelation {
      * 没有 **直接** 支持的 API 时，
      * 可能会通过 [guilds] 或者API查询所有数据的方式来获取总数。
      */
-    @JSTP
+    @STP
     public suspend fun guildCount(): Int
 }
 
@@ -191,7 +191,7 @@ public interface GroupRelation {
      *
      * 如果实现者不支持也可能始终得到 `null`。
      */
-    @JST(blockingBaseName = "getGroup", blockingSuffix = "", asyncBaseName = "getGroup")
+    @ST(blockingBaseName = "getGroup", blockingSuffix = "", asyncBaseName = "getGroup")
     public suspend fun group(id: ID): ChatGroup?
 
     /**
@@ -208,7 +208,7 @@ public interface GroupRelation {
      * 没有 **直接** 支持的 API 时，
      * 可能会通过 [groups] 或者API查询所有数据的方式来获取总数。
      */
-    @JSTP
+    @STP
     public suspend fun groupCount(): Int
 }
 
@@ -224,7 +224,7 @@ public interface ContactRelation {
      *
      * 如果实现者不支持也可能始终得到 `null`。
      */
-    @JST(blockingBaseName = "getContact", blockingSuffix = "", asyncBaseName = "getContact")
+    @ST(blockingBaseName = "getContact", blockingSuffix = "", asyncBaseName = "getContact")
     public suspend fun contact(id: ID): Contact?
 
     /**
@@ -244,6 +244,6 @@ public interface ContactRelation {
      * 没有 **直接** 支持的 API 时，
      * 可能会通过 [contacts] 或者API查询所有数据的方式来获取总数。
      */
-    @JSTP
+    @STP
     public suspend fun contactCount(): Int
 }

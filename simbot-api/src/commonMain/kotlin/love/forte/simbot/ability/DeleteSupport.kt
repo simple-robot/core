@@ -1,6 +1,6 @@
 package love.forte.simbot.ability
 
-import love.forte.simbot.suspendrunner.JST
+import love.forte.simbot.suspendrunner.ST
 import kotlin.jvm.JvmInline
 import kotlin.jvm.JvmSynthetic
 
@@ -10,7 +10,7 @@ import kotlin.jvm.JvmSynthetic
  *
  * @author ForteScarlet
  */
-@JST
+@ST
 public interface DeleteSupport {
 
     /**
