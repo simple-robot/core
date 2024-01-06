@@ -1,7 +1,7 @@
 package love.forte.simbot.suspendrunner
 
 import kotlinx.coroutines.CoroutineScope
-import love.forte.simbot.annotations.InternalAPI
+import love.forte.simbot.annotations.InternalSimbotAPI
 import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.CoroutineContext
 
@@ -27,7 +27,7 @@ public class Reserve<out T>(private val scope: CoroutineScope, private val conte
      *
      * @return A CompletableFuture that represents the result of the asynchronous operation.
      */
-    @OptIn(InternalAPI::class)
+    @OptIn(InternalSimbotAPI::class)
     public fun async(): CompletableFuture<out T> = runInAsync(scope, context) { block.invoke() }
 }
 

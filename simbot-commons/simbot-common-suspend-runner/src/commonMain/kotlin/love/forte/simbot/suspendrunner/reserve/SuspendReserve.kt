@@ -1,7 +1,7 @@
 package love.forte.simbot.suspendrunner.reserve
 
 import kotlinx.coroutines.CoroutineScope
-import love.forte.simbot.annotations.InternalAPI
+import love.forte.simbot.annotations.InternalSimbotAPI
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -51,7 +51,7 @@ public interface SuspendReserve<out T> {
 /**
  * 得到 [SuspendReserve] 实例。
  */
-@InternalAPI
+@InternalSimbotAPI
 public fun <T> suspendReserve(
     scope: CoroutineScope,
     context: CoroutineContext,

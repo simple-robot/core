@@ -17,8 +17,8 @@ package love.forte.simbot.suspendrunner
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
-import love.forte.simbot.annotations.ExperimentalAPI
-import love.forte.simbot.annotations.InternalAPI
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
+import love.forte.simbot.annotations.InternalSimbotAPI
 import love.forte.simbot.logger.LoggerFactory
 import love.forte.simbot.suspendrunner.reserve.SuspendReserve
 import love.forte.simbot.suspendrunner.reserve.suspendReserve
@@ -41,7 +41,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @see DefaultBlockingDispatcherOrNull
  * @throws UnsupportedOperationException 不支持虚拟线程时
  */
-@ExperimentalAPI
+@ExperimentalSimbotAPI
 public val VirtualThreadDispatcher: CoroutineDispatcher by lazy {
     runCatching {
         val handle = MethodHandles.publicLookup().findStatic(
@@ -248,7 +248,7 @@ private fun loadCustomBlockingDispatcher(loader: ClassLoader?): CoroutineDispatc
  *
  *
  */
-@InternalAPI
+@InternalSimbotAPI
 public val DefaultBlockingDispatcherOrNull: CoroutineDispatcher? by lazy {
     initDefaultBlockingDispatcher(
         BLOCKING_DISPATCHER_BASE_PROPERTY,
@@ -271,13 +271,13 @@ public val DefaultBlockingDispatcherOrNull: CoroutineDispatcher? by lazy {
  * 如果 [DefaultBlockingDispatcherOrNull] 为 null，得到 [Dispatchers.Default], 否则得到 [DefaultBlockingDispatcherOrNull]的值。
  * @see DefaultBlockingDispatcherOrNull
  */
-@InternalAPI
+@InternalSimbotAPI
 public val DefaultBlockingDispatcher: CoroutineDispatcher
     get() = DefaultBlockingDispatcherOrNull ?: Dispatchers.Default
 
 private infix fun String.eq(other: String): Boolean = equals(other = other, ignoreCase = true)
 
-@OptIn(ExperimentalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class)
 private inline fun initDefaultBlockingDispatcher(
     dispatcherPropertyName: String,
     dispatcherLimitedParallelismPropertyName: String,
@@ -366,7 +366,7 @@ private inline fun initDefaultBlockingDispatcher(
  *
  * @see DefaultBlockingDispatcherOrNull
  */
-@InternalAPI
+@InternalSimbotAPI
 public val DefaultBlockingContext: CoroutineContext by lazy {
     CoroutineName("defaultBlocking").let { name ->
         if (DefaultBlockingDispatcherOrNull == null) name else DefaultBlockingDispatcher + name
@@ -402,7 +402,7 @@ public val DefaultBlockingContext: CoroutineContext by lazy {
  * | `simbot.runInAsync.dispatcher=forkJoinPool` | [ForkJoinPool] | 使用 [ForkJoinPool] 作为默认调度器. |
  * | `simbot.runInAsync.dispatcher=custom` | [CustomBlockingDispatcherProvider] | (since 3.3.0) 通过 SPI 加载 [CustomBlockingDispatcherProvider] 并通过其构建 [CoroutineDispatcher] |
  */
-@InternalAPI
+@InternalSimbotAPI
 public val DefaultAsyncDispatcherOrNull: CoroutineDispatcher? by lazy {
     initDefaultBlockingDispatcher(
         ASYNC_DISPATCHER_BASE_PROPERTY,
@@ -446,7 +446,7 @@ public val DefaultAsyncDispatcherOrNull: CoroutineDispatcher? by lazy {
  * 如果 [DefaultAsyncDispatcherOrNull] 为 null，得到 [Dispatchers.Default], 否则得到 [DefaultAsyncDispatcherOrNull]的值。
  * @see DefaultAsyncDispatcherOrNull
  */
-@InternalAPI
+@InternalSimbotAPI
 public val DefaultAsyncDispatcher: CoroutineDispatcher
     get() = DefaultAsyncDispatcherOrNull ?: Dispatchers.Default
 
@@ -466,7 +466,7 @@ private val `$$DefaultScopeJob` = SupervisorJob()
  * 此默认作用域进行异步任务作业。
  *
  */
-@InternalAPI
+@InternalSimbotAPI
 public val DefaultAsyncContext: CoroutineContext by lazy {
     val asyncDispatcher = DefaultAsyncDispatcherOrNull
     if (asyncDispatcher == null) {
@@ -477,7 +477,7 @@ public val DefaultAsyncContext: CoroutineContext by lazy {
 }
 
 @Suppress("unused", "ObjectPropertyName")
-@InternalAPI
+@InternalSimbotAPI
 private val `$$DefaultScope`: CoroutineScope by lazy {
     CoroutineScope(DefaultAsyncContext)
 }
@@ -492,17 +492,17 @@ private val `$$DefaultScope`: CoroutineScope by lazy {
  * 来自定义一个**全局**的阻塞函数执行策略。
  *
  */
-@ExperimentalAPI
+@ExperimentalSimbotAPI
 public interface RunInBlockingStrategy {
     @kotlin.jvm.Throws(Exception::class)
     public operator fun <T> invoke(context: CoroutineContext, block: suspend CoroutineScope.() -> T): T
 }
 
-@OptIn(ExperimentalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class)
 private var runInBlockingStrategy: RunInBlockingStrategy = DefaultRunInBlockingStrategy
 
 
-@OptIn(ExperimentalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class)
 private object DefaultRunInBlockingStrategy : RunInBlockingStrategy {
     override fun <T> invoke(context: CoroutineContext, block: suspend CoroutineScope.() -> T): T {
         return runBlocking(context, block)
@@ -514,7 +514,7 @@ private object DefaultRunInBlockingStrategy : RunInBlockingStrategy {
  *
  * 默认情况下的调度策略与 [runBlocking] 一致。
  */
-@ExperimentalAPI
+@ExperimentalSimbotAPI
 public fun setRunInBlockingStrategy(strategy: RunInBlockingStrategy) {
     runInBlockingStrategy = strategy
 }
@@ -528,16 +528,16 @@ public fun setRunInBlockingStrategy(strategy: RunInBlockingStrategy) {
  * 来自定义一个**全局**的无作用域阻塞函数执行策略。
  *
  */
-@ExperimentalAPI
+@ExperimentalSimbotAPI
 public interface RunInNoScopeBlockingStrategy {
     @kotlin.jvm.Throws(Exception::class)
     public operator fun <T> invoke(context: CoroutineContext, block: suspend () -> T): T
 }
 
-@OptIn(ExperimentalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class)
 private var runInNoScopeBlockingStrategy: RunInNoScopeBlockingStrategy = DefaultRunInNoScopeBlockingStrategy
 
-@OptIn(ExperimentalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class)
 private object DefaultRunInNoScopeBlockingStrategy : RunInNoScopeBlockingStrategy {
     override fun <T> invoke(context: CoroutineContext, block: suspend () -> T): T {
         val runner = SuspendRunner<T>(context)
@@ -558,7 +558,7 @@ private object DefaultRunInNoScopeBlockingStrategy : RunInNoScopeBlockingStrateg
  *
  * 默认情况下 [runInNoScopeBlocking] 的策略为在当前线程上阻塞并等待。
  */
-@ExperimentalAPI
+@ExperimentalSimbotAPI
 public fun setRunInNoScopeBlockingStrategy(strategy: RunInNoScopeBlockingStrategy) {
     runInNoScopeBlockingStrategy = strategy
 }
@@ -576,7 +576,7 @@ public fun setRunInNoScopeBlockingStrategy(strategy: RunInNoScopeBlockingStrateg
  * @see DefaultBlockingContext
  * @see runBlocking
  */
-@OptIn(ExperimentalAPI::class, InternalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class, InternalSimbotAPI::class)
 @Throws(InterruptedException::class)
 public fun <T> runInBlocking(
     context: CoroutineContext = DefaultBlockingContext,
@@ -594,7 +594,7 @@ public fun <T> runInBlocking(
  * @see runInBlocking
  * @see withTimeout
  */
-@OptIn(ExperimentalAPI::class, InternalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class, InternalSimbotAPI::class)
 @Throws(RunInBlockingException::class)
 public fun <T> runInTimeoutBlocking(
     timeout: Long,
@@ -621,7 +621,7 @@ public fun <T> runInTimeoutBlocking(
  * @see DefaultBlockingContext
  * @see runBlocking
  */
-@OptIn(ExperimentalAPI::class, InternalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class, InternalSimbotAPI::class)
 @Throws(RunInBlockingException::class)
 public fun <T> runInNoScopeBlocking(
     context: CoroutineContext = DefaultBlockingContext,
@@ -639,9 +639,9 @@ public fun <T> runInNoScopeBlocking(
  * @see DefaultBlockingContext
  * @see runBlocking
  */
-@OptIn(ExperimentalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class)
 @Throws(RunInBlockingException::class)
-@InternalAPI
+@InternalSimbotAPI
 public fun <T> runInNoScopeBlockingWithoutTimeoutDebug(
     context: CoroutineContext = DefaultBlockingContext,
     block: suspend () -> T,
@@ -663,7 +663,7 @@ public fun <T> runInNoScopeBlockingWithoutTimeoutDebug(
  * @see runInBlocking
  * @see withTimeout
  */
-@OptIn(ExperimentalAPI::class, InternalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class, InternalSimbotAPI::class)
 @Throws(InterruptedException::class, TimeoutException::class)
 public fun <T> runInNoScopeTimeoutBlocking(
     timeout: Long,
@@ -680,7 +680,7 @@ public fun <T> runInNoScopeTimeoutBlocking(
 /**
  * 执行一个异步函数，得到 [CompletableFuture].
  */
-@InternalAPI
+@InternalSimbotAPI
 public fun <T> runInAsync(
     scope: CoroutineScope,
     context: CoroutineContext = EmptyCoroutineContext,
@@ -691,14 +691,14 @@ public fun <T> runInAsync(
 /**
  * 执行一个异步函数，得到 [CompletableFuture].
  */
-@InternalAPI
+@InternalSimbotAPI
 public fun <T> runInAsync(block: suspend CoroutineScope.() -> T): CompletableFuture<T> =
     runInAsync(scope = `$$DefaultScope`, context = EmptyCoroutineContext, block = block)
 
 /**
  * @see SuspendReserve
  */
-@InternalAPI
+@InternalSimbotAPI
 public fun <T> asReserve(
     scope: CoroutineScope? = null,
     context: CoroutineContext? = null,
@@ -709,13 +709,13 @@ public fun <T> asReserve(
 /**
  * @see asReserve
  */
-@InternalAPI
+@InternalSimbotAPI
 @Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
 public fun <T> `$$asReserve`(scope: CoroutineScope? = null, block: suspend () -> T): SuspendReserve<T> =
     asReserve(scope = scope, context = EmptyCoroutineContext, block = block)
 
 
-@InternalAPI
+@InternalSimbotAPI
 @Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
 @Throws(RunInBlockingException::class)
 public fun <T> `$$runInBlocking`(block: suspend () -> T): T = runInNoScopeBlocking(block = block)
@@ -733,7 +733,7 @@ public fun <T> `$$runInBlocking`(block: suspend () -> T): T = runInNoScopeBlocki
  *
  * see `$$runInAsyncNullable`
  */
-@InternalAPI
+@InternalSimbotAPI
 @Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
 public fun <T> `$$runInAsync`(block: suspend () -> T, scope: CoroutineScope = `$$DefaultScope`): CompletableFuture<T> {
     return runInAsync(scope) { block() }
@@ -744,7 +744,7 @@ public fun <T> `$$runInAsync`(block: suspend () -> T, scope: CoroutineScope = `$
  *
  * 第二个参数 [CoroutineScope] 可以为null，可以更好的对当前作用域环境进行灵活判断。
  */
-@InternalAPI
+@InternalSimbotAPI
 @Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
 public fun <T> `$$runInAsyncNullable`(block: suspend () -> T, scope: CoroutineScope? = null): CompletableFuture<T> {
     return runInAsync(scope ?: `$$DefaultScope`) { block() }

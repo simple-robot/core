@@ -1,7 +1,9 @@
 package love.forte.simbot.event
 
+import kotlinx.coroutines.CoroutineScope
 import love.forte.simbot.common.attribute.MutableAttributeMap
 import love.forte.simbot.message.MessageContent
+import kotlin.coroutines.CoroutineContext
 
 /**
  * 一个在事件处理流程中流转的上下文。
@@ -9,7 +11,17 @@ import love.forte.simbot.message.MessageContent
  *
  * @author ForteScarlet
  */
-public interface EventContext {
+public interface EventContext : CoroutineScope {
+    /**
+     * 当前事件调度的上下文作为 [CoroutineScope] 的协程上下文。
+     * 通常与其所产生的调度器实现有关，例如与
+     * [ApplicationConfiguration.coroutineContext][love.forte.simbot.application.ApplicationConfiguration.coroutineContext]
+     * 有关。
+     *
+     * [EventContext] 的 [coroutineContext] 中不应出现 [kotlinx.coroutines.Job]。
+     */
+    override val coroutineContext: CoroutineContext
+
     /**
      * 本次事件处理流程中被处理的事件。
      */
@@ -39,6 +51,11 @@ public interface EventListenerContext {
      * @see EventContext.event
      */
     public val event: Event get() = context.event
+
+    /**
+     * 当前正在处理事件（所处的）事件处理器实例。
+     */
+    public val listener: EventListener
 
     /**
      * 本次事件处理器进行处理时，用于**匹配**的事件中消息文本内容。

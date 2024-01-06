@@ -1,11 +1,11 @@
-package love.forte.simbot.quantcat
+package love.forte.simbot.quantcat.common
 
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeWith
 import love.forte.simbot.common.function.plus
 import love.forte.simbot.event.EventInterceptor
 import love.forte.simbot.event.EventInterceptorRegistrationProperties
-import love.forte.simbot.quantcat.AnnotationEventInterceptorFactory.Result.Companion.build
+import love.forte.simbot.quantcat.common.AnnotationEventInterceptorFactory.Result.Companion.build
 import kotlin.jvm.JvmStatic
 import kotlin.reflect.KFunction
 

@@ -18,23 +18,11 @@ plugins {
     kotlin("kapt")
 }
 
-
-tasks.withType<JavaCompile> {
-    sourceCompatibility = JVMConstants.KT_JVM_TARGET
-    targetCompatibility = JVMConstants.KT_JVM_TARGET
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        javaParameters = true
-        jvmTarget = JVMConstants.KT_JVM_TARGET
-        freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
-    }
-}
+configJavaCompileWithModule("simbot.core.springboot.common")
 
 kotlin {
     explicitApi()
+    configKotlinJvm(JVMConstants.KT_JVM_TARGET_VALUE)
 }
 
 dependencies {

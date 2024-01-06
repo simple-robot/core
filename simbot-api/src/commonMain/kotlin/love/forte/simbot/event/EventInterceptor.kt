@@ -1,7 +1,12 @@
+@file:JvmName("EventInterceptors")
+@file:JvmMultifileClass
+
 package love.forte.simbot.event
 
 import love.forte.simbot.common.PriorityConstant
 import love.forte.suspendreversal.annotations.SuspendReversal
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmSynthetic
 
 
@@ -10,10 +15,13 @@ import kotlin.jvm.JvmSynthetic
  *
  * 也可以通过 [EventListenerRegistrationProperties] 针对某指定的监听器进行拦截。
  *
+ * 对于Java实现者，考虑使用 [JAsyncEventInterceptor] 和 [JBlockEventInterceptor]
+ *
  * @see EventDispatchInterceptor
  *
  * @author ForteScarlet
  */
+@Suppress("KDocUnresolvedReference")
 @SuspendReversal
 public fun interface EventInterceptor {
 
@@ -57,6 +65,7 @@ public fun interface EventInterceptor {
     public interface Context {
         /**
          * 当前被处理的事件上下文。
+         * 可能是中途被某个拦截器取代后的结果。
          */
         public val eventListenerContext: EventListenerContext
 
@@ -69,6 +78,7 @@ public fun interface EventInterceptor {
 
         /**
          * 执行被拦截的逻辑并得到事件处理结果 [EventResult]。
+         * 向后传递的 [EventListenerContext] 会被参数 [eventListenerContext] 取代。
          */
         @JvmSynthetic
         @Throws(Exception::class)

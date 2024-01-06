@@ -16,7 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.promise
-import love.forte.simbot.annotations.InternalAPI
+import love.forte.simbot.annotations.InternalSimbotAPI
 import love.forte.simbot.suspendrunner.reserve.SuspendReserve
 import love.forte.simbot.suspendrunner.reserve.suspendReserve
 import kotlin.coroutines.CoroutineContext
@@ -27,7 +27,7 @@ import kotlin.js.Promise
 /**
  * 执行一个异步函数，得到 [Promise].
  */
-@InternalAPI
+@InternalSimbotAPI
 public inline fun <T> runInPromise(
     scope: CoroutineScope,
     context: CoroutineContext = EmptyCoroutineContext,
@@ -39,7 +39,7 @@ public inline fun <T> runInPromise(
  * 使用 [GlobalScope] 执行一个异步函数，得到 [Promise].
  */
 @DelicateCoroutinesApi
-@InternalAPI
+@InternalSimbotAPI
 public inline fun <T> runInPromise(
     context: CoroutineContext = EmptyCoroutineContext,
     crossinline block: suspend CoroutineScope.() -> T,
@@ -50,7 +50,7 @@ public inline fun <T> runInPromise(
  */
 @OptIn(DelicateCoroutinesApi::class)
 @Suppress("FunctionName")
-@InternalAPI
+@InternalSimbotAPI
 @Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
 public fun <T> `$$runInPromise`(
     scope: CoroutineScope? = null,
@@ -61,7 +61,7 @@ public fun <T> `$$runInPromise`(
 /**
  * @see SuspendReserve
  */
-@InternalAPI
+@InternalSimbotAPI
 @OptIn(DelicateCoroutinesApi::class)
 public fun <T> asReserve(
     scope: CoroutineScope? = null,
@@ -74,7 +74,7 @@ public fun <T> asReserve(
  * @see asReserve
  */
 @Suppress("FunctionName")
-@InternalAPI
+@InternalSimbotAPI
 @Deprecated("Just used by compiler", level = DeprecationLevel.HIDDEN)
 public fun <T> `$$asReserve`(scope: CoroutineScope? = null, block: suspend () -> T): SuspendReserve<T> =
     asReserve(scope = scope, context = EmptyCoroutineContext, block = block)

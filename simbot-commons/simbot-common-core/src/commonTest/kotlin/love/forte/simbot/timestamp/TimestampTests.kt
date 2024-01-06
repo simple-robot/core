@@ -1,6 +1,6 @@
 package love.forte.simbot.timestamp
 
-import love.forte.simbot.annotations.ExperimentalAPI
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import love.forte.simbot.common.time.MillisecondTimestamp
 import love.forte.simbot.common.time.TimeUnit
 import love.forte.simbot.common.time.Timestamp
@@ -23,7 +23,7 @@ class TimestampTests {
         assertEquals(timestamp.timeAs(TimeUnit.SECONDS), millis / 1000)
     }
 
-    @OptIn(ExperimentalAPI::class)
+    @OptIn(ExperimentalSimbotAPI::class)
     @Test
     fun nowTimestampTests() {
         val now = Timestamp.now()

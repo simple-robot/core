@@ -1,6 +1,6 @@
 package love.forte.simbot.plugin
 
-import love.forte.simbot.annotations.ExperimentalAPI
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeBy
 
@@ -25,7 +25,7 @@ internal fun nameBasedPluginKey(name: String): SimplePlugin.Key = PluginKey(name
 @PublishedApi
 internal fun <CONF : Any> simplePlugin(key: SimplePlugin.Key, conf: CONF): SimplePlugin = SimplePluginImpl(key, conf)
 
-@ExperimentalAPI
+@ExperimentalSimbotAPI
 public inline fun <CONF : Any> createPlugin(
     name: String,
     crossinline configCreator: () -> CONF,
@@ -44,7 +44,7 @@ public inline fun <CONF : Any> createPlugin(
 }
 
 
-@ExperimentalAPI
+@ExperimentalSimbotAPI
 public inline fun createPlugin(
     name: String,
     crossinline creator: PluginConfigureContext.(Unit) -> Unit

@@ -1,6 +1,6 @@
 package love.forte.simbot.timestamp
 
-import love.forte.simbot.annotations.ExperimentalAPI
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import love.forte.simbot.common.time.DateTimestamp
 import love.forte.simbot.common.time.Timestamp
 import kotlin.js.Date
@@ -26,7 +26,7 @@ class DateTimestampTests {
         }
     }
 
-    @OptIn(ExperimentalAPI::class)
+    @OptIn(ExperimentalSimbotAPI::class)
     @Test
     fun jsTimestampNowIsDateTimestampTest() {
         assertTrue("JS Timestamp.now is not DateTimestamp instance") { Timestamp.now() is DateTimestamp }

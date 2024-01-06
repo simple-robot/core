@@ -9,7 +9,6 @@ import love.forte.simbot.suspendrunner.STP
  *
  * @author ForteScarlet
  */
-// @SuspendReversal
 @STP
 public interface ActorEvent : BotEvent {
     /**

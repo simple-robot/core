@@ -1,7 +1,12 @@
 package love.forte.simbot.core.event
 
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import love.forte.simbot.application.Application
+import love.forte.simbot.common.function.ConfigurerFunction
+import love.forte.simbot.common.function.invokeWith
 import love.forte.simbot.core.application.Simple
+import love.forte.simbot.core.event.impl.SimpleEventDispatcherConfigurationImpl
+import love.forte.simbot.core.event.impl.SimpleEventDispatcherImpl
 import love.forte.simbot.event.*
 
 /**
@@ -10,6 +15,24 @@ import love.forte.simbot.event.*
  * [SimpleEventDispatcher] 实现 [EventDispatcher] 并提供最基础的完整功能实现。
  */
 public interface SimpleEventDispatcher : EventDispatcher
+
+/**
+ * 构建一个 [SimpleEventDispatcher].
+ */
+@ExperimentalSimbotAPI
+public fun createSimpleEventDispatcherImpl(configurer: ConfigurerFunction<SimpleEventDispatcherConfiguration>): SimpleEventDispatcher {
+    val configuration = SimpleEventDispatcherConfigurationImpl()
+    configurer.invokeWith(configuration)
+    return SimpleEventDispatcherImpl(configuration)
+}
+
+/**
+ * 构建一个 [SimpleEventDispatcher].
+ */
+@ExperimentalSimbotAPI
+public fun createSimpleEventDispatcherImpl(configuration: SimpleEventDispatcherConfigurationImpl): SimpleEventDispatcher {
+    return SimpleEventDispatcherImpl(configuration)
+}
 
 
 /**

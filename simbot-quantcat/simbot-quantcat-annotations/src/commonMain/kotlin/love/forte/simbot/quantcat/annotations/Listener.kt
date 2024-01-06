@@ -9,12 +9,13 @@ import love.forte.simbot.common.PriorityConstant
  * 一个事件处理器建议只有**一个** [Event][love.forte.simbot.event.Event] 类型的参数。
  *
  * ```kotlin
+ * @Listener
  * suspend fun listenFoo(event: FooEvent) {
- *     // ...
+ *     // 此时监听的类型就是 FooEvent
  * }
  * ```
  *
- * 在 Kotlin 中，被标记的函数最好是可挂起函数（标记 `suspend`）。
+ * 注：在 Kotlin 中，被标记的函数最好是可挂起函数（标记 `suspend`）。
  *
  *
  * @property id 此事件处理器的id。通常用于日志输出或调试用。默认会根据函数生成一个ID。

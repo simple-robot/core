@@ -1,10 +1,11 @@
-package love.forte.simbot.core.event
+@file:JvmName("SimpleEventDispatcherImpls")
+@file:JvmMultifileClass
+
+package love.forte.simbot.core.event.impl
 
 import love.forte.simbot.common.collection.PriorityConcurrentQueue
 import love.forte.simbot.event.EventListenerRegistrationHandle
-import kotlin.concurrent.Volatile
-import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.ref.WeakReference
+import java.lang.ref.WeakReference
 
 internal actual fun <T : Any> createQueueRegistrationHandle(
     priority: Int,
@@ -14,7 +15,6 @@ internal actual fun <T : Any> createQueueRegistrationHandle(
     WeakEventListenerRegistrationHandle(priority, queue, target)
 
 
-@OptIn(ExperimentalNativeApi::class)
 private class WeakEventListenerRegistrationHandle<T : Any>(
     private val priority: Int,
     queue: PriorityConcurrentQueue<T>,
@@ -33,8 +33,8 @@ private class WeakEventListenerRegistrationHandle<T : Any>(
             return
         }
 
-        val queue = qr.value
-        val target = tr.value
+        val queue = qr.get()
+        val target = tr.get()
 
         if (queue != null && target != null) {
             queue.remove(priority, target)

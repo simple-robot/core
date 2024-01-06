@@ -172,6 +172,16 @@ private object EmptyAttributeMap : AttributeMap {
 }
 
 /**
+ * 一个包含 [AttributeMap] 的容器。
+ */
+public interface AttributeMapContainer {
+    /**
+     * An [AttributeMap].
+     */
+    public val attributeMap: AttributeMap
+}
+
+/**
  * [MutableAttributeMap] 是 [AttributeMap] 的子类型，代表一个允许变化的 [AttributeMap]。
  * 类似于 [Map] 与 [MutableMap] 之间的关系。
  *

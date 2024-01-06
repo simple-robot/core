@@ -74,6 +74,7 @@ kotlin {
         commonMain {
             dependencies {
                 compileOnly(project(":simbot-api"))
+                compileOnly(project(":simbot-commons:simbot-common-annotations"))
             }
         }
 
@@ -84,10 +85,18 @@ kotlin {
             }
         }
 
+        jvmMain.dependencies {
+            compileOnly(kotlin("reflect"))
+        }
+
         jvmTest {
             dependencies {
                 implementation(kotlin("test-junit5"))
             }
+        }
+
+        jsMain.dependencies {
+            implementation(project(":simbot-commons:simbot-common-annotations"))
         }
     }
 

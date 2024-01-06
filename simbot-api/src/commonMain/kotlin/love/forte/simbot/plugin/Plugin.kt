@@ -51,6 +51,26 @@ public interface PluginFactory<P : Plugin, CONF : Any> :
 }
 
 /**
+ * 一个 [Plugin] 的安装器接口，
+ * 提供用于安装 [Plugin] 的能力。
+ */
+public interface PluginInstaller {
+    /**
+     * 注册安装一个插件 [Plugin] 类型，并为其添加一个对应的配置。
+     */
+    public fun <P : Plugin, CONF : Any> install(
+        pluginFactory: PluginFactory<P, CONF>, configurer: ConfigurerFunction<CONF>
+    )
+
+    /**
+     * 注册安装一个插件 [Plugin] 类型。
+     */
+    public fun <P : Plugin, CONF : Any> install(pluginFactory: PluginFactory<P, CONF>) {
+        install(pluginFactory) {}
+    }
+}
+
+/**
  * 提供给 [PluginFactoriesConfigurator] 用于配置 [Plugin] 的上下文信息。
  * 可以得到来自 [Application][love.forte.simbot.application.Application] 的初始化配置信息
  * 和 [Component] 的配置信息。

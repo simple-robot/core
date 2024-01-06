@@ -17,7 +17,7 @@
 
 package love.forte.simbot.common.time
 
-import love.forte.simbot.annotations.ExperimentalAPI
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import kotlin.jvm.JvmStatic
 
 /**
@@ -90,7 +90,7 @@ public interface Timestamp : Comparable<Timestamp> {
          * 实验性: [now] 在大多数原生平台中实现不稳定。请尽可能在可靠平台中使用（例如 `JVM`、`JS`）
          */
         @JvmStatic
-        @ExperimentalAPI
+        @ExperimentalSimbotAPI
         public fun now(): Timestamp = nowInternal()
     }
 }

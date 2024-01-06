@@ -1,7 +1,7 @@
 package love.forte.simbot.common.time
 
 import kotlinx.cinterop.UnsafeNumber
-import love.forte.simbot.annotations.ExperimentalAPI
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import love.forte.simbot.common.time.NSDateTimestamp.Companion.toTimestamp
 import platform.Foundation.NSDate
 import platform.Foundation.compare
@@ -73,7 +73,7 @@ public class NSDateTimestamp(public val date: NSDate) : Timestamp {
  *
  * @see NSDateTimestamp
  */
-@OptIn(ExperimentalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class)
 internal actual fun nowInternal(): Timestamp =
     NSDate.now().toTimestamp()
 

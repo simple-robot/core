@@ -1,0 +1,105 @@
+package love.forte.simbot.spring.configuration
+
+import love.forte.simbot.spring.application.SpringEventDispatcherConfiguration
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+
+/**
+ * 用于在 starter 中针对 [SpringEventDispatcherConfiguration] 进行处理的处理器，
+ * 只能存在一个，默认情况下会加载所有的 [SimbotDispatcherConfigurer] 并应用他们的逻辑。
+ *
+ * 可以通过注册自定义的 [SimbotDispatcherProcessor] 来覆盖默认行为。
+ *
+ * @see SimbotDispatcherConfigurer
+ * @see DefaultSimbotDispatcherProcessorConfiguration
+ */
+public interface SimbotDispatcherProcessor {
+    /**
+     * 处理逻辑。
+     */
+    public fun process(configuration: SpringEventDispatcherConfiguration)
+}
+
+/**
+ * 用于在 starter 中配置 [SpringEventDispatcherConfiguration]，
+ * 默认情况下注册到 spring 中生效，可注册多个。
+ *
+ * Kotlin example:
+ *
+ * ```kt
+ * @Component
+ * class MySimbotDispatcherConfigurer : SimbotDispatcherConfigurer {
+ *     // impl...
+ * }
+ * ```
+ *
+ * ```kt
+ * @Configuration
+ * open class MySimbotDispatcherConfiguration {
+ *     @Bean
+ *     open fun myDispatcherConfigurer(): SimbotDispatcherConfigurer = ...
+ * }
+ * ```
+ *
+ * Java example:
+ *
+ * ```java
+ * @Component
+ * public class MySimbotDispatcherConfigurer implements SimbotDispatcherConfigurer {
+ *      // impl...
+ * }
+ * ```
+ *
+ * ```java
+ * @Configuration
+ * public class MySimbotDispatcherConfiguration {
+ *     @Bean
+ *     public SimbotDispatcherConfigurer myDispatcherConfigurer() {
+ *         return ...
+ *     }
+ * }
+ * ```
+ *
+ * @author ForteScarlet
+ */
+public interface SimbotDispatcherConfigurer {
+    /**
+     * 配置 [configuration].
+     */
+    public fun configure(configuration: SpringEventDispatcherConfiguration)
+}
+
+
+/**
+ * 用户注册 [SimbotDispatcherProcessor] 默认行为的配置类。
+ *
+ */
+@Configuration(proxyBeanMethods = false)
+public open class DefaultSimbotDispatcherProcessorConfiguration {
+    @Bean(DEFAULT_SIMBOT_DISPATCHER_PROCESSOR_BEAN_NAME)
+    @ConditionalOnMissingBean(SimbotDispatcherProcessor::class)
+    public open fun defaultSimbotDispatcherProcessor(
+        @Autowired(required = false) configurers: List<SimbotDispatcherConfigurer>? = null
+    ): DefaultSimbotDispatcherProcessor {
+        // logger?
+        return DefaultSimbotDispatcherProcessor(configurers ?: emptyList())
+    }
+
+    public companion object {
+        public const val DEFAULT_SIMBOT_DISPATCHER_PROCESSOR_BEAN_NAME: String =
+            "love.forte.simbot.spring.configuration.defaultSimbotDispatcherProcessor"
+    }
+}
+
+/**
+ * [SimbotDispatcherProcessor] 的默认实现，通过
+ * [DefaultSimbotDispatcherProcessorConfiguration] 向 spring 中配置。
+ */
+public open class DefaultSimbotDispatcherProcessor(private val configurers: List<SimbotDispatcherConfigurer>) :
+    SimbotDispatcherProcessor {
+    override fun process(configuration: SpringEventDispatcherConfiguration) {
+        configurers.forEach { it.configure(configuration) }
+    }
+}

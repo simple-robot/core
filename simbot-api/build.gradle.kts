@@ -17,6 +17,7 @@ apply(plugin = "simbot-multiplatform-maven-publish")
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 configJavaCompileWithModule("simbot.api")
@@ -75,8 +76,8 @@ kotlin {
         commonMain {
             dependencies {
                 // jvm compile only
-                api(libs.jetbrains.annotations)
-                api(project(":simbot-commons:simbot-common-annotations"))
+                compileOnly(libs.jetbrains.annotations)
+                compileOnly(project(":simbot-commons:simbot-common-annotations"))
                 api(project(":simbot-commons:simbot-common-suspend-runner"))
                 api(project(":simbot-commons:simbot-common-core"))
                 api(project(":simbot-commons:simbot-common-collection"))
@@ -103,9 +104,6 @@ kotlin {
                 compileOnly(libs.kotlinx.coroutines.reactor)
                 compileOnly(libs.kotlinx.coroutines.rx2)
                 compileOnly(libs.kotlinx.coroutines.rx3)
-
-                compileOnly(libs.jetbrains.annotations)
-                compileOnly(project(":simbot-commons:simbot-common-annotations"))
             }
         }
 
@@ -123,6 +121,8 @@ kotlin {
         }
 
         jsMain.dependencies {
+            implementation(project(":simbot-commons:simbot-common-annotations"))
+            implementation(libs.jetbrains.annotations)
             implementation(libs.suspend.reversal.annotations)
         }
 

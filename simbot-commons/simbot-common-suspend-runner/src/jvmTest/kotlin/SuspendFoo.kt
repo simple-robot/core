@@ -1,6 +1,6 @@
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import love.forte.simbot.annotations.InternalAPI
+import love.forte.simbot.annotations.InternalSimbotAPI
 import love.forte.simbot.suspendrunner.reserve.suspendReserve
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -18,7 +18,7 @@ class SuspendFoo : CoroutineScope {
         return name
     }
 
-    @OptIn(InternalAPI::class)
+    @OptIn(InternalSimbotAPI::class)
     fun runReserve(name: String) = suspendReserve(this, EmptyCoroutineContext) { run(name) }
 
 }

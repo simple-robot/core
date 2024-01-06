@@ -1,4 +1,7 @@
-package love.forte.simbot.core.event
+@file:JvmName("SimpleEventDispatcherImpls")
+@file:JvmMultifileClass
+
+package love.forte.simbot.core.event.impl
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -12,31 +15,53 @@ import love.forte.simbot.common.collection.PriorityConcurrentQueue
 import love.forte.simbot.common.collection.concurrentMutableMap
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeWith
+import love.forte.simbot.core.event.*
 import love.forte.simbot.event.*
 import kotlin.concurrent.Volatile
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
+import kotlin.jvm.JvmSynthetic
 
 
-internal class SimpleEventDispatcherConfigurationImpl : AbstractEventDispatcherConfiguration(),
+/**
+ * [SimpleEventDispatcherConfiguration] 的简单实现
+ */
+public open class SimpleEventDispatcherConfigurationImpl : AbstractEventDispatcherConfiguration(),
     SimpleEventDispatcherConfiguration {
+    /**
+     * 继承 [AbstractEventDispatcherConfiguration.interceptors] 并将其对外公开
+     */
     public override val interceptors: MutableList<Pair<EventInterceptor, ConfigurerFunction<EventInterceptorRegistrationProperties>?>>
         get() = super.interceptors
 
+    /**
+     * 继承 [AbstractEventDispatcherConfiguration.dispatchInterceptors] 并将其对外公开
+     */
     public override val dispatchInterceptors: MutableList<Pair<EventDispatchInterceptor, ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>?>>
         get() = super.dispatchInterceptors
 }
 
-private class SimpleEventInterceptorRegistrationPropertiesImpl : SimpleEventInterceptorRegistrationProperties {
+/**
+ * [SimpleEventInterceptorRegistrationProperties] 的简单实现
+ */
+public open class SimpleEventInterceptorRegistrationPropertiesImpl : SimpleEventInterceptorRegistrationProperties {
     override var priority: Int = PriorityConstant.NORMAL
 }
 
-private class SimpleEventDispatchInterceptorRegistrationPropertiesImpl :
+/**
+ * [SimpleEventDispatchInterceptorRegistrationProperties] 的简单实现
+ */
+public open class SimpleEventDispatchInterceptorRegistrationPropertiesImpl :
     SimpleEventDispatchInterceptorRegistrationProperties {
     override var priority: Int = PriorityConstant.NORMAL
 }
 
-private class SimpleEventListenerRegistrationPropertiesImpl(private val interceptorBuilder: SimpleEventInterceptorsBuilder) :
+/**
+ * [SimpleEventListenerRegistrationProperties] 的简单实现
+ */
+public class SimpleEventListenerRegistrationPropertiesImpl(private val interceptorBuilder: SimpleEventInterceptorsBuilder) :
     SimpleEventListenerRegistrationProperties {
 
     override var priority: Int = PriorityConstant.NORMAL
@@ -49,11 +74,16 @@ private class SimpleEventListenerRegistrationPropertiesImpl(private val intercep
     }
 }
 
-private class SimpleEventInterceptorsBuilder {
+/**
+ * 一个用于构建
+ * [SimpleEventInterceptorInvoker] 和 [SimpleEventDispatchInterceptorInvoker]
+ * 的简单构建器实现。
+ */
+public class SimpleEventInterceptorsBuilder {
     private val interceptors: MutableList<SimpleEventInterceptorInvoker> = mutableListOf()
     private val dispatchInterceptors: MutableList<SimpleEventDispatchInterceptorInvoker> = mutableListOf()
 
-    fun addInterceptor(
+    public fun addInterceptor(
         interceptor: EventInterceptor,
         configurer: ConfigurerFunction<EventInterceptorRegistrationProperties>? = null
     ) {
@@ -62,7 +92,7 @@ private class SimpleEventInterceptorsBuilder {
         interceptors.add(invoker)
     }
 
-    fun addDispatchInterceptor(
+    public fun addDispatchInterceptor(
         interceptor: EventDispatchInterceptor,
         configurer: ConfigurerFunction<EventDispatchInterceptorRegistrationProperties>? = null
     ) {
@@ -71,35 +101,53 @@ private class SimpleEventInterceptorsBuilder {
         dispatchInterceptors.add(invoker)
     }
 
-    fun build(): SimpleEventInterceptors = SimpleEventInterceptors(interceptors.sorted(), dispatchInterceptors.sorted())
+    public fun build(): SimpleEventInterceptors =
+        SimpleEventInterceptors(interceptors.sorted(), dispatchInterceptors.sorted())
 }
 
-private class SimpleEventInterceptors(
-    val interceptors: List<SimpleEventInterceptorInvoker>,
-    val dispatchInterceptors: List<SimpleEventDispatchInterceptorInvoker>,
+/**
+ * 一个包装了多个
+ * [SimpleEventInterceptorInvoker] 和 [SimpleEventDispatchInterceptorInvoker]
+ * 的集合体。
+ */
+public data class SimpleEventInterceptors(
+    public val interceptors: List<SimpleEventInterceptorInvoker>,
+    public val dispatchInterceptors: List<SimpleEventDispatchInterceptorInvoker>,
 )
 
-
-private class SimpleEventInterceptorInvoker(
+/**
+ * 一个携带优先级的 [EventInterceptor] 代理实现。
+ */
+public class SimpleEventInterceptorInvoker(
     private val interceptor: EventInterceptor,
     private val priority: Int
 ) : Comparable<SimpleEventInterceptorInvoker>, EventInterceptor by interceptor {
     override fun compareTo(other: SimpleEventInterceptorInvoker): Int = priority.compareTo(other.priority)
 }
 
-private class SimpleEventDispatchInterceptorInvoker(
+/**
+ * 一个携带优先级的 [EventDispatchInterceptor] 代理实现。
+ */
+public class SimpleEventDispatchInterceptorInvoker(
     private val interceptor: EventDispatchInterceptor,
     private val priority: Int
 ) : Comparable<SimpleEventDispatchInterceptorInvoker>, EventDispatchInterceptor by interceptor {
     override fun compareTo(other: SimpleEventDispatchInterceptorInvoker): Int = priority.compareTo(other.priority)
 }
 
-private class SimpleEventInterceptorsInvoker(private val interceptors: Iterable<SimpleEventInterceptorInvoker>) {
+/**
+ * 一个针对 [SimpleEventInterceptorInvoker] 的简单执行器实现。
+ */
+public class SimpleEventInterceptorsInvoker(private val interceptors: Iterable<SimpleEventInterceptorInvoker>) {
     private class ContextImpl(
         override val eventListenerContext: EventListenerContext,
         val iterator: Iterator<EventInterceptor>,
         private val actualTarget: suspend (EventListenerContext) -> EventResult
     ) : EventInterceptor.Context {
+
+        // TODO Java API?
+        @JvmSynthetic
+        @Throws(Exception::class)
         override suspend fun invoke(): EventResult {
             return if (iterator.hasNext()) {
                 iterator.next().intercept(this)
@@ -108,6 +156,9 @@ private class SimpleEventInterceptorsInvoker(private val interceptors: Iterable<
             }
         }
 
+        // TODO Java API?
+        @JvmSynthetic
+        @Throws(Exception::class)
         override suspend fun invoke(eventListenerContext: EventListenerContext): EventResult {
             return if (iterator.hasNext()) {
                 iterator.next().intercept(copy(eventListenerContext))
@@ -120,7 +171,9 @@ private class SimpleEventInterceptorsInvoker(private val interceptors: Iterable<
             ContextImpl(eventListenerContext, iterator, actualTarget)
     }
 
-    suspend fun invoke(
+    // TODO Java API?
+    @JvmSynthetic
+    public suspend fun invoke(
         eventContext: EventListenerContext,
         actualTarget: suspend (EventListenerContext) -> EventResult
     ): EventResult {
@@ -129,7 +182,7 @@ private class SimpleEventInterceptorsInvoker(private val interceptors: Iterable<
     }
 }
 
-private class SimpleEventDispatchInterceptorsInvoker(private val interceptors: Iterable<SimpleEventDispatchInterceptorInvoker>) {
+public class SimpleEventDispatchInterceptorsInvoker(private val interceptors: Iterable<SimpleEventDispatchInterceptorInvoker>) {
     private class ContextImpl(
         override val eventContext: EventContext,
         val iterator: Iterator<EventDispatchInterceptor>,
@@ -155,7 +208,7 @@ private class SimpleEventDispatchInterceptorsInvoker(private val interceptors: I
             ContextImpl(eventContext, iterator, actualTarget)
     }
 
-    fun invoke(
+    public fun invoke(
         eventContext: EventContext,
         actualTarget: (EventContext) -> Flow<EventResult>
     ): Flow<EventResult> {
@@ -165,25 +218,36 @@ private class SimpleEventDispatchInterceptorsInvoker(private val interceptors: I
 }
 
 /**
- *
- * @author ForteScarlet
+ * 将 [SimpleEventDispatcherConfigurationImpl] 中的部分信息解析为 [SimpleEventInterceptors]
  */
-internal class SimpleEventDispatcherImpl(
-    private val configuration: SimpleEventDispatcherConfigurationImpl,
-) : SimpleEventDispatcher {
-    //region Interceptors
-    private val interceptors = SimpleEventInterceptorsBuilder().apply {
-        configuration.interceptors.forEach { (interceptor, prop) ->
+public fun SimpleEventDispatcherConfigurationImpl.resolveInterceptors(): SimpleEventInterceptors {
+    return SimpleEventInterceptorsBuilder().apply {
+        interceptors.forEach { (interceptor, prop) ->
             addInterceptor(interceptor, prop)
         }
-        configuration.dispatchInterceptors.forEach { (interceptor, prop) ->
+        dispatchInterceptors.forEach { (interceptor, prop) ->
             addDispatchInterceptor(interceptor, prop)
         }
     }.build()
+}
+
+/**
+ * [SimpleEventDispatcher] 的简单实现
+ *
+ * @author ForteScarlet
+ */
+public class SimpleEventDispatcherImpl(
+    private val configuration: SimpleEventDispatcherConfiguration,
+    private val interceptors: SimpleEventInterceptors,
+) : SimpleEventDispatcher {
+
+    public constructor(configuration: SimpleEventDispatcherConfigurationImpl) : this(
+        configuration = configuration,
+        interceptors = configuration.resolveInterceptors()
+    )
 
     private val dispatchInterceptorsInvoker =
         interceptors.dispatchInterceptors.takeIf { it.isNotEmpty() }?.let { SimpleEventDispatchInterceptorsInvoker(it) }
-    //SimpleEventDispatchInterceptorsInvoker(interceptors.dispatchInterceptors)
 
     private val dispatcherContext = configuration.coroutineContext.minusKey(Job)
 
@@ -227,7 +291,7 @@ internal class SimpleEventDispatcherImpl(
     }
 
     private fun pushWithInterceptor(event: Event): Flow<EventResult> {
-        val context = EventContextImpl(event)
+        val context = EventContextImpl(dispatcherContext, event)
 
         return runCatching {
             dispatchInterceptorsInvoker?.invoke(context) { eventFlow(context) } ?: eventFlow(context)
@@ -253,6 +317,7 @@ internal class SimpleEventDispatcherImpl(
     }
 
     private data class EventContextImpl(
+        override val coroutineContext: CoroutineContext,
         override val event: Event,
         override val attributes: MutableAttributeMap = mutableAttributeMapOf(concurrentMutableMap())
     ) : EventContext
@@ -269,7 +334,7 @@ internal class SimpleEventDispatcherImpl(
         val listenerIterator = listenersQueue.iterator()
 
         for (listenerInvoker in listenerIterator) {
-            val lContext = EventListenerContextImpl(context)
+            val lContext = EventListenerContextImpl(context, listenerInvoker.listener)
             val result = withContext(dispatcherContext) {
                 listenerInvoker.invokeAndCollectedOrErrorResult(lContext)
             }
@@ -288,7 +353,7 @@ internal class SimpleEventDispatcherImpl(
     ) {
         val listenerIterator = listenersQueue.iterator()
         for (listenerInvoker in listenerIterator) {
-            val lContext = EventListenerContextImpl(context)
+            val lContext = EventListenerContextImpl(context, listenerInvoker.listener)
             val result = listenerInvoker.invokeAndCollectedOrErrorResult(lContext)
 
             collector.emit(result)
@@ -307,7 +372,7 @@ internal class SimpleEventDispatcherImpl(
     }
 }
 
-private data class EventListenerContextImpl(override val context: EventContext) : EventListenerContext {
+private data class EventListenerContextImpl(override val context: EventContext, override val listener: EventListener) : EventListenerContext {
     @Volatile
     override var plainText: String? = (context.event as? MessageEvent)?.messageContent?.plainText
 }

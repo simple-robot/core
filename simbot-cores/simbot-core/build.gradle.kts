@@ -13,27 +13,13 @@ repositories {
     mavenCentral()
 }
 
+configJavaCompileWithModule("simbot.core")
+
 kotlin {
     explicitApi()
-
     applyDefaultHierarchyTemplate()
 
-    jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JVMConstants.KT_JVM_TARGET
-                javaParameters = true
-
-                freeCompilerArgs = freeCompilerArgs + listOf(
-                    "-Xjvm-default=all",
-                )
-            }
-        }
-        withJava()
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
+    configKotlinJvm(JVMConstants.KT_JVM_TARGET_VALUE)
 
     js(IR) {
         browser()
@@ -102,6 +88,11 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-junit5"))
             }
+        }
+
+        jsMain.dependencies {
+            implementation(project(":simbot-commons:simbot-common-annotations"))
+            implementation(project(":simbot-commons:simbot-common-collection"))
         }
 
         nativeMain

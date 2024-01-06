@@ -4,6 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import love.forte.simbot.ability.OnCompletion
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import love.forte.simbot.application.*
 import love.forte.simbot.bot.BotManager
 import love.forte.simbot.common.function.ConfigurerFunction
@@ -14,8 +15,7 @@ import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
 import love.forte.simbot.core.event.SimpleEventDispatcher
 import love.forte.simbot.core.event.SimpleEventDispatcherConfiguration
-import love.forte.simbot.core.event.SimpleEventDispatcherConfigurationImpl
-import love.forte.simbot.core.event.SimpleEventDispatcherImpl
+import love.forte.simbot.core.event.createSimpleEventDispatcherImpl
 import love.forte.simbot.event.EventDispatcher
 import love.forte.simbot.plugin.Plugin
 import love.forte.simbot.plugin.PluginConfigureContext
@@ -99,6 +99,7 @@ public object Simple :
         return SimpleApplicationLauncherImpl { create0(configurer) }
     }
 
+    @OptIn(ExperimentalSimbotAPI::class)
     private fun create0(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SimpleApplicationBuilder, ApplicationEventRegistrar, SimpleEventDispatcherConfiguration>>?): SimpleApplicationImpl {
 
         val simpleConfigurer = SimpleApplicationFactoryConfigurer().invokeBy(configurer)
@@ -112,18 +113,16 @@ public object Simple :
         }
 
         // 事件调度器
-        val dispatcherConfiguration = SimpleEventDispatcherConfigurationImpl()
-        simpleConfigurer.eventDispatcherConfigurers.forEach { cf ->
-            dispatcherConfiguration.invokeBy(cf)
+        val eventDispatcher = createSimpleEventDispatcherImpl {
+            simpleConfigurer.eventDispatcherConfigurers.forEach { cf ->
+                invokeBy(cf)
+            }
+
+            // 合并 Application coroutineContext into dispatcher coroutineContext, 且不要Job
+            val minJobDispatcherContext = coroutineContext.minusKey(Job)
+            val minJobApplicationContext = configuration.coroutineContext.minusKey(Job)
+            coroutineContext = minJobApplicationContext + minJobDispatcherContext
         }
-
-        // 合并 Application coroutineContext into dispatcher coroutineContext, 且不要Job
-
-        val minJobDispatcherContext = dispatcherConfiguration.coroutineContext.minusKey(Job)
-        val minJobApplicationContext = configuration.coroutineContext.minusKey(Job)
-
-        dispatcherConfiguration.coroutineContext = minJobApplicationContext + minJobDispatcherContext
-        val eventDispatcher: SimpleEventDispatcher = SimpleEventDispatcherImpl(dispatcherConfiguration)
 
         // 事件注册器
         simpleConfigurer.applicationEventRegistrarConfigurations.forEach { c ->

@@ -10,7 +10,7 @@ package love.forte.simbot.annotations
     level = RequiresOptIn.Level.WARNING
 )
 @MustBeDocumented
-public annotation class ExperimentalAPI
+public annotation class ExperimentalSimbotAPI
 
 /**
  * 一个仅供 simbot 内部使用的API。
@@ -22,7 +22,7 @@ public annotation class ExperimentalAPI
     level = RequiresOptIn.Level.WARNING
 )
 @MustBeDocumented
-public annotation class InternalAPI
+public annotation class InternalSimbotAPI
 
 /**
  * 一个设计为仅供 Java 用户使用的API

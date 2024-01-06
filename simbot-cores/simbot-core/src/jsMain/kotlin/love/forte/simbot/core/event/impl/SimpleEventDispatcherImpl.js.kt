@@ -1,4 +1,4 @@
-package love.forte.simbot.core.event
+package love.forte.simbot.core.event.impl
 
 import love.forte.simbot.common.collection.PriorityConcurrentQueue
 import love.forte.simbot.event.EventListenerRegistrationHandle

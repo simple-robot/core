@@ -1,15 +1,17 @@
-package love.forte.simbot.quantcat
+package love.forte.simbot.quantcat.common.filter
 
 import love.forte.simbot.event.EventListener
 import love.forte.simbot.event.EventListenerRegistrationProperties
-import love.forte.simbot.quantcat.annotations.Filter
 import kotlin.reflect.KFunction
 
+
+// TODO?
 
 /**
  *
  * @author ForteScarlet
  */
+@Deprecated("Not impl yet")
 public interface FilterProcessor {
     // TODO FilterProcessor
 
@@ -35,10 +37,8 @@ public interface FilterProcessor {
         /**
          * 被标记的 [Filter] 注解对象
          */
-        public val filter: Filter
+        public val filterProperties: FilterProperties
     }
-
-
 
 }
 

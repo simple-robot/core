@@ -64,6 +64,28 @@ public interface ComponentFactory<COM : Component, CONF : Any> :
 }
 
 /**
+ * 一个 [Component] 的安装器接口，
+ * 提供用于安装 [Component] 的能力。
+ *
+ */
+public interface ComponentInstaller {
+    /**
+     * 注册安装一个组件类型，并为其添加对应的配置。
+     */
+    public fun <COM : Component, CONF : Any> install(
+        componentFactory: ComponentFactory<COM, CONF>, configurer: ConfigurerFunction<CONF>
+    )
+
+    /**
+     * 注册安装一个组件类型。
+     */
+    public fun <COM : Component, CONF : Any> install(componentFactory: ComponentFactory<COM, CONF>) {
+        install(componentFactory) {}
+    }
+}
+
+
+/**
  * 提供给 [ComponentFactoriesConfigurator] 用于配置 [Component] 的上下文信息。
  * 可以得到来自 [Application][love.forte.simbot.application.Application] 的初始化配置信息。
  */

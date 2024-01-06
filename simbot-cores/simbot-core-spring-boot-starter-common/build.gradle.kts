@@ -17,31 +17,19 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-
-tasks.withType<JavaCompile> {
-    sourceCompatibility = JVMConstants.KT_JVM_TARGET
-    targetCompatibility = JVMConstants.KT_JVM_TARGET
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        javaParameters = true
-        jvmTarget = JVMConstants.KT_JVM_TARGET
-        freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
-    }
-}
+configJavaCompileWithModule("simbot.core.springboot.common")
 
 kotlin {
     explicitApi()
+    configKotlinJvm(JVMConstants.KT_JVM_TARGET_VALUE)
 }
 
 dependencies {
     compileOnly(project(":simbot-commons:simbot-common-annotations"))
-    compileOnly(project(":simbot-quantcat:simbot-quantcat-annotations"))
+    api(project(":simbot-quantcat:simbot-quantcat-annotations"))
     api(project(":simbot-quantcat:simbot-quantcat-common"))
     api(project(":simbot-cores:simbot-core"))
-    
+
     // compileOnly(libs.spring.boot.v3.logging)
     //
     // compileOnly(libs.spring.boot.v3.autoconfigure)

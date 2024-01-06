@@ -5,15 +5,9 @@ import love.forte.simbot.common.async.Async
 import love.forte.simbot.common.async.toAsync
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeWith
-import love.forte.simbot.component.Component
-import love.forte.simbot.component.ComponentConfigureContext
-import love.forte.simbot.component.ComponentFactoriesConfigurator
-import love.forte.simbot.component.ComponentFactory
+import love.forte.simbot.component.*
 import love.forte.simbot.event.EventDispatcherConfiguration
-import love.forte.simbot.plugin.Plugin
-import love.forte.simbot.plugin.PluginConfigureContext
-import love.forte.simbot.plugin.PluginFactoriesConfigurator
-import love.forte.simbot.plugin.PluginFactory
+import love.forte.simbot.plugin.*
 import kotlin.jvm.JvmSynthetic
 
 
@@ -82,7 +76,8 @@ public annotation class ApplicationFactoryConfigurerDSL
  *
  * @see AbstractApplicationFactoryConfigurer
  */
-public interface ApplicationFactoryConfigurer<C : ApplicationBuilder, AER : ApplicationEventRegistrar, DC : EventDispatcherConfiguration> {
+public interface ApplicationFactoryConfigurer<C : ApplicationBuilder, AER : ApplicationEventRegistrar, DC : EventDispatcherConfiguration> :
+    ComponentInstaller, PluginInstaller {
 
     /**
      * 配置 [Application] 配置阶段的一些配置信息。
@@ -106,14 +101,15 @@ public interface ApplicationFactoryConfigurer<C : ApplicationBuilder, AER : Appl
      * 注册安装一个组件类型，并为其添加对应的配置。
      */
     @ApplicationFactoryConfigurerDSL
-    public fun <COM : Component, CONF : Any> install(
+    override fun <COM : Component, CONF : Any> install(
         componentFactory: ComponentFactory<COM, CONF>, configurer: ConfigurerFunction<CONF>
     )
 
     /**
      * 注册安装一个组件类型。
      */
-    public fun <COM : Component, CONF : Any> install(componentFactory: ComponentFactory<COM, CONF>) {
+    @ApplicationFactoryConfigurerDSL
+    override fun <COM : Component, CONF : Any> install(componentFactory: ComponentFactory<COM, CONF>) {
         install(componentFactory) {}
     }
 
@@ -121,14 +117,15 @@ public interface ApplicationFactoryConfigurer<C : ApplicationBuilder, AER : Appl
      * 注册安装一个插件 [Plugin] 类型，并为其添加一个对应的配置。
      */
     @ApplicationFactoryConfigurerDSL
-    public fun <P : Plugin, CONF : Any> install(
+    override fun <P : Plugin, CONF : Any> install(
         pluginFactory: PluginFactory<P, CONF>, configurer: ConfigurerFunction<CONF>
     )
 
     /**
      * 注册安装一个插件 [Plugin] 类型。
      */
-    public fun <P : Plugin, CONF : Any> install(pluginFactory: PluginFactory<P, CONF>) {
+    @ApplicationFactoryConfigurerDSL
+    override fun <P : Plugin, CONF : Any> install(pluginFactory: PluginFactory<P, CONF>) {
         install(pluginFactory) {}
     }
 }

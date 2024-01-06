@@ -2,7 +2,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
-import love.forte.simbot.annotations.ExperimentalAPI
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.UUID
 import love.forte.simbot.common.time.Timestamp
@@ -94,6 +94,6 @@ class AppTests {
 
 private class TestEvent : Event {
     override val id: ID = UUID.random()
-    @OptIn(ExperimentalAPI::class)
+    @OptIn(ExperimentalSimbotAPI::class)
     override val time: Timestamp = Timestamp.now()
 }

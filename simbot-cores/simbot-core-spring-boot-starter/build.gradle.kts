@@ -13,43 +13,39 @@
 plugins {
     // id("simbot.boot-module-conventions")
     // `simbot-jvm-maven-publish`
+    `java-library`
     kotlin("jvm")
     kotlin("plugin.serialization")
     kotlin("kapt")
+    id("simbot.dokka-module-configuration")
 }
 
-
-tasks.withType<JavaCompile> {
-    sourceCompatibility = "17"
-    targetCompatibility = "17"
-    options.encoding = "UTF-8"
+repositories {
+    mavenCentral()
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        javaParameters = true
-        jvmTarget = "17"
-        freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
-    }
-}
+configJavaCompileWithModule("simbot.core.springboot.starter", jvmVersion = "17")
 
 kotlin {
     explicitApi()
+    configKotlinJvm(jdkVersion = 17)
 }
 
 dependencies {
+    implementation(platform(libs.spring.boot.v3.dependencies))
+
     compileOnly(project(":simbot-commons:simbot-common-annotations"))
     compileOnly(project(":simbot-quantcat:simbot-quantcat-annotations"))
     api(project(":simbot-quantcat:simbot-quantcat-common"))
     api(project(":simbot-cores:simbot-core"))
     api(project(":simbot-cores:simbot-core-spring-boot-starter-common"))
+    api(kotlin("reflect"))
 
     compileOnly(libs.spring.boot.v3.logging)
-
     compileOnly(libs.spring.boot.v3.autoconfigure)
     compileOnly(libs.spring.boot.v3.configuration.processor)
-    annotationProcessor(libs.spring.boot.v3.configuration.processor)
-    kapt(libs.spring.boot.v3.configuration.processor)
+    //annotationProcessor(libs.spring.boot.v3.configuration.processor)
+    //kapt(libs.spring.boot.v3.configuration.processor)
 
     compileOnly(libs.javax.annotation.api)
 

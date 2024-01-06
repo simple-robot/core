@@ -1,4 +1,4 @@
-package love.forte.simbot.quantcat
+package love.forte.simbot.quantcat.common
 
 /**
  * 一些默认提供的标准 [AnnotationEventInterceptorFactory] 实现。

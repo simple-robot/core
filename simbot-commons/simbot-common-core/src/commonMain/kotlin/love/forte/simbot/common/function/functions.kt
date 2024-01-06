@@ -17,7 +17,15 @@ public fun interface Action<in T> {
     public operator fun invoke(value: T)
 }
 
-
+/**
+ * 根据提供的 [T] 判断其是否符合某种“条件”。
+ */
+public fun interface Condition<in T> {
+    /**
+     * Check the [value].
+     */
+    public operator fun invoke(value: T): Boolean
+}
 
 /**
  * 一个"配置"函数接口。通过 `receiver` 接收配置信息参数。

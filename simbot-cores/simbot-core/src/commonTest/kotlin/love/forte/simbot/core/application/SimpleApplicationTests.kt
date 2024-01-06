@@ -2,7 +2,7 @@ package love.forte.simbot.core.application
 
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.test.runTest
-import love.forte.simbot.annotations.ExperimentalAPI
+import love.forte.simbot.annotations.ExperimentalSimbotAPI
 import love.forte.simbot.application.launchApplication
 import love.forte.simbot.application.onCancelled
 import love.forte.simbot.application.onLaunch
@@ -170,7 +170,7 @@ class SimpleApplicationTests {
 private class TestEvent : Event {
     override val id: ID = UUID.random()
 
-    @OptIn(ExperimentalAPI::class)
+    @OptIn(ExperimentalSimbotAPI::class)
     override val time: Timestamp = Timestamp.now()
 }
 
@@ -183,7 +183,7 @@ private class TestPluginConf {
 
 }
 
-@OptIn(ExperimentalAPI::class)
+@OptIn(ExperimentalSimbotAPI::class)
 private val TestPlugin = createPlugin("TestPlugin", ::TestPluginConf) { conf ->
     applicationEventRegistrar.onLaunch {
         println("Launch!")

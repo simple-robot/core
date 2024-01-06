@@ -1,8 +1,8 @@
 package love.forte.simbot.quantcat.annotations
 
 import love.forte.simbot.common.PriorityConstant
-import love.forte.simbot.quantcat.MatchType
 import love.forte.simbot.quantcat.annotations.Filter.Targets
+import love.forte.simbot.quantcat.common.filter.*
 
 /**
  * 与 [@Listener][Listener] 配合使用，标记为对当前事件处理器的基础属性过滤器。
@@ -84,22 +84,8 @@ public annotation class Filter(
          * ```kotlin
          * event.bot.id in bots
          * ```
-         *
-         * @see checkBotsIdByIsMe
          */
         val bots: Array<String> = [],
-
-        /**
-         * 是否使用 [Bot.isMe][love.forte.simbot.bot.Bot.isMe] 作为 [bots]
-         * 的匹配方式。
-         *
-         * ```kotlin
-         * bots.any { botId -> event.bot.isMe(botId) }
-         * ```
-         *
-         * 默认为 `false`。
-         */
-        val checkBotsIdByIsMe: Boolean = false,
 
         /**
          * 对 [Actor][love.forte.simbot.definition.Actor] 进行匹配。
@@ -221,137 +207,33 @@ public annotation class Filter(
             public const val NON_PREFIX: String = "!"
         }
     }
-
-
 }
 
-
-/**
- * [Filter] 标记的结果最终产生的“过滤器”的模式。
- *
- */
-public enum class FilterMode {
-    /**
-     * 将 [Filter] 中的逻辑作为 [EventInterceptor][love.forte.simbot.event.EventInterceptor] 注册。
-     * 可以通过优先级的控制来使其与其他全局拦截器之间的关系。
-     *
-     */
-    INTERCEPTOR,
-
-    /**
-     * 作为一段逻辑注入到事件处理器的前置中。
-     * 由于最终的执行逻辑是与事件处理器的逻辑融为一体的，
-     * 所以使用此模式时，[Filter] 所产生的逻辑始终会在所有拦截器之后执行。
-     */
-    IN_LISTENER
-
-
-}
-
-
-internal val EmptyTargets: Targets = Targets()
-
-/**
- * Combines two instances of the [Targets] class together.
- *
- * @param other The [Targets] instance to be combined with.
- * @return The resulting [Targets] instance after the combination.
- */
-public operator fun Targets.plus(other: Targets): Targets {
-    if (this == EmptyTargets) {
-        if (other == EmptyTargets) {
-            return EmptyTargets
-        }
-        return other
-    }
-
-    if (other == EmptyTargets) {
-        if (this == EmptyTargets) {
-            return EmptyTargets
-        }
-        return this
-    }
-
-    return mergeTargets(listOf(this, other))
-}
-
-/**
- * Merges the given list of [Targets] into a single [Targets] object.
- *
- * @param targets The list of [Targets] to merge.
- * @return The merged [Targets] object.
- */
-public fun mergeTargets(targets: Iterable<Targets>): Targets {
-    val iterator = targets.iterator()
-    if (!iterator.hasNext()) {
-        return EmptyTargets
-    }
-
-    val first = iterator.next()
-    if (!iterator.hasNext()) {
-        return first
-    }
-
-    var checkBotsIdByIsMe = first.checkBotsIdByIsMe
-    var atBot = first.atBot
-
-    val components = first.components.toMutableSet()
-    val bots = first.bots.toMutableSet()
-    val actors = first.actors.toMutableSet()
-    val authors = first.authors.toMutableSet()
-    val chatRooms = first.chatRooms.toMutableSet()
-    val organizations = first.organizations.toMutableSet()
-    val groups = first.groups.toMutableSet()
-    val guilds = first.guilds.toMutableSet()
-    val contacts = first.contacts.toMutableSet()
-    val ats = first.ats.toMutableSet()
-
-    for (value in iterator) {
-        checkBotsIdByIsMe = value.checkBotsIdByIsMe || checkBotsIdByIsMe
-        atBot = value.atBot || atBot
-
-        components.addAll(value.components)
-        bots.addAll(value.bots)
-        actors.addAll(value.actors)
-        authors.addAll(value.authors)
-        chatRooms.addAll(value.chatRooms)
-        organizations.addAll(value.organizations)
-        groups.addAll(value.groups)
-        guilds.addAll(value.guilds)
-        contacts.addAll(value.contacts)
-        ats.addAll(value.ats)
-    }
-
-    val allEmpty = components.isEmpty() &&
-            bots.isEmpty() &&
-            actors.isEmpty() &&
-            authors.isEmpty() &&
-            chatRooms.isEmpty() &&
-            organizations.isEmpty() &&
-            groups.isEmpty() &&
-            guilds.isEmpty() &&
-            contacts.isEmpty() &&
-            ats.isEmpty()
-
-    if (allEmpty && EmptyTargets.atBot == atBot && EmptyTargets.checkBotsIdByIsMe == checkBotsIdByIsMe) {
-        return EmptyTargets
-    }
-
-    return Targets(
-        atBot = atBot,
-        checkBotsIdByIsMe = checkBotsIdByIsMe,
-        components = components.toTypedArray(),
-        bots = bots.toTypedArray(),
-        actors = actors.toTypedArray(),
-        authors = authors.toTypedArray(),
-        chatRooms = chatRooms.toTypedArray(),
-        organizations = organizations.toTypedArray(),
-        groups = groups.toTypedArray(),
-        guilds = guilds.toTypedArray(),
-        contacts = contacts.toTypedArray(),
-        ats = ats.toTypedArray(),
+public fun Filter.toProperties(): FilterProperties =
+    FilterProperties(
+        value = value,
+        mode = mode,
+        priority = priority,
+        targets = targets.map { it.toProperties() },
+        ifNullPass = ifNullPass,
+        matchType = matchType,
     )
-}
+
+public fun Filter.Targets.toProperties(): FilterTargetsProperties =
+    FilterTargetsProperties(
+        components = components.toList(),
+        bots = bots.toList(),
+        actors = actors.toList(),
+        authors = authors.toList(),
+        chatRooms = chatRooms.toList(),
+        organizations = organizations.toList(),
+        groups = groups.toList(),
+        guilds = guilds.toList(),
+        contacts = contacts.toList(),
+        ats = ats.toList(),
+        atBot = atBot,
+    )
+
 
 /**
  * 配合 [Filter] 使用。针对多个 [Filter] 之间的协同配置。
@@ -364,27 +246,3 @@ public annotation class MultiFilter(
      */
     val matchType: MultiFilterMatchType
 )
-
-/**
- * 多值匹配，当可能存在多轮匹配时进行的取值策略。
- *
- * @see MultiFilter
- * @author ForteScarlet
- *
- */
-public enum class MultiFilterMatchType {
-    /**
-     * 任意匹配成功即可
-     */
-    ANY,
-
-    /**
-     * 需要全部匹配成功
-     */
-    ALL,
-
-    /**
-     * 需要无匹配内容
-     */
-    NONE;
-}
