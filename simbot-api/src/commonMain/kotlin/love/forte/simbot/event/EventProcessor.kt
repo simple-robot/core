@@ -1,5 +1,4 @@
-@file:JvmMultifileClass
-@file:JvmName("EventProcessors")
+@file:JvmMultifileClass @file:JvmName("EventProcessors")
 
 package love.forte.simbot.event
 
@@ -8,6 +7,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
+import kotlin.jvm.JvmSynthetic
 
 
 /**
@@ -43,6 +43,23 @@ import kotlin.jvm.JvmName
  *
  * 参考上述示例，协程上下文的使用“优先级”可近似地参考为 `context2` > `context1` > `context3` 。
  *
+ * ## Java API
+ *
+ * 在 `EventProcessors` 的静态API中提供了一些非挂起的可供 Java 友好调用的API，
+ * 例如:
+ *
+ * ```java
+ * List<EventResult> resultList = EventProcessors.pushAndCollectToListAsync(processor, event, scope);
+ * // ...
+ * ```
+ *
+ * ```java
+ * Flux<EventResult> resultList = EventProcessors.pushAndAsFlux(processor, event, scope);
+ * // ...
+ * ```
+ *
+ * 其中提供了一些异步或响应式相关的转化、处理API。
+ * 对于它们各自的说明、限制、要求则在 [push] 的基础上参考它们的文档说明。
  *
  * @author ForteScarlet
  */
@@ -74,27 +91,75 @@ public interface EventProcessor {
      *
      * ### 异常
      *
-     * 如果事件处理器 [EventListener] 或者事件拦截器 [EventInterceptor] 的执行过程中产生了异常，则对应位置的 [EventResult] 将会是包装了此异常的 [StandardEventResult.Error]，
+     * 如果事件处理器 [EventListener] 或者事件拦截器 [EventInterceptor] 的执行过程中产生了异常，
+     * 则对应位置的 [EventResult] 将会是包装了此异常的 [StandardEventResult.Error]，
      * 且不会中断后续其他处理器或拦截器的执行。
      *
+     * ```kotlin
+     * eventDispatcher.push(event)
+     *     .onEach { result ->
+     *         if (result is StandardEventResult.Error) {
+     *             // 这个 result 代表了一个异常
+     *         }
+     *     }
+     *     .collect { ... }
+     * ```
+     *
      * 如果事件调度拦截器在执行的过程中产生了异常，则会直接向 [Flow] 中抛出异常。此异常可通过 [Flow.catch] 得到。
+     *
+     * ```kotlin
+     * eventDispatcher.push(event)
+     *     .catch {
+     *         // 调度拦截器 EventDispatchInterceptor 产生了异常
+     *     }
+     *     .collect { ... }
+     * ```
+     *
+     * 也可以通过一些预设的扩展API来处理部分特殊的响应结果。(对于特殊的响应结果可参考 [StandardEventResult])
+     * 例如 [Flow.filterNotInvalid] 会过滤掉所有表示无效的返回值 [StandardEventResult.Invalid]:
+     * ```kotlin
+     *  eventDispatcher.push(event)
+     *     .filterNotInvalid() // 过滤掉所有 Invalid 类型结果
+     *     .collect { ... }
+     * ```
+     *
+     * ## Java API
+     *
+     * 在 `EventProcessors` 的静态API中提供了一些非挂起的可供 Java 友好调用的API，
+     * 例如:
+     *
+     * ```java
+     * List<EventResult> resultList = EventProcessors.pushAndCollectToListAsync(processor, event, scope);
+     * // ...
+     * ```
+     *
+     * ```java
+     * Flux<EventResult> resultList = EventProcessors.pushAndAsFlux(processor, event, scope);
+     * // ...
+     * ```
+     *
+     * 其中提供了一些异步或响应式相关的转化、处理API。
+     * 对于它们各自的说明、限制、要求则在 [push] 的基础上参考它们的文档说明。
      *
      * @return [EventResult] 结果。如果具有特殊含义，那么可能是 [StandardEventResult] 中的某类型。
      *
      */
     public fun push(event: Event): Flow<EventResult>
+
+
+    /**
+     * 通过 [scope] 将事件推送并异步处理，不关心事件的结果。
+     */
+    public fun pushAndLaunch(scope: CoroutineScope, event: Event): Job {
+        return push(event).launchIn(scope)
+    }
 }
 
-/**
- * 通过 [scope] 将事件推送并异步处理，不关心事件的结果。
- */
-public fun EventProcessor.pushAndLaunch(scope: CoroutineScope, event: Event): Job {
-    return push(event).launchIn(scope)
-}
 
 /**
  * 将事件推送并收集处理。
  */
+@JvmSynthetic
 public suspend fun EventProcessor.pushAndCollect(event: Event, collector: FlowCollector<EventResult>? = null) {
     with(push(event)) {
         if (collector != null) collect(collector) else collect()
@@ -103,9 +168,9 @@ public suspend fun EventProcessor.pushAndCollect(event: Event, collector: FlowCo
 
 
 /**
- * Filters out any invalid [EventResult] objects from the flow.
+ * Filters out any not [StandardEventResult.Invalid] objects from the flow.
  *
- * @return A new flow containing only valid [EventResult] objects.
+ * @return A new flow containing only not [StandardEventResult.Invalid] objects.
  */
 public fun Flow<EventResult>.filterNotInvalid(): Flow<EventResult> = filter { it !is StandardEventResult.Invalid }
 
@@ -116,6 +181,21 @@ public fun Flow<EventResult>.filterNotInvalid(): Flow<EventResult> = filter { it
  * @return a flow of [EventResult]s excluding the events of type `StandardEventResult.Invalid`.
  */
 public fun Flow<EventResult>.takeWhileNotInvalid(): Flow<EventResult> = takeWhile { it !is StandardEventResult.Invalid }
+
+/**
+ * Filters out any not [StandardEventResult.Empty] objects from the flow.
+ *
+ * @return A new flow containing only not [StandardEventResult.Empty] objects.
+ */
+public fun Flow<EventResult>.filterNotEmpty(): Flow<EventResult> = filter { it !is StandardEventResult.Empty }
+
+/**
+ * Returns a flow of [EventResult]s that is composed of the events emitted by the original [Flow]
+ * until an event of type [StandardEventResult.Empty] is encountered.
+ *
+ * @return a flow of [EventResult]s excluding the events of type `StandardEventResult.Invalid`.
+ */
+public fun Flow<EventResult>.takeWhileNotEmpty(): Flow<EventResult> = takeWhile { it !is StandardEventResult.Empty }
 
 /**
  * Filters the [Flow] of [EventResult]s and removes all [StandardEventResult.Error] instances.
@@ -135,10 +215,24 @@ public fun Flow<EventResult>.takeWhileNotError(): Flow<EventResult> = takeWhile 
  * Throws an exception if the event result is of type [StandardEventResult.Error].
  * Otherwise, returns the event result unchanged.
  *
+ * e.g.
+ * ```kotlin
+ * flow.throwIfError()
+ * .catch { e -> ... } // 抛出后即可在此处捕获到
+ * .collect { ... }
+ * ```
+ *
  * @return A [Flow] that emits event results without errors.
  */
 public fun Flow<EventResult>.throwIfError(): Flow<EventResult> =
     map { if (it is StandardEventResult.Error) throw it.content else it }
+
+/**
+ * 处理当前流中经过的每一个
+ * [StandardEventResult.Error] 类型的结果。
+ */
+public inline fun Flow<EventResult>.onEachError(crossinline action: (StandardEventResult.Error) -> Unit): Flow<EventResult> =
+    onEach { if (it is StandardEventResult.Error) action(it) }
 
 /**
  * Filters the non-empty [EventResult] objects from the given flow.
@@ -146,12 +240,21 @@ public fun Flow<EventResult>.throwIfError(): Flow<EventResult> =
  * @receiver The flow of [EventResult] objects.
  * @return A new flow containing only the non-empty [EventResult] objects.
  */
-public fun Flow<EventResult>.filterNotEmpty(): Flow<EventResult> = filter { it !is StandardEventResult.EmptyResult }
+public fun Flow<EventResult>.filterNotEmptyResult(): Flow<EventResult> =
+    filter { it !is StandardEventResult.EmptyResult }
 
 /**
  * Returns a Flow of [EventResult]s which stops emitting elements when it encounters an empty [EventResult].
  *
  * @return a Flow of [EventResult]s until an empty [EventResult] is encountered.
  */
-public fun Flow<EventResult>.takeWhileNotEmpty(): Flow<EventResult> =
+public fun Flow<EventResult>.takeWhileNotEmptyResult(): Flow<EventResult> =
     takeWhile { it !is StandardEventResult.EmptyResult }
+
+/**
+ * 从当前流中过滤出 **非无效** 的类型，即过滤出不是下述类型之一的其他结果：
+ * - [StandardEventResult.Error]
+ * - [StandardEventResult.EmptyResult]
+ *
+ */
+public fun Flow<EventResult>.filterOnlyValid(): Flow<EventResult> = filterNotEmptyResult().filterNotError()

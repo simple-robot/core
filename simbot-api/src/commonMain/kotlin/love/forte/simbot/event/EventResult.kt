@@ -217,6 +217,9 @@ public sealed class StandardEventResult : EventResult {
 
     /**
      * 代表 [content] 可能为一个反应式的结果，并且允许其在一个函数结束时进行收集。
+     *
+     * 首次结果收集应当由 [EventDispatcher] 推送结果之前即完成，因此 [EventProcessor.push]
+     * 的结果中不会出现从未收集过结果的 result。
      */
     public abstract class CollectableReactivelyResult : StandardEventResult() {
 
