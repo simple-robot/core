@@ -29,5 +29,5 @@ include(":simbot-quantcat:simbot-quantcat-annotations")
 include(":simbot-quantcat:simbot-quantcat-common")
 
 include(":simbot-cores:simbot-core-spring-boot-starter-common")
-include(":simbot-cores:simbot-core-spring-boot-v2-starter")
 include(":simbot-cores:simbot-core-spring-boot-starter") // v3
+//include(":simbot-cores:simbot-core-spring-boot-v2-starter")

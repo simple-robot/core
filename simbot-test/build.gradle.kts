@@ -126,28 +126,6 @@ kotlin {
             implementation(libs.ktor.client.js)
             implementation(libs.ktor.client.core)
         }
-
-        nativeTest.dependencies {
-            // implementation(libs.ktor.client.core)
-            // implementation(libs.ktor.client.cio)
-        }
-
-        linuxTest.dependencies {
-            // implementation(libs.ktor.client.core)
-            // implementation(libs.ktor.client.cio)
-        }
-
-        appleTest.dependencies {
-            // implementation(libs.ktor.client.core)
-            // implementation(libs.ktor.client.cio)
-        }
-
-        mingwTest.dependencies {
-            // implementation(libs.ktor.client.core)
-            // implementation(libs.ktor.client.winhttp)
-        }
-
-
     }
 }
 

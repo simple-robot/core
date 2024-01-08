@@ -14,13 +14,13 @@ import kotlin.jvm.JvmSynthetic
  *
  * 也可以通过 [EventListenerRegistrationProperties] 针对某指定的监听器进行拦截。
  *
- * 对于Java实现者，考虑使用 [JAsyncEventInterceptor] 和 [JBlockEventInterceptor]
+ * 对于Java实现者，考虑使用 `JAsyncEventInterceptor` 和 `JBlockEventInterceptor`,
+ * 或 `EventInterceptors` 中提供的静态API，例如 `EventInterceptors.block(...)`。
  *
  * @see EventDispatchInterceptor
  *
  * @author ForteScarlet
  */
-@Suppress("KDocUnresolvedReference")
 public fun interface EventInterceptor {
 
     /**

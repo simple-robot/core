@@ -37,7 +37,8 @@ public open class SimbotApplicationRunner(
     private fun registerOnComplete() {
         application.onCompletion { cause ->
             if (cause != null) {
-                logger.error("Application {} was on completion with cause: {}", application, cause.message, cause)
+                logger.info("Application {} was on completion with cause: {}", application, cause.message)
+                logger.debug("Application {} was on completion with cause: {}", application, cause.message, cause)
             } else {
                 logger.info("Application {} was on completion", application)
             }

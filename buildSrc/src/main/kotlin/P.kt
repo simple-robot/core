@@ -61,7 +61,7 @@ sealed class P(override val group: String) : ProjectDetail() {
 
         // const val COMPONENT_GROUP = "love.forte.simbot.component"
         const val DESCRIPTION = "Simple Robot，一个通用的bot风格事件调度框架，以灵活的统一标准来编写bot应用。"
-        const val HOMEPAGE = "https://github.com/simple-robot/core"
+        const val HOMEPAGE = "https://github.com/simple-robot/simpler-robot"
 
         fun findProjectDetailByGroup(group: String): ProjectDetail? {
             val groupProject =
@@ -127,7 +127,7 @@ sealed class P(override val group: String) : ProjectDetail() {
     override val scm: Scm = scm {
         url = HOMEPAGE
         connection = "scm:git:$HOMEPAGE.git"
-        developerConnection = "scm:git:ssh://git@github.com/simple-robot/core.git"
+        developerConnection = "scm:git:ssh://git@github.com/simple-robot/simpler-robot.git"
     }
 
 

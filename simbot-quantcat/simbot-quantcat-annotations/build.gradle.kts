@@ -83,6 +83,9 @@ kotlin {
 
         commonTest {
             dependencies {
+                implementation(project(":simbot-api"))
+                implementation(project(":simbot-commons:simbot-common-annotations"))
+                implementation(project(":simbot-quantcat:simbot-quantcat-common"))
                 implementation(kotlin("test"))
                 implementation(kotlin("reflect"))
             }
