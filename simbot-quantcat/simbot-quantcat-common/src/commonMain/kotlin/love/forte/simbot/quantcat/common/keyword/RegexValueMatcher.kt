@@ -61,9 +61,17 @@ private class MatcherParameters(matcher: MatchResult) : MatchParameters {
     /**
      * 根据指定参数名称获取对应的提取参数。
      * @param key
-     * @return
+     * @return value
      */
-    override fun get(key: String): String? = groups[key]?.value
+    override fun get(key: String): String? {
+        val group = try {
+            groups[key] ?: return null
+        } catch (notFound: IllegalArgumentException) {
+            return null
+        }
+
+        return group.value
+    }
 }
 
 /**

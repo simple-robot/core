@@ -113,7 +113,7 @@ public object Simple :
         }
 
         // 事件调度器
-        val eventDispatcher = createSimpleEventDispatcherImpl {
+        val dispatcher = createSimpleEventDispatcherImpl {
             simpleConfigurer.eventDispatcherConfigurers.forEach { cf ->
                 invokeBy(cf)
             }
@@ -150,7 +150,7 @@ public object Simple :
                 get() = components
 
             override val eventDispatcher: EventDispatcher
-                get() = eventDispatcher
+                get() = dispatcher
         })
 
 
@@ -161,7 +161,7 @@ public object Simple :
 
         return SimpleApplicationImpl(
             configuration,
-            eventDispatcher,
+            dispatcher,
             components,
             plugins,
             botManagers,

@@ -4,6 +4,7 @@ import love.forte.simbot.bot.Bot
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.IDContainer
 import love.forte.simbot.common.time.Timestamp
+import love.forte.simbot.component.Component
 import love.forte.simbot.suspendrunner.STP
 
 /**
@@ -28,15 +29,45 @@ public interface Event : IDContainer {
 }
 
 /**
+ * 一个由某个组件所发起的事件。
+ *
+ * @author ForteScarlet
+ */
+public interface ComponentEvent : Event {
+    /**
+     * 所属组件
+     */
+    public val component: Component
+}
+
+/**
  * 与 [Bot] 相关的事件。
  *
  * @author ForteScarlet
  */
-public interface BotEvent : Event {
+public interface BotEvent : ComponentEvent {
     /**
      * 相关的 [Bot]。
      */
     public val bot: Bot
+
+    /**
+     * [component] 默认由 [bot.component][Bot.component] 提供。
+     *
+     */
+    override val component: Component
+        get() = bot.component
+}
+
+/**
+ * 存在一个 [主要事件中心][content] 的事件类型。
+ */
+@STP
+public interface ContentEvent : Event {
+    /**
+     * 这个事件的主要事件中心值。
+     */
+    public suspend fun content(): Any?
 }
 
 /**
@@ -45,9 +76,9 @@ public interface BotEvent : Event {
  * @author ForteScarlet
  */
 @STP
-public interface ChangeEvent : Event {
+public interface ChangeEvent : ContentEvent {
     /**
      * 发生了变化的主体。
      */
-    public suspend fun content(): Any?
+    override suspend fun content(): Any?
 }

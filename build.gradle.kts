@@ -1,5 +1,3 @@
-import love.forte.gradle.common.core.project.setup
-
 plugins {
     idea
 //    id("simbot.changelog-generator")
@@ -28,6 +26,7 @@ allprojects {
                 }
             }
         }
+        mavenLocal()
     }
 
     // apply(plugin = "io.gitlab.arturbosch.detekt")

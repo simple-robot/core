@@ -40,6 +40,7 @@ dependencies {
     api(project(":simbot-cores:simbot-core"))
     api(project(":simbot-cores:simbot-core-spring-boot-starter-common"))
     api(kotlin("reflect"))
+    api(libs.kotlinx.serialization.json)
 
     compileOnly(libs.spring.boot.v3.logging)
     compileOnly(libs.spring.boot.v3.autoconfigure)
@@ -49,12 +50,17 @@ dependencies {
 
     compileOnly(libs.javax.annotation.api)
 
+    testImplementation(project(":simbot-commons:simbot-common-annotations"))
+    testImplementation(project(":simbot-test"))
     testImplementation(libs.spring.boot.v3.test)
-    testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.kotlinx.serialization.properties)
     testImplementation(libs.kotlinx.serialization.protobuf)
     testImplementation(libs.spring.boot.v3.aop)
     testImplementation(libs.spring.boot.v3.autoconfigure)
     testImplementation(libs.spring.boot.v3.configuration.processor)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}

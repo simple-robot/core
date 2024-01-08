@@ -10,11 +10,11 @@ import love.forte.simbot.suspendrunner.STP
  * @author ForteScarlet
  */
 @STP
-public interface ActorEvent : BotEvent {
+public interface ActorEvent : BotEvent, ContentEvent {
     /**
      * 被作为事件中心的 [Actor]。
      */
-    public suspend fun content(): Actor
+    override suspend fun content(): Actor
 }
 
 /**
@@ -117,17 +117,29 @@ public interface ChatChannelEvent : ChannelEvent, ChatRoomEvent {
 }
 
 /**
+ * 可以感知到 [Organization] 的事件类型。
+ * 此类型由一些存在组织信息、但组织信息不是主要信息的事件类型实现。
+ */
+@STP
+public interface OrganizationAwareEvent : BotEvent {
+    /**
+     * 事件中的 [Organization].
+     */
+    public suspend fun organization(): Organization
+}
+
+/**
  * 一个以某 [Member] 为中心的事件。
  *
  * @author ForteScarlet
  */
 @STP
-public interface MemberEvent : ActorEvent {
+public interface MemberEvent : ActorEvent, OrganizationAwareEvent {
     /**
      * 事件中 [member][content] 所属的 [Organization]。
      *
      */
-    public suspend fun organization(): Organization
+    override suspend fun organization(): Organization
 
     /**
      * 被作为事件中心的 [Member]。

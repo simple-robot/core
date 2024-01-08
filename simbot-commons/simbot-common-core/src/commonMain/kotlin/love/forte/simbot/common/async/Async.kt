@@ -1,9 +1,14 @@
+@file:JvmName("AsyncUtil")
+@file:JvmMultifileClass
 package love.forte.simbot.common.async
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.selects.SelectClause0
 import kotlinx.coroutines.selects.SelectClause1
 import love.forte.simbot.common.function.Action
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
+import kotlin.jvm.JvmSynthetic
 
 
 /**
@@ -198,7 +203,7 @@ public inline fun <T> CoroutineScope.toAsync(crossinline block: suspend () -> T)
  *
  * @return 表示异步操作的 [Async] 对象
  */
-public fun <T> Deferred<T>.toAsync(): Async<T> = Async(this)
+public fun <T> Deferred<T>.asAsync(): Async<T> = Async(this)
 
 /**
  * 将给定的值封装为一个已完成的 `Async<T>` 对象。
@@ -215,6 +220,7 @@ public fun <T> completedAsync(value: T): Async<T> = Async(CompletableDeferred(va
  *
  * @see Deferred.await
  */
+@JvmSynthetic
 public suspend fun <T> Async<T>.await(): T = deferred.await()
 
 /**
@@ -223,6 +229,7 @@ public suspend fun <T> Async<T>.await(): T = deferred.await()
  *
  * @see Deferred.join
  */
+@JvmSynthetic
 public suspend fun Async<*>.join(): Unit = deferred.join()
 
 /**

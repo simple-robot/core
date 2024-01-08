@@ -577,7 +577,7 @@ public fun setRunInNoScopeBlockingStrategy(strategy: RunInNoScopeBlockingStrateg
  * @see runBlocking
  */
 @OptIn(ExperimentalSimbotAPI::class, InternalSimbotAPI::class)
-@Throws(InterruptedException::class)
+@Throws(RunInBlockingException::class)
 public fun <T> runInBlocking(
     context: CoroutineContext = DefaultBlockingContext,
     block: suspend CoroutineScope.() -> T,

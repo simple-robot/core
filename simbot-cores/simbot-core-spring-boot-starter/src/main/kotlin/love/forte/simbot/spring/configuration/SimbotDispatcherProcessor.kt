@@ -1,5 +1,9 @@
 package love.forte.simbot.spring.configuration
 
+import love.forte.simbot.event.EventDispatchInterceptor
+import love.forte.simbot.event.EventInterceptor
+import love.forte.simbot.logger.LoggerFactory
+import love.forte.simbot.logger.logger
 import love.forte.simbot.spring.application.SpringEventDispatcherConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -81,10 +85,15 @@ public open class DefaultSimbotDispatcherProcessorConfiguration {
     @Bean(DEFAULT_SIMBOT_DISPATCHER_PROCESSOR_BEAN_NAME)
     @ConditionalOnMissingBean(SimbotDispatcherProcessor::class)
     public open fun defaultSimbotDispatcherProcessor(
-        @Autowired(required = false) configurers: List<SimbotDispatcherConfigurer>? = null
+        @Autowired(required = false) configurers: List<SimbotDispatcherConfigurer>? = null,
+        @Autowired(required = false) interceptors: List<EventInterceptor>? = null,
+        @Autowired(required = false) dispatcherInterceptors: List<EventDispatchInterceptor>? = null
     ): DefaultSimbotDispatcherProcessor {
-        // logger?
-        return DefaultSimbotDispatcherProcessor(configurers ?: emptyList())
+        return DefaultSimbotDispatcherProcessor(
+            interceptors = interceptors ?: emptyList(),
+            dispatcherInterceptors = dispatcherInterceptors ?: emptyList(),
+            configurers = configurers ?: emptyList()
+        )
     }
 
     public companion object {
@@ -97,9 +106,31 @@ public open class DefaultSimbotDispatcherProcessorConfiguration {
  * [SimbotDispatcherProcessor] 的默认实现，通过
  * [DefaultSimbotDispatcherProcessorConfiguration] 向 spring 中配置。
  */
-public open class DefaultSimbotDispatcherProcessor(private val configurers: List<SimbotDispatcherConfigurer>) :
+public open class DefaultSimbotDispatcherProcessor(
+    private val configurers: List<SimbotDispatcherConfigurer>,
+    private val interceptors: List<EventInterceptor>,
+    private val dispatcherInterceptors: List<EventDispatchInterceptor>
+) :
     SimbotDispatcherProcessor {
     override fun process(configuration: SpringEventDispatcherConfiguration) {
-        configurers.forEach { it.configure(configuration) }
+        // 拦截器加载
+        interceptors.forEach {
+            configuration.addInterceptor(it)
+            logger.debug("Added interceptor {}", it)
+        }
+
+        dispatcherInterceptors.forEach {
+            configuration.addDispatchInterceptor(it)
+            logger.debug("Added dispatcher interceptor {}", it)
+        }
+
+        configurers.forEach {
+            it.configure(configuration)
+            logger.debug("Configured {} by configurer {}", configuration, it)
+        }
+    }
+
+    public companion object {
+        private val logger = LoggerFactory.logger<DefaultSimbotDispatcherProcessor>()
     }
 }

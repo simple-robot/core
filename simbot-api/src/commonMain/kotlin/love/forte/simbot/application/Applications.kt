@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import love.forte.simbot.common.async.Async
+import love.forte.simbot.common.async.asAsync
 import love.forte.simbot.common.async.toAsync
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeWith
@@ -55,7 +56,7 @@ public fun <A : Application, C : AbstractApplicationBuilder, L : ApplicationLaun
     }.getOrElse { e ->
         return CompletableDeferred<A>().apply {
             completeExceptionally(e)
-        }.toAsync()
+        }.asAsync()
     }
 
     return scope.toAsync { launcher.launch() }

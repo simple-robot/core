@@ -5,6 +5,7 @@ module simbot.core.springboot.common {
     requires transitive simbot.quantcat.common;
     requires transitive simbot.core;
     requires static java.annotation;
+    requires kotlinx.coroutines.core;
 
     exports love.forte.simbot.spring.application;
     exports love.forte.simbot.spring;

@@ -46,7 +46,7 @@ inline fun KotlinMultiplatformExtension.configKotlinJvm(
 inline fun KotlinJvmProjectExtension.configKotlinJvm(
     jdkVersion: Int = JVMConstants.KT_JVM_TARGET_VALUE,
     crossinline block: KotlinJvmProjectExtension.() -> Unit = {}
-    ) {
+) {
     configJavaToolchain(jdkVersion)
     compilerOptions {
         javaParameters = true

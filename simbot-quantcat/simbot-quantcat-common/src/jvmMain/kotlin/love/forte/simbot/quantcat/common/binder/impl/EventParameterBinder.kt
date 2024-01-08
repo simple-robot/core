@@ -79,7 +79,7 @@ private class EventInstanceBinder(private val targetType: KClass<Event>) : Param
     override fun arg(context: EventListenerContext): Result<Any?> {
         // 如果当前事件类型是目标类型的子类，提供参数
         return targetType.safeCast(context.event)?.let { Result.success(it) }
-            ?: Result.failure(BindException("The type of EventListenerProcessingContext.event is inconsistent with the target type $targetType"))
+            ?: Result.failure(BindException("The type of EventListenerContext.event is inconsistent with the target type $targetType"))
     }
 }
 

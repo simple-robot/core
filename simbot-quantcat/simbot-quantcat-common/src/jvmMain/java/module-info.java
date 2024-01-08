@@ -5,6 +5,8 @@ module simbot.quantcat.common {
     requires static kotlinx.coroutines.core;
     requires static simbot.common.core;
     requires static simbot.common.annotations;
+    requires org.slf4j;
+    requires simbot.logger;
 
     exports love.forte.simbot.quantcat.common;
     exports love.forte.simbot.quantcat.common.filter;

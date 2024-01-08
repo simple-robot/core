@@ -17,7 +17,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import love.forte.simbot.common.async.Async
-import love.forte.simbot.common.async.toAsync
+import love.forte.simbot.common.async.asAsync
 import love.forte.simbot.common.function.Action
 import kotlin.jvm.JvmSynthetic
 
@@ -57,7 +57,7 @@ public interface Collectable<out T> {
      *
      */
     public fun collectAsync(scope: CoroutineScope, collector: Action<T>): Async<Unit> =
-        scope.async { collect(collector) }.toAsync()
+        scope.async { collect(collector) }.asAsync()
 
     /**
      * 将自身中的元素（或收集器）转化为 [Flow]。
@@ -95,7 +95,7 @@ public interface SynchronouslyIterateCollectable<out T> : Collectable<T>, Iterab
      *
      */
     override fun collectAsync(scope: CoroutineScope, collector: Action<T>): Async<Unit> =
-        scope.async { forEach(collector) }.toAsync()
+        scope.async { forEach(collector) }.asAsync()
 
     /**
      * 转化或收集为一个 [List]。

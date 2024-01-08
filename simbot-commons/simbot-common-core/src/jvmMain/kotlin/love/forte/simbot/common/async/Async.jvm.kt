@@ -1,7 +1,12 @@
+@file:JvmName("AsyncUtil")
+@file:JvmMultifileClass
+
 package love.forte.simbot.common.async
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.future.asDeferred
+import love.forte.simbot.annotations.InternalSimbotAPI
 import love.forte.simbot.common.function.Action
 import java.util.concurrent.CompletableFuture
 
@@ -128,6 +133,13 @@ public actual class Async<out T> @PublishedApi internal actual constructor(publi
         deferred.cancel(cause)
     }
 
+    private var _sourceFuture: CompletableFuture<out @UnsafeVariance T>? = null
+
+    @InternalSimbotAPI
+    internal fun setInternalSourceFuture(f: CompletableFuture<out @UnsafeVariance T>) {
+        _sourceFuture = f
+    }
+
     /**
      * 转换 [Async] 对象为 [CompletableFuture]。
      *
@@ -137,6 +149,15 @@ public actual class Async<out T> @PublishedApi internal actual constructor(publi
      * @see Deferred.asCompletableFuture
      */
     @Suppress("MemberVisibilityCanBePrivate")
-    public fun asFuture(): CompletableFuture<out T> = deferred.asCompletableFuture()
+    public fun asFuture(): CompletableFuture<out T> = _sourceFuture ?: deferred.asCompletableFuture()
 
+}
+
+/**
+ * 将一个 [CompletableFuture] 转化为 [Async].
+ *
+ */
+@OptIn(InternalSimbotAPI::class)
+public fun <T> CompletableFuture<out T>.asAsync(): Async<T> = asDeferred().asAsync().also {
+    it.setInternalSourceFuture(this)
 }

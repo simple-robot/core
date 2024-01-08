@@ -5,6 +5,7 @@ package love.forte.simbot.application
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.serialization.modules.SerializersModule
 import love.forte.simbot.ability.CompletionAware
 import love.forte.simbot.ability.LifecycleAware
 import love.forte.simbot.bot.Bot
@@ -91,6 +92,11 @@ public interface Components : Collection<Component> {
      * 根据 [id] 寻找第一个匹配的 [Component]。
      */
     public fun findById(id: String): Component? = find { it.id == id }
+
+    /**
+     * 当前所有的组件内 [Component.serializersModule] 的聚合产物。
+     */
+    public val serializersModule: SerializersModule
 }
 
 /**
@@ -117,6 +123,10 @@ public fun Collection<Component>.toComponents(): Components = CollectionComponen
  */
 private class CollectionComponents(private val collections: Collection<Component>) : Components,
     Collection<Component> by collections {
+    override val serializersModule: SerializersModule = SerializersModule {
+        collections.forEach { include(it.serializersModule) }
+    }
+
     override fun toString(): String = "Components(values=$collections)"
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -190,7 +200,6 @@ public interface BotManagers : Collection<BotManager> {
      * 以序列的形式获取当前 [BotManager] 中所有的 [Bot]。
      */
     public fun allBots(): Sequence<Bot> = asSequence().flatMap { it.all() }
-
 
 
 }

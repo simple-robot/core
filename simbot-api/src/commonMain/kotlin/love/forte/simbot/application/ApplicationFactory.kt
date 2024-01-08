@@ -1,6 +1,8 @@
 package love.forte.simbot.application
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import love.forte.simbot.common.async.Async
 import love.forte.simbot.common.async.toAsync
 import love.forte.simbot.common.function.ConfigurerFunction
@@ -207,5 +209,14 @@ public interface ApplicationLauncher<out A : Application> {
      * 启动时会触发 [ApplicationLaunchStage.Launch] 事件线，调用所有的启动事件并集此启动所有的组件或插件。
      */
     public fun launchIn(scope: CoroutineScope): Async<A> = scope.toAsync { launch() }
+
+    /**
+     * 根据已经成型的配置，构建并在异步中启动一个 [Application][A]。
+     * 启动时会触发 [ApplicationLaunchStage.Launch] 事件线，调用所有的启动事件并集此启动所有的组件或插件。
+     * 注意：会使用 [GlobalScope] 作为作用域并不传播 [DelicateCoroutinesApi] 警告。
+     * 对于此作用域的说明、限制或差异等详细描述请参考 [GlobalScope] 的文档说明。
+     */
+    @OptIn(DelicateCoroutinesApi::class)
+    public fun launchInGlobal(): Async<A> = GlobalScope.toAsync { launch() }
 }
 

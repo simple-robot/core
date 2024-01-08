@@ -1,7 +1,12 @@
 package love.forte.simbot.bot
 
+import love.forte.simbot.ability.CompletionAware
 import love.forte.simbot.ability.LifecycleAware
+import love.forte.simbot.common.function.MergeableFactory
 import love.forte.simbot.common.id.ID
+import love.forte.simbot.plugin.PluginConfigureContext
+import love.forte.simbot.plugin.PluginFactory
+import love.forte.simbot.suspendrunner.ST
 
 /**
  *
@@ -9,7 +14,7 @@ import love.forte.simbot.common.id.ID
  *
  * ### 生命周期
  *
- * [BotManager] 持有一个会影响诞生自它的所有 [Bot] 的生命周期。
+ * [BotManager] 持有一个会影响诞生自它的所有 [Bot] 的生命周期的 [Job][kotlinx.coroutines.Job]。
  * 当 [BotManager] 被执行了 [BotManager.cancel]，除了影响 [BotManager] 自身的生命周期以外，
  * 也会同样影响到所有由它产生的 [Bot]。
  *
@@ -18,7 +23,7 @@ import love.forte.simbot.common.id.ID
  * @author ForteScarlet
  * @see BotPlugin
  */
-public interface BotManager : AutoConfigurableBotPlugin, LifecycleAware {
+public interface BotManager : AutoConfigurableBotPlugin, LifecycleAware, CompletionAware {
 
     /**
      * 得到所有的 [Bot]，以序列的形式。
@@ -66,10 +71,33 @@ public interface BotManager : AutoConfigurableBotPlugin, LifecycleAware {
      * 即使一个 [BotManager] 没有管理任何 [Bot]，
      * 在 [cancel] 之前也会保持挂起状态。
      */
+    @ST(asyncBaseName = "asFuture", asyncSuffix = "")
     public suspend fun join()
 
     /**
      * 关闭当前 [BotManager]. 会同时关闭由其管理的所有 [Bot]。
      */
     public fun cancel(cause: Throwable? = null)
+}
+
+
+/**
+ * [BotManager] 的工厂函数，用于配置并预构建 [BotManager] 实例。
+ * 继承自 [PluginFactory].
+ *
+ * @see BotManager
+ * @param P 目标类型
+ * @param CONF 配置类型。配置类型应是一个可变类，以便于在 DSL 中进行动态配置。
+ */
+public interface BotManagerFactory<P : BotManager, CONF : Any> :
+    MergeableFactory<BotManagerFactory.Key, P, CONF, PluginConfigureContext> {
+    /**
+     * 用于 [BotManagerFactory] 在内部整合时的标识类型。
+     *
+     * 更多说明参阅 [PluginFactory.Key]。
+     *
+     * @see PluginFactory.key
+     * @see MergeableFactory.key
+     */
+    public interface Key : PluginFactory.Key
 }

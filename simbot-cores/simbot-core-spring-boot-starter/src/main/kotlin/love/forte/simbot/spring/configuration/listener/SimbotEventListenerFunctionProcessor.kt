@@ -2,10 +2,14 @@ package love.forte.simbot.spring.configuration.listener
 
 import love.forte.simbot.application.Application
 import love.forte.simbot.event.EventListener
+import love.forte.simbot.quantcat.annotations.ApplyBinder
 import love.forte.simbot.quantcat.annotations.Listener
+import love.forte.simbot.quantcat.common.binder.BinderManager
+import love.forte.simbot.spring.utils.findMergedAnnotationSafely
+import love.forte.simbot.spring.utils.getKotlinFunctionSafely
+import love.forte.simbot.spring.utils.getTargetTypeSafely
+import love.forte.simbot.spring.utils.selectMethodsSafely
 import org.slf4j.LoggerFactory
-import org.springframework.aop.framework.autoproxy.AutoProxyUtils
-import org.springframework.aop.scope.ScopedObject
 import org.springframework.aop.scope.ScopedProxyUtils
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
@@ -14,22 +18,19 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.annotation.ConfigurationClassPostProcessor
-import org.springframework.core.MethodIntrospector
-import org.springframework.core.annotation.AnnotatedElementUtils
 import org.springframework.core.annotation.AnnotationUtils
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.kotlinFunction
 
 /**
- * 用于通过 [Application] 构建 [EventListener] 的工厂函数。
+ * 用于通过 [Application] 注册 [EventListener] 的函数接口。
  */
-public fun interface EventListenerFactory {
-    public fun create(application: Application): EventListener?
+public fun interface SimbotEventListenerResolver {
+    public fun resolve(application: Application)
 }
 
 /**
- * 将所有 bean 中标记了 [Listener] 的函数解析为 [EventListenerFactory]
+ * 将所有 bean 中标记了 [Listener] 的函数解析为 [SimbotEventListenerResolver]
  *
  * @author ForteScarlet
  */
@@ -48,43 +49,70 @@ public open class SimbotEventListenerFunctionProcessor : ApplicationContextAware
     }
 
     override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
-        val beanNames = beanFactory.getBeanNamesForType(Any::class.java)
-        for (beanName in beanNames) {
-            if (ScopedProxyUtils.isScopedTarget(beanName)) {
-                continue
+        beanFactory.beanNamesIterator.asSequence()
+            .filter { !ScopedProxyUtils.isScopedTarget(it) }
+            .forEach { beanName ->
+                val beanType = beanFactory.getTargetTypeSafely(beanName) ?: return@forEach
+
+                beanFactory.processListener(beanName, beanType)
             }
-
-            val beanType = beanFactory.getTargetTypeSafely(beanName) ?: continue
-
-            beanFactory.processListener(beanName, beanType)
-        }
     }
 
 
-    private fun ConfigurableListableBeanFactory.processListener(beanName: String, beanType: Class<*>) {
+    private fun ConfigurableListableBeanFactory.processListener(
+        beanName: String,
+        beanType: Class<*>,
+    ) {
         if (!AnnotationUtils.isCandidateClass(beanType, Listener::class.java)) {
             return
         }
 
-        val annotatedMethods: Map<Method, Listener> = beanType.selectMethodsSafely() ?: return
+        val annotatedMethods = beanType.selectMethodsSafely<Listener>()?.takeIf { it.isNotEmpty() } ?: return
+
+        logger.debug("Resolve candidate class {} bean named {} with any @Listener methods", beanType, beanName)
+
         annotatedMethods.forEach { (method, listenerAnnotation) ->
-            val eventListenerRegistrationDescription =
-                resolveMethodToListener(beanName, method, listenerAnnotation, TODO())
-                    ?: return@forEach
+            val function = method.getKotlinFunctionSafely() ?: return@forEach
 
-//            val beanDefinition = eventListenerRegistrationDescription.resolveToBeanDefinition()
-            val beanDefinition = resolveToBeanDefinition(eventListenerRegistrationDescription)
+            val applyBinder = method.findMergedAnnotationSafely<ApplyBinder>()
 
-            registry.registerBeanDefinition(generatedListenerBeanName(beanName, method), beanDefinition)
+            val eventListenerResolverDescription =
+                resolveMethodToListener(beanName, function, listenerAnnotation, applyBinder)
+
+            val beanDefinition = resolveToBeanDefinition(eventListenerResolverDescription)
+            val beanDefinitionName = generatedListenerBeanName(beanName, method)
+
+            logger.debug("Generate event listener resolver bean definition {} named {}", beanDefinition, beanDefinitionName)
+
+            registry.registerBeanDefinition(beanDefinitionName, beanDefinition)
         }
     }
 
-    private fun resolveMethodToListener(
-        beanName: String, method: Method, listenerAnnotation: Listener,
-        listenerProcessor: KFunctionEventListenerProcessor
-    ): (() -> EventListenerFactory)? {
+    private fun ConfigurableListableBeanFactory.resolveMethodToListener(
+        beanName: String,
+        function: KFunction<*>,
+        listenerAnnotation: Listener,
+        applyBinder: ApplyBinder?,
+    ): (() -> SimbotEventListenerResolver) {
+        return {
+            val binderManagerInstance = getBean(BinderManager::class.java)
+            processor.process(
+                beanName,
+                function,
+                listenerAnnotation,
+                applyBinder,
+                applicationContext,
+                binderManagerInstance
+            )
+        }
+    }
 
-        TODO()
+    private fun resolveToBeanDefinition(instanceSupplier: () -> SimbotEventListenerResolver): BeanDefinition {
+        return BeanDefinitionBuilder.genericBeanDefinition(
+            SimbotEventListenerResolver::class.java,
+            instanceSupplier
+        ).setPrimary(false)
+            .beanDefinition
     }
 
     public companion object {
@@ -92,38 +120,6 @@ public open class SimbotEventListenerFunctionProcessor : ApplicationContextAware
     }
 }
 
-
-private fun resolveToBeanDefinition(instanceSupplier: () -> EventListenerFactory): BeanDefinition {
-    return BeanDefinitionBuilder.genericBeanDefinition(
-        EventListenerFactory::class.java,
-        instanceSupplier
-    ).setPrimary(false).beanDefinition
-}
-
-
-private fun ConfigurableListableBeanFactory.getTargetTypeSafely(beanName: String): Class<*>? {
-    val type = kotlin.runCatching { AutoProxyUtils.determineTargetClass(this, beanName) }.getOrNull() ?: return null
-
-    return if (ScopedObject::class.java.isAssignableFrom(type)) {
-        return kotlin.runCatching {
-            AutoProxyUtils.determineTargetClass(this, ScopedProxyUtils.getTargetBeanName(beanName))
-        }.getOrElse { type }
-    } else {
-        type
-    }
-}
-
-private fun Method.getKotlinFunctionSafely(): KFunction<*>? {
-    return kotlin.runCatching { kotlinFunction }.getOrNull()
-}
-
-private inline fun <reified A : Annotation> Class<*>.selectMethodsSafely(): Map<Method, A>? {
-    return runCatching {
-        MethodIntrospector.selectMethods(this, MethodIntrospector.MetadataLookup { method ->
-            AnnotatedElementUtils.findMergedAnnotation(method, A::class.java)
-        })
-    }.getOrNull()
-}
 
 private fun generatedListenerBeanName(beanName: String, method: Method): String =
     "$beanName${method.toGenericString()}#GENERATED_LISTENER"

@@ -1,7 +1,5 @@
 package love.forte.simbot.quantcat.common.binder
 
-import kotlin.reflect.KFunction
-
 /**
  * Binder管理器。
  */
@@ -25,13 +23,5 @@ public interface BinderManager {
     /**
      * 获取所有的全局binder工厂。
      */
-    public fun getGlobals(): List<ParameterBinderFactory>
-    
-    /**
-     * 解析一个函数并将其作为一个binder工厂。
-     */
-    public fun resolveFunctionToBinderFactory(
-        function: KFunction<*>,
-        instanceGetter: (ParameterBinderFactory.Context) -> Any?,
-    ): ParameterBinderFactory
+    public val globals: List<ParameterBinderFactory>
 }

@@ -26,7 +26,7 @@ import kotlin.reflect.KClass
 
 /**
  *
- * 为 [love.forte.simboot.filter.Keyword] 提供参数绑定功能。
+ * 为 [Keyword] 提供参数绑定功能的绑定器工厂。
  *
  * @author ForteScarlet
  */
@@ -66,7 +66,7 @@ private sealed class KeywordBinder(val name: String, val paramType: KClass<*>?) 
                 context.plainText ?: return Result.failure(BindException("Current event's textContent is null."))
 
             for (keyword in keywordList) {
-                val param = keyword.valueMatcher.getParam(name, textContent)
+                val param = keyword.regexValueMatcher.getParam(name, textContent)
                 if (param != null) {
                     return Result.success(convert(param))
                 }
@@ -82,7 +82,7 @@ private sealed class KeywordBinder(val name: String, val paramType: KClass<*>?) 
                 ?: return Result.success(null)
             val textContent = context.plainText ?: return Result.success(null)
             for (keyword in keywords) {
-                val param = keyword.valueMatcher.getParam(name, textContent)
+                val param = keyword.regexValueMatcher.getParam(name, textContent)
                 if (param != null) return Result.success(convert(param))
             }
 

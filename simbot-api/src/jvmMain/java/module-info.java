@@ -23,7 +23,6 @@ module simbot.api {
     requires static org.reactivestreams;
 
     // libs.suspend.reversal.annotations?
-    exports love.forte.simbot;
     exports love.forte.simbot.ability;
     exports love.forte.simbot.application;
     exports love.forte.simbot.bot;

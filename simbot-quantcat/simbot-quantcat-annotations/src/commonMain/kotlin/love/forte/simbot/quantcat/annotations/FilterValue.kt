@@ -12,6 +12,8 @@
 
 package love.forte.simbot.quantcat.annotations
 
+import love.forte.simbot.quantcat.common.filter.FilterValueProperties
+
 /**
  * 指定一个参数，此参数为通过 [love.forte.simbot.quantcat.annotations.Filter]
  * 解析而得到的动态参数提取器中的内容。
@@ -24,3 +26,12 @@ package love.forte.simbot.quantcat.annotations
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 public annotation class FilterValue(val value: String, val required: Boolean = true)
+
+/**
+ * [FilterValue] to [FilterValueProperties].
+ */
+public fun FilterValue.toProperties(): FilterValueProperties =
+    FilterValueProperties(
+        value = value,
+        required = required
+    )

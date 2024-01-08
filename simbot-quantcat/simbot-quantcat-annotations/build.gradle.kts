@@ -76,6 +76,7 @@ kotlin {
         commonMain {
             dependencies {
                 compileOnly(project(":simbot-api"))
+                compileOnly(project(":simbot-commons:simbot-common-annotations"))
                 compileOnly(project(":simbot-quantcat:simbot-quantcat-common"))
             }
         }
@@ -91,6 +92,10 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-junit5"))
             }
+        }
+
+        jsMain.dependencies {
+            implementation(project(":simbot-commons:simbot-common-annotations"))
         }
     }
 

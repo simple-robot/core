@@ -894,3 +894,10 @@ private inline fun <reified T : ID> T.idExactEq(other: Any?, orElse: T.(T) -> Bo
 
     return orElse(other)
 }
+
+/**
+ * 同 [ID.toString], 得到 [ID] 的字面值。
+ *
+ */
+public inline val ID.literal: String
+    get() = toString()

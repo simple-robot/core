@@ -4,7 +4,6 @@
 package love.forte.simbot.event
 
 import love.forte.simbot.common.PriorityConstant
-import love.forte.suspendreversal.annotations.SuspendReversal
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmSynthetic
@@ -22,7 +21,6 @@ import kotlin.jvm.JvmSynthetic
  * @author ForteScarlet
  */
 @Suppress("KDocUnresolvedReference")
-@SuspendReversal
 public fun interface EventInterceptor {
 
     /**

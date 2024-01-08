@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.toList
 import love.forte.simbot.common.async.Async
-import love.forte.simbot.common.async.toAsync
+import love.forte.simbot.common.async.asAsync
 import love.forte.simbot.common.collection.asIterator
 import love.forte.simbot.common.function.Action
 import love.forte.simbot.suspendrunner.runInNoScopeBlocking
+import java.util.stream.Collectors
 import java.util.stream.Stream
 import kotlin.streams.asSequence
 import kotlin.streams.asStream
-import kotlin.streams.toList
 
 
 /**
@@ -94,7 +94,7 @@ public interface FlowSynchronouslyIterateCollectable<T> : SynchronouslyIterateCo
      * @return 返回 [Async] 结果, 用于表达异步操作结果。
      */
     override fun collectAsync(scope: CoroutineScope, collector: Action<T>): Async<Unit> =
-        scope.async { collect(collector) }.toAsync()
+        scope.async { collect(collector) }.asAsync()
 
     /**
      * 将数据转化为 [Flow]流。
@@ -192,6 +192,6 @@ public fun <T> Stream<T>.asCollectable(): SequenceCollectable<T> = StreamCollect
 private class StreamCollectableImpl<T>(private val stream: Stream<T>) : SequenceCollectable<T> {
     override fun asSequence(): Sequence<T> = stream.asSequence()
     override fun forEach(action: Action<T>): Unit = stream.forEach(action::invoke)
-    override fun toList(): List<T> = stream.toList()
+    override fun toList(): List<T> = stream.collect(Collectors.toUnmodifiableList())
 }
 

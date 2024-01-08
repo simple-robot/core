@@ -33,7 +33,7 @@ public object EmptyKeyword : Keyword {
     override val text: String
         get() = ""
 
-    override val valueMatcher: ValueMatcher
+    override val regexValueMatcher: ValueMatcher
         get() = EmptyFilterParameterMatcher
 }
 

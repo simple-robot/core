@@ -19,6 +19,7 @@ include(":simbot-commons:simbot-common-core")
 include(":simbot-commons:simbot-common-suspend-runner")
 include(":simbot-commons:simbot-common-stage-loop")
 include(":simbot-api")
+include(":simbot-test")
 include(":simbot-cores:simbot-core")
 
 include(":simbot-logger")

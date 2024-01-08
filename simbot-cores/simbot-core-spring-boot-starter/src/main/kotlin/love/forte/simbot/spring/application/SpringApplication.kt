@@ -1,38 +1,29 @@
 package love.forte.simbot.spring.application
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
 import love.forte.simbot.annotations.ExperimentalSimbotAPI
+import love.forte.simbot.annotations.InternalSimbotAPI
 import love.forte.simbot.application.*
+import love.forte.simbot.bot.BotManager
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeBy
+import love.forte.simbot.common.function.invokeWith
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactoriesConfigurator
-import love.forte.simbot.core.event.SimpleEventDispatcherConfiguration
 import love.forte.simbot.core.event.createSimpleEventDispatcherImpl
 import love.forte.simbot.core.event.impl.SimpleEventDispatcherConfigurationImpl
+import love.forte.simbot.event.EventDispatcher
 import love.forte.simbot.plugin.Plugin
 import love.forte.simbot.plugin.PluginConfigureContext
 import love.forte.simbot.plugin.PluginFactoriesConfigurator
 import love.forte.simbot.spring.application.internal.SpringApplicationImpl
 import love.forte.simbot.spring.application.internal.SpringEventDispatcherConfigurationImpl
-import org.springframework.context.ApplicationContext
-import java.util.concurrent.Executor
-import kotlin.coroutines.CoroutineContext
-
-/**
- * 使用在 Spring Starter 中的 [Application] 实现。
- * 主要由内部使用。
- */
-public interface SpringApplication : Application
 
 /**
  * Factory for [SpringApplication].
  */
-public object Spring :
-    ApplicationFactory<SpringApplication, SpringApplicationBuilder, SpringApplicationLauncher, SpringApplicationEventRegistrar, SpringEventDispatcherConfiguration> {
+public object Spring : SpringApplicationFactory {
     override fun create(configurer: ConfigurerFunction<ApplicationFactoryConfigurer<SpringApplicationBuilder, SpringApplicationEventRegistrar, SpringEventDispatcherConfiguration>>?): SpringApplicationLauncher {
         return SpringApplicationLauncherImpl { create0(configurer) }
     }
@@ -42,8 +33,10 @@ public object Spring :
         val springConfigurer = SpringApplicationFactoryConfigurer().invokeBy(configurer)
         val configuration = springConfigurer.createConfigInternal(SpringApplicationBuilder())
 
-        // register?
-
+        val registrar = object : AbstractApplicationEventRegistrar(), SpringApplicationEventRegistrar {
+            public override val events: MutableMap<ApplicationLaunchStage<*>, MutableList<ApplicationEventHandler>>
+                get() = super.events
+        }
 
         // 事件调度器
         val dispatcherConfiguration = SpringEventDispatcherConfigurationImpl(SimpleEventDispatcherConfigurationImpl())
@@ -54,87 +47,53 @@ public object Spring :
         val minJobApplicationContext = configuration.coroutineContext.minusKey(Job)
         dispatcherConfiguration.coroutineContext = minJobApplicationContext + minJobDispatcherContext
 
-
         val dispatcher = createSimpleEventDispatcherImpl(dispatcherConfiguration.simple)
 
         // 事件注册器
+        springConfigurer.applicationEventRegistrarConfigurations.forEach { c ->
+            c.invokeWith(registrar)
+        }
 
-        // components
+        // TODO components
+        val components = springConfigurer.componentFactoriesConfigurator.createAll(object : ComponentConfigureContext {
+            override val applicationConfiguration: ApplicationConfiguration
+                get() = configuration
+
+            override val applicationEventRegistrar: ApplicationEventRegistrar
+                get() = registrar
+        }).toComponents()
 
         // plugins
+        val pluginCollections = springConfigurer.pluginFactoriesConfigurator.createAll(object : PluginConfigureContext {
+            override val applicationConfiguration: ApplicationConfiguration
+                get() = configuration
+
+            override val applicationEventRegistrar: ApplicationEventRegistrar
+                get() = registrar
+
+            override val components: Components
+                get() = components
+
+            override val eventDispatcher: EventDispatcher
+                get() = dispatcher
+        })
 
 
-        TODO()
-    }
-}
+        val plugins = pluginCollections.toPlugins()
+        val botManagers = pluginCollections.filterIsInstance<BotManager>().toBotManagers()
 
-/**
- * Simbot Spring Boot Starter 中使用的 [ApplicationBuilder]
- *
- */
-public class SpringApplicationBuilder : AbstractApplicationBuilder() {
-    /**
-     * @see SpringApplicationConfigurationProperties
-     */
-    public var applicationConfigurationProperties: SpringApplicationConfigurationProperties =
-        SpringApplicationConfigurationProperties()
+        val events = applicationLaunchStages(registrar.events.mapValues { it.value.toList() })
 
-    /**
-     * Spring [ApplicationContext].
-     */
-    public lateinit var applicationContext: ApplicationContext
-
-
-    internal fun build(): SpringApplicationConfiguration =
-        SpringApplicationConfigurationImpl(
-            coroutineContext,
-            applicationConfigurationProperties,
-            applicationContext
+        return SpringApplicationImpl(
+            configuration,
+            dispatcher,
+            components,
+            plugins,
+            botManagers,
+            events
         )
-
-}
-
-public interface SpringApplicationConfiguration : ApplicationConfiguration {
-    /**
-     * @see SpringApplicationConfigurationProperties
-     */
-    public val applicationConfigurationProperties: SpringApplicationConfigurationProperties
-
-    /**
-     * Spring [ApplicationContext].
-     */
-    public val applicationContext: ApplicationContext
-}
-
-/**
- * Simbot Spring Boot Starter 中使用的 [ApplicationLauncher] 实现。
- *
- */
-public interface SpringApplicationLauncher : ApplicationLauncher<SpringApplication>
-
-/**
- * Simbot Spring Boot Starter 中使用的 [ApplicationEventRegistrar] 实现。
- *
- */
-public interface SpringApplicationEventRegistrar : ApplicationEventRegistrar
-
-/**
- * Simbot Spring Boot Starter 中使用的调度器配置。
- *
- */
-public interface SpringEventDispatcherConfiguration : SimpleEventDispatcherConfiguration {
-
-    /**
-     * 添加一个 [Executor] 并作为 [协程调度器][CoroutineDispatcher] 添加到 [CoroutineContext] 中。
-     */
-    public fun setExecutorDispatcher(executor: Executor) {
-        coroutineContext += executor.asCoroutineDispatcher()
     }
-
-
 }
-
-////
 
 private class SpringApplicationLauncherImpl(
     private val applicationCreator: () -> SpringApplicationImpl
@@ -164,6 +123,7 @@ private class SpringApplicationFactoryConfigurer(
     componentFactoriesConfigurator,
     pluginFactoriesConfigurator
 ) {
+    @OptIn(InternalSimbotAPI::class)
     fun createConfigInternal(configBuilder: SpringApplicationBuilder): SpringApplicationConfiguration {
         return createConfig(configBuilder) {
             it.build()
@@ -179,9 +139,3 @@ private class SpringApplicationFactoryConfigurer(
     }
 }
 
-
-private class SpringApplicationConfigurationImpl(
-    override val coroutineContext: CoroutineContext,
-    override val applicationConfigurationProperties: SpringApplicationConfigurationProperties,
-    override val applicationContext: ApplicationContext
-) : SpringApplicationConfiguration

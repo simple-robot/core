@@ -2,6 +2,8 @@ package love.forte.simbot.spring.application
 
 import love.forte.simbot.application.Application
 import love.forte.simbot.bot.Bot
+import love.forte.simbot.bot.BotManager
+import love.forte.simbot.bot.SerializableBotConfiguration
 
 
 /**
@@ -11,22 +13,55 @@ import love.forte.simbot.bot.Bot
  */
 public class SpringApplicationConfigurationProperties {
     /**
-     * 需要加载的所有组件下它们对应的所有bot配置文件。
-     * 键为对应组件的 id，值为对应的资源列表。
-     * 资源文件的内容应为 JSON 格式。
+     * 与 bot 配置相关的属性。
      */
-    public var botConfigurationResources: Map<String, List<String>> = emptyMap()
+    public var bots: BotProperties = BotProperties()
 
     /**
-     * 是否在 `Bot` 注册后使用 [Bot.start] 启动它们。
-     *
+     * 与 bot 配置相关的属性。
      */
-    public var isAutoStartBots: Boolean = true
+    public class BotProperties {
+        public companion object {
+            internal const val DEFAULT_JSON_RESOURCE_PATTERN: String = "classpath:simbot-bots/*.bot.json"
+        }
 
-    /**
-     * 当自动扫描的bot注册或启动失败时的处理策略。默认为直接抛出异常。
-     */
-    public var botAutoRegistrationFailurePolicy: BotRegistrationFailurePolicy = BotRegistrationFailurePolicy.ERROR
+        /**
+         * 需要加载的所有组件下它们对应的所有 JSON 格式 的 bot 配置文件。
+         * 默认为 [`classpath:simbot-bots/\*.bot.json`][DEFAULT_JSON_RESOURCE_PATTERN]
+         */
+        public var configurationJsonResources: MutableSet<String> = mutableSetOf()
+
+        // with types?
+
+        /**
+         * 当加载用于注册bot的配置文件出现错误时的处理策略。默认为 [BotConfigResourceLoadFailurePolicy.ERROR] 即抛出异常。
+         */
+        public var autoRegistrationResourceLoadFailurePolicy: BotConfigResourceLoadFailurePolicy = BotConfigResourceLoadFailurePolicy.ERROR
+
+        /**
+         * 当无法为某个 [SerializableBotConfiguration] 找到任何可供其注册的 [BotManager] 时的处理策略。
+         * 默认为 [MismatchConfigurableBotManagerPolicy.ERROR_LOG] 输出 `error` 日志。
+         */
+        public var autoRegistrationMismatchConfigurableBotManagerPolicy: MismatchConfigurableBotManagerPolicy = MismatchConfigurableBotManagerPolicy.ERROR_LOG
+
+        /**
+         * 是否在 `Bot` 注册后使用 [Bot.start] 启动它们。
+         */
+        public var autoStartBots: Boolean = true
+
+        /**
+         * 当 [autoStartBots] 为 `true` 时，
+         * 启动 bot 的方式。
+         * 会先加载（注册）完所有 bot 后再启动。
+         * 默认为 [BotAutoStartMode.ASYNC]。
+         */
+        public var autoStartMode: BotAutoStartMode = BotAutoStartMode.ASYNC
+
+        /**
+         * 当自动扫描的bot注册或启动失败时的处理策略。默认为直接异常以终止程序。
+         */
+        public var autoRegistrationFailurePolicy: BotRegistrationFailurePolicy = BotRegistrationFailurePolicy.ERROR
+    }
 
     /**
      * 组件相关的配置信息。
@@ -87,6 +122,21 @@ public class SpringApplicationConfigurationProperties {
     }
 }
 
+
+public enum class BotAutoStartMode {
+    /**
+     * 依次阻塞启动。
+     */
+    BLOCK,
+
+    /**
+     * 每个 bot 独立地异步启动。
+     * 如果 [SpringApplicationConfigurationProperties.BotProperties.autoRegistrationFailurePolicy] 为 [BotRegistrationFailurePolicy.ERROR],
+     * 则异步中任意 bot 如果启动失败都会导致整体失败。
+     */
+    ASYNC
+}
+
 /**
  * 基于 [Application] 保活的策略
  */
@@ -111,10 +161,14 @@ public enum class BotRegistrationFailurePolicy {
 
     /**
      * 当bot注册或启动过程中出现异常或bot最终无法注册时都会抛出异常并终止程序。
-     *
-     * 是默认的选项。
+     * 是建议的默认选择。
      */
     ERROR,
+
+    /**
+     * 当bot注册或启动过程中出现异常或bot最终无法注册时会输出带有异常信息的 `error` 日志。
+     */
+    ERROR_LOG,
 
     /**
      * 当bot注册或启动过程中出现异常或bot最终无法注册时会输出带有异常信息的 `warn` 日志。
@@ -126,3 +180,58 @@ public enum class BotRegistrationFailurePolicy {
      */
     IGNORE;
 }
+
+/**
+ * 当自动扫描的bot的配置文件加载失败时候的策略（找不到文件、无法读取、无法解析为 [SerializableBotConfiguration] 等）。
+ */
+public enum class BotConfigResourceLoadFailurePolicy {
+
+    /**
+     * 当出现无法解析的资源文件时抛出异常来尝试中断整个处理流程。
+     * 是建议的默认选择。
+     */
+    ERROR,
+
+    /**
+     * 当出现无法解析的资源文件时输出 `error` 级别的日志来尝试中断整个处理流程。
+     */
+    ERROR_LOG,
+
+    /**
+     * 当出现无法解析的资源文件时会输出 `warn` 日志。
+     */
+    WARN,
+
+    /**
+     * 当出现无法解析的资源文件时仅会输出 `debug` 调试日志。
+     */
+    IGNORE;
+}
+
+
+/**
+ * 被加载的 [SerializableBotConfiguration] 无法找到任何可供注册的 [BotManager] 时的策略。
+ */
+public enum class MismatchConfigurableBotManagerPolicy {
+    /**
+     * 当无法找到任何可供注册的 [BotManager] 时抛出异常来尝试中断整个处理流程。
+     */
+    ERROR,
+
+    /**
+     * 当无法找到任何可供注册的 [BotManager] 时输出 `error` 级别的日志来尝试中断整个处理流程。
+     * 是建议的默认选择。
+     */
+    ERROR_LOG,
+
+    /**
+     * 当无法找到任何可供注册的 [BotManager] 时输出 `warn` 级别的日志并尝试跳过。
+     */
+    WARN,
+
+    /**
+     * 当无法找到任何可供注册的 [BotManager] 时输出 `debug` 级别的日志并尝试跳过。
+     */
+    IGNORE;
+}
+

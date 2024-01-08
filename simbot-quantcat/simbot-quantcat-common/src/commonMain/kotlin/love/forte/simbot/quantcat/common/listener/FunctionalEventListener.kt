@@ -9,6 +9,6 @@ import kotlin.reflect.KFunction
  *
  * @author ForteScarlet
  */
-public abstract class FunctionalEventListener<R> : EventListener {
-    protected abstract val caller: KFunction<R>
+public abstract class FunctionalEventListener : EventListener {
+    protected abstract val caller: KFunction<*>
 }

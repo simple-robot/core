@@ -27,16 +27,8 @@ public class SimpleBinderManager(
         return idBinderFactories[id]
     }
 
-    override fun getGlobals(): List<ParameterBinderFactory> {
-        return globalBinderFactories.toList()
-    }
-
-    override fun resolveFunctionToBinderFactory(
-        function: KFunction<*>,
-        instanceGetter: (ParameterBinderFactory.Context) -> Any?,
-    ): ParameterBinderFactory {
-        return function.toBinderFactory(instanceGetter)
-    }
+    override val globals: List<ParameterBinderFactory>
+        get() = globalBinderFactories.toList()
 }
 
 /**

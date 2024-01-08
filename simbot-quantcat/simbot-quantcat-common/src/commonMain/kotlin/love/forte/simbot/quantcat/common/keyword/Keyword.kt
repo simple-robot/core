@@ -33,5 +33,8 @@ public interface Keyword {
      */
     public val regex: Regex
 
-    public val valueMatcher: ValueMatcher
+    /**
+     * 基于正则 [regex] 的匹配与参数提取器。
+     */
+    public val regexValueMatcher: ValueMatcher
 }

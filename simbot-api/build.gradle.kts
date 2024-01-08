@@ -123,7 +123,7 @@ kotlin {
         jsMain.dependencies {
             implementation(project(":simbot-commons:simbot-common-annotations"))
             implementation(libs.jetbrains.annotations)
-            implementation(libs.suspend.reversal.annotations)
+            //implementation(libs.suspend.reversal.annotations)
         }
 
         jsTest.dependencies {

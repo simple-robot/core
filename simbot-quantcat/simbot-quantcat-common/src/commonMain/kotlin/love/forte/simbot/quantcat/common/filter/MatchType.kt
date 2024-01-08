@@ -2,6 +2,8 @@ package love.forte.simbot.quantcat.common.filter
 
 import love.forte.simbot.quantcat.common.keyword.Keyword
 import love.forte.simbot.quantcat.common.keyword.KeywordMatcher
+import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
 
 
 /**
@@ -94,4 +96,13 @@ public enum class MultiFilterMatchType {
      * 需要无匹配内容
      */
     NONE;
+
+    public companion object {
+        /**
+         * 得到一个默认的策略。
+         */
+        @get:JvmName("getDefault")
+        @get:JvmStatic
+        public val Default: MultiFilterMatchType get() = ANY
+    }
 }

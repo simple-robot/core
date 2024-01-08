@@ -32,15 +32,17 @@ public annotation class Filter(
      */
     val mode: FilterMode = FilterMode.IN_LISTENER,
     /**
-     * 当 [mode] 为 [FilterMode.INTERCEPTOR] 时可用，代表其作为拦截器注册时的优先级。
+     * 优先级。
+     * 当 [mode]
+     * 为 [FilterMode.INTERCEPTOR]
+     * 时代表其作为拦截器注册时的优先级。
      */
     val priority: Int = PriorityConstant.NORMAL,
     /**
      * 针对部分特定目标的过滤匹配。
      *
-     * 建议只提供 0-1 个 [Targets] 。
-     * 当提供多个 [Targets] 时，最终的匹配内容为它们的合并结果。
-     * 但是多个 [Targets] 并不美观，也会使整体代码显得冗长。
+     * 只能提供 0-1 个 [Targets] 。
+     * 当提供多个 [Targets] 时，只会取第一个元素的值。
      */
     val targets: Array<Targets> = [],
     /**
@@ -71,8 +73,8 @@ public annotation class Filter(
     public annotation class Targets(
         /**
          * 对 [Component][love.forte.simbot.component.Component] 进行匹配。
-         * 如果事件为 [BotEvent][love.forte.simbot.event.BotEvent],
-         * 则只有 [Bot.component.id][love.forte.simbot.component.Component.id] 在此列表中时才会放行。
+         * 如果事件为 [ComponentEvent][love.forte.simbot.event.ComponentEvent],
+         * 则只有 [component.id][love.forte.simbot.component.Component.id] 在此列表中时才会放行。
          *
          */
         val components: Array<String> = [],
@@ -204,7 +206,7 @@ public annotation class Filter(
              * [Filter.Targets] 中的“非”前缀。
              *
              */
-            public const val NON_PREFIX: String = "!"
+            public const val NON_PREFIX: String = "!" // TODO
         }
     }
 }
@@ -243,6 +245,7 @@ public fun Filter.Targets.toProperties(): FilterTargetsProperties =
 public annotation class MultiFilter(
     /**
      * 多个过滤器之间的匹配策略。
+     * 策略只会对 [FilterMode.IN_LISTENER] 模式的过滤器配置生效。
      */
     val matchType: MultiFilterMatchType
 )

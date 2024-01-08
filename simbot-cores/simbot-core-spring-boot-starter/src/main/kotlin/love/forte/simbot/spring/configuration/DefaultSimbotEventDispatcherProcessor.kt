@@ -1,6 +1,8 @@
 package love.forte.simbot.spring.configuration
 
 import love.forte.simbot.event.EventDispatcher
+import love.forte.simbot.logger.LoggerFactory
+import love.forte.simbot.logger.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -40,6 +42,15 @@ public open class DefaultSimbotEventDispatcherProcessor(
 ) : SimbotEventDispatcherProcessor {
     override fun process(dispatcher: EventDispatcher) {
         registerProcessor.process(dispatcher)
-        postConfigurers.forEach { it.configure(dispatcher) }
+        logger.debug("Processed dispatcher {} by processor {}", dispatcher, registerProcessor)
+
+        postConfigurers.forEach {
+            it.configure(dispatcher)
+            logger.debug("Configured dispatcher {} by {}", dispatcher, it)
+        }
+    }
+
+    public companion object {
+        private val logger = LoggerFactory.logger<DefaultSimbotDispatcherProcessor>()
     }
 }
