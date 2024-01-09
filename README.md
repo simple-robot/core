@@ -4,15 +4,9 @@
 > 此仓库是 Simple Robot v4 版本的**临时**开发仓库，会在大部分基本工作都完成或接近尾声的时候合并至 [主仓库](https://github.com/simple-robot/simpler-robot)
 > 的相关分支并移除此仓库。
 
-目标：
 
-- [x] 全面的 KMP （Kotlin Multiplatform）
-- [x] JVM平台模块化
-- [x] 尽可能更全面的Java友好：阻塞、异步API；更友好的DSL，比如不要总是 `return Unit.INSTANCE`；对组件、插件开发的Java支持，或最少也要有额外的Java开发模块。
-- [x] 更简单、容易扩展的API。比如移除掉之前毫无用处的 `Event.Key` 机制。
-- [x] 更好的逻辑关系、生命周期。
-- [ ] 更友好的组件、插件开发。包括Kotlin和Java。
-
+> [!warning]
+> 本仓库内容已经迁移至 [simpler-robot v4-dev分支](https://github.com/simple-robot/simpler-robot/tree/v4-dev) 。
 
 
 ```kotlin
