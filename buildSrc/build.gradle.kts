@@ -30,11 +30,6 @@ dependencies {
     implementation("love.forte.gradle.common:gradle-common-kotlin-multiplatform:$gradleCommon")
     implementation("love.forte.gradle.common:gradle-common-publication:$gradleCommon")
 
-    // ktor
-    implementation("io.ktor:ktor-client-core:$ktor")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktor")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor")
-
     // detekt
     // 1.23.1
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.1")
